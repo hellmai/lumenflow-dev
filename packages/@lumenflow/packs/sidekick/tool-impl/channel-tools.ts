@@ -143,9 +143,7 @@ async function channelSendTool(input: unknown, context?: ToolContextLike): Promi
       channels.push(existing);
       await storage.writeStore('channels', channels);
     } else {
-      const updated = channels.map((c) =>
-        c.id === existing!.id ? { ...c, updated_at: now } : c,
-      );
+      const updated = channels.map((c) => (c.id === existing!.id ? { ...c, updated_at: now } : c));
       await storage.writeStore('channels', updated);
     }
 
@@ -175,10 +173,7 @@ async function channelSendTool(input: unknown, context?: ToolContextLike): Promi
 // channel:receive
 // ---------------------------------------------------------------------------
 
-async function channelReceiveTool(
-  input: unknown,
-  _context?: ToolContextLike,
-): Promise<ToolOutput> {
+async function channelReceiveTool(input: unknown, _context?: ToolContextLike): Promise<ToolOutput> {
   const parsed = toRecord(input);
   const channelName = asNonEmptyString(parsed.channel);
   const limit = asInteger(parsed.limit);
@@ -198,9 +193,7 @@ async function channelReceiveTool(
     }
   }
 
-  const sorted = filtered.toSorted(
-    (a, b) => Date.parse(a.created_at) - Date.parse(b.created_at),
-  );
+  const sorted = filtered.toSorted((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
 
   const items = limit && limit > 0 ? sorted.slice(-limit) : sorted;
 

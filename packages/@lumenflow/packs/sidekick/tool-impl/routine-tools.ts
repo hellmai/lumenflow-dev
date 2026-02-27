@@ -117,9 +117,7 @@ async function routineListTool(input: unknown, _context?: ToolContextLike): Prom
   const storage = getStoragePort();
   const routines = await storage.readStore('routines');
 
-  const sorted = routines.toSorted(
-    (a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at),
-  );
+  const sorted = routines.toSorted((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
 
   const items = limit && limit > 0 ? sorted.slice(0, limit) : sorted;
 

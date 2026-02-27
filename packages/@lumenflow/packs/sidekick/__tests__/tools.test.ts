@@ -676,14 +676,10 @@ describe('channel:send', () => {
   it('caps outbox at 100 messages', async () => {
     // Seed 100 messages
     for (let i = 0; i < 100; i++) {
-      await withPort(port, () =>
-        channelTools({ content: `msg-${i}` }, ctx('channel:send')),
-      );
+      await withPort(port, () => channelTools({ content: `msg-${i}` }, ctx('channel:send')));
     }
     // Send one more
-    await withPort(port, () =>
-      channelTools({ content: 'overflow' }, ctx('channel:send')),
-    );
+    await withPort(port, () => channelTools({ content: 'overflow' }, ctx('channel:send')));
     const messages = await port.readStore('messages');
     expect(messages).toHaveLength(100);
     // Oldest should be trimmed, newest should be present
@@ -759,9 +755,7 @@ describe('channel:receive', () => {
   it('respects limit', async () => {
     await withPort(port, () => channelTools({ content: 'A' }, ctx('channel:send')));
     await withPort(port, () => channelTools({ content: 'B' }, ctx('channel:send')));
-    const result = await withPort(port, () =>
-      channelTools({ limit: 1 }, ctx('channel:receive')),
-    );
+    const result = await withPort(port, () => channelTools({ limit: 1 }, ctx('channel:receive')));
     expect((result.data as Record<string, unknown>).count).toBe(1);
   });
 });
@@ -798,10 +792,7 @@ describe('routine:create', () => {
 
   it('persists the routine to the store', async () => {
     await withPort(port, () =>
-      routineTools(
-        { name: 'persisted', steps: [{ tool: 'task:list' }] },
-        ctx('routine:create'),
-      ),
+      routineTools({ name: 'persisted', steps: [{ tool: 'task:list' }] }, ctx('routine:create')),
     );
     const routines = await port.readStore('routines');
     expect(routines).toHaveLength(1);
@@ -810,10 +801,7 @@ describe('routine:create', () => {
 
   it('appends an audit event on create', async () => {
     await withPort(port, () =>
-      routineTools(
-        { name: 'audited', steps: [{ tool: 'task:list' }] },
-        ctx('routine:create'),
-      ),
+      routineTools({ name: 'audited', steps: [{ tool: 'task:list' }] }, ctx('routine:create')),
     );
     const events = await port.readAuditEvents();
     const createEvents = events.filter((e) => e.tool === 'routine:create');
@@ -922,9 +910,7 @@ describe('routine:run', () => {
     const routines = await port.readStore('routines');
     const routineId = routines[0]?.id as string;
 
-    const result = await withPort(port, () =>
-      routineTools({ id: routineId }, ctx('routine:run')),
-    );
+    const result = await withPort(port, () => routineTools({ id: routineId }, ctx('routine:run')));
     expect(result.success).toBe(true);
     const data = result.data as Record<string, unknown>;
     expect(data.plan_only).toBe(true);
@@ -945,10 +931,7 @@ describe('routine:run', () => {
 
   it('appends an audit event on run', async () => {
     await withPort(port, () =>
-      routineTools(
-        { name: 'audit-run', steps: [{ tool: 'task:list' }] },
-        ctx('routine:create'),
-      ),
+      routineTools({ name: 'audit-run', steps: [{ tool: 'task:list' }] }, ctx('routine:create')),
     );
     const routines = await port.readStore('routines');
     const routineId = routines[0]?.id as string;
