@@ -2,7 +2,7 @@ id: WU-2251
 title: Network allowlist schema and scope intersection
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - SandboxNetworkPosture includes allowlist variant
   - intersectNetworkScopes handles allowlist intersection
   - SandboxProfile populated with allowlist from scope intersection
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2251
+claimed_at: 2026-02-27T17:37:12.818Z
+baseline_main_sha: 85a34f576f16e1ef90ea1a29453719bcee8ab988
+session_id: 7937ad71-258b-492c-831a-8d5c71fc0950
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T17:37:12.825Z

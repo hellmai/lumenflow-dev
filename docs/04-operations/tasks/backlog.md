@@ -52,7 +52,6 @@ sections:
 - [WU-2233 — Implement Sidekick task and memory tool groups](wu/WU-2233.yaml) — Framework: Core Lifecycle
 - [WU-2234 — Implement Sidekick channel, routine, and system tool groups](wu/WU-2234.yaml) — Framework: Core Lifecycle
 - [WU-2237 — Sidekick validation, gates, smoke flow, and publish readiness](wu/WU-2237.yaml) — Framework: Core Validation
-- [WU-2251 — Network allowlist schema and scope intersection](wu/WU-2251.yaml) — Framework: Core Lifecycle
 - [WU-2252 — Network allowlist enforcement in bwrap](wu/WU-2252.yaml) — Framework: Core Lifecycle
 - [WU-2253 — macOS sandbox posture-aware network rules](wu/WU-2253.yaml) — Framework: Core Lifecycle
 - [WU-2254 — macOS sandbox read confinement and deny overlays](wu/WU-2254.yaml) — Framework: Core Lifecycle
@@ -65,6 +64,7 @@ sections:
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
 - [WU-2232 — Sidekick StoragePort and filesystem storage adapter](wu/WU-2232.yaml) — Framework: Core Lifecycle
+- [WU-2251 — Network allowlist schema and scope intersection](wu/WU-2251.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
