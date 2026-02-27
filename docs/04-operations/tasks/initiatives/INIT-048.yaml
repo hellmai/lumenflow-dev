@@ -31,3 +31,4 @@ notes:
     rationale.
   - 'Time-boxed permissions and dynamic policy reload deferred to future initiative. Phase 1+2
     scope: network allowlisting, macOS hardening, argument-level policy.'
+related_plan: lumenflow://plans/INIT-048-kernel-hardening-network-polic.md
