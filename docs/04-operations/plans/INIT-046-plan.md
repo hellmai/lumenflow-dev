@@ -192,7 +192,13 @@ INIT-046 is complete when all of the following are true:
 
 ## References
 
-- Initiative: docs/04-operations/tasks/initiatives/INIT-046.yaml
-- Work units: docs/04-operations/tasks/wu/WU-2231.yaml through docs/04-operations/tasks/wu/WU-2237.yaml
-- Commands reference: docs/04-operations/\_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
-- Existing handover: /home/USER/.lumenflow/strategy/lumenflow-dev/strategy/handovers/INIT-046-sidekick-pack-runtime-handover-2026-02-27.md
+- docs/04-operations/tasks/initiatives/INIT-046.yaml
+- docs/04-operations/tasks/wu/WU-2231.yaml
+- docs/04-operations/tasks/wu/WU-2232.yaml
+- docs/04-operations/tasks/wu/WU-2233.yaml
+- docs/04-operations/tasks/wu/WU-2234.yaml
+- docs/04-operations/tasks/wu/WU-2235.yaml
+- docs/04-operations/tasks/wu/WU-2236.yaml
+- docs/04-operations/tasks/wu/WU-2237.yaml
+- docs/04-operations/\_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+- /home/USER/.lumenflow/strategy/lumenflow-dev/strategy/handovers/INIT-046-sidekick-pack-runtime-handover-2026-02-27.md
