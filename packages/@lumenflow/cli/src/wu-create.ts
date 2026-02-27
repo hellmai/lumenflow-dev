@@ -591,13 +591,9 @@ export async function main() {
   // WU-1443: Apply resilient defaults so a plan-first WU doesn't immediately fail strict validation.
   const effectiveType = args.type || DEFAULT_TYPE;
 
+  // WU-2245: Pass through notes as-is; undefined when not provided.
   const resolvedNotes =
-    typeof args.notes === 'string' && args.notes.trim().length > 0
-      ? args.notes
-      : WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER;
-  if (resolvedNotes === WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER) {
-    console.warn(`${LOG_PREFIX} No --notes provided; using placeholder notes (edit before done).`);
-  }
+    typeof args.notes === 'string' && args.notes.trim().length > 0 ? args.notes : undefined;
 
   const hasProvidedTests =
     hasAnyItems(args.testPathsManual) ||

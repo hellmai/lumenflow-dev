@@ -114,11 +114,8 @@ export function buildWUContent({
     artifacts: [WU_PATHS.STAMP(id)],
     dependencies: [],
     risks: [],
-    // WU-1443: Default notes to non-empty placeholder to avoid strict completeness failures.
-    notes:
-      typeof notes === 'string' && notes.trim().length > 0
-        ? notes
-        : WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER,
+    // WU-2245: Leave notes empty when not provided; use provided text when --notes is given.
+    notes: typeof notes === 'string' && notes.trim().length > 0 ? notes : undefined,
     requires_review: false,
     ...(initiative && { initiative }),
     ...(phase && { phase: parseInt(phase, 10) }),
