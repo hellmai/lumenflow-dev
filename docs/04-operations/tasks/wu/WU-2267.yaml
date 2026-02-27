@@ -2,14 +2,15 @@ id: WU-2267
 title: Add package.json to sidekick pack for npm publish
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
   - packages/@lumenflow/packs/sidekick/package.json
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -28,8 +29,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add package.json to packages/@lumenflow/packs/sidekick so pnpm release includes it in the npm publish sweep. Consumers can then install via npm.
+description: Add package.json to packages/@lumenflow/packs/sidekick so pnpm release includes it in
+  the npm publish sweep. Consumers can then install via npm.
 acceptance:
-  - package.json exists at packages/@lumenflow/packs/sidekick/ with correct name, version, exports, and publishConfig
+  - package.json exists at packages/@lumenflow/packs/sidekick/ with correct name, version, exports,
+    and publishConfig
   - pnpm release --dry-run includes sidekick pack in publish list
   - pack:validate still passes after package.json addition
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2267
+claimed_at: 2026-02-27T18:37:46.847Z
+baseline_main_sha: 52697b373cc0b22cc81492f6748798fdcf073c6c
+session_id: 773cb4e6-c10f-478e-8b86-bfc1ca818ece
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T18:37:46.854Z
