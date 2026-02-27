@@ -2,7 +2,7 @@ id: WU-2247
 title: worktree_path stores absolute home paths in version-controlled YAML
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -39,4 +39,9 @@ acceptance:
   - No absolute home paths remain in any tracked YAML file
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-27T14:33:31.248Z
+approved_at: 2026-02-27T14:42:43.217Z
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/framework-core-lifecycle-wu-2247
+claimed_at: 2026-02-27T14:42:43.211Z
+baseline_main_sha: c7286d10aa7a9d19797745abb5735d265db1d469
+session_id: 693d6807-be4b-4d1f-acfa-7a16cdfc0725
