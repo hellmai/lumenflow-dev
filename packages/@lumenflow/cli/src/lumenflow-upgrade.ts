@@ -425,6 +425,11 @@ export interface ScriptSyncResult {
  */
 export function syncScriptsToPackageJson(dir: string): ScriptSyncResult {
   const pkgPath = path.join(dir, 'package.json');
+
+  if (!existsSync(pkgPath)) {
+    return { added: [], modified: false };
+  }
+
   const content = readFileSync(pkgPath, 'utf-8');
   const packageJson = JSON.parse(content) as Record<string, unknown>;
 
