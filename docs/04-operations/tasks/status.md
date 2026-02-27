@@ -5,7 +5,6 @@ _Last updated: 2026-02-27_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
-- [WU-2229 — Fix orphan backlog references and detection gaps](wu/WU-2229.yaml)
 
 ## Completed
 
@@ -1128,3 +1127,4 @@ _Last updated: 2026-02-27_
 - [WU-2227 — wu:escalate should be worktree-aware to prevent YAML rebase conflicts](wu/WU-2227.yaml) — 2026-02-27
 - [WU-2226 — lumenflow:upgrade should sync new pnpm script entries from CLI public-manifest](wu/WU-2226.yaml) — 2026-02-27
 - [WU-2228 — Add command discovery to onboarding and fix wu:escalate doc parity](wu/WU-2228.yaml) — 2026-02-27
+- [WU-2229 — Fix orphan backlog references and detection gaps](wu/WU-2229.yaml) — 2026-02-27
