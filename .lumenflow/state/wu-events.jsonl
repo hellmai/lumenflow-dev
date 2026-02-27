@@ -2474,8 +2474,8 @@
 {"type":"release","wuId":"WU-2231","timestamp":"2026-02-27T16:59:01.334Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2264","timestamp":"2026-02-27T17:03:22.434Z","lane":"Content: Framework Docs","title":"Populate INIT-048 plan file with technical content"}
 {"type":"checkpoint","wuId":"WU-2262","timestamp":"2026-02-27T17:03:45.489Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
-{"type":"complete","wuId":"WU-2262","timestamp":"2026-02-27T17:05:33.968Z"}
 {"type":"complete","wuId":"WU-2264","timestamp":"2026-02-27T17:05:28.704Z"}
+{"type":"complete","wuId":"WU-2262","timestamp":"2026-02-27T17:05:33.968Z"}
 {"type":"claim","wuId":"WU-2263","timestamp":"2026-02-27T17:12:37.641Z","lane":"Framework: CLI Enforcement","title":"wu:create validate diverges from wu:claim manual-test requirement"}
 {"type":"checkpoint","wuId":"WU-2263","timestamp":"2026-02-27T17:13:07.947Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2231","timestamp":"2026-02-27T17:16:06.371Z","lane":"Framework: Core Lifecycle","title":"Sidekick pack scaffold and manifest contract"}
@@ -2484,3 +2484,4 @@
 {"type":"checkpoint","wuId":"WU-2236","timestamp":"2026-02-27T17:20:28.952Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2236","timestamp":"2026-02-27T17:22:42.172Z"}
 {"type":"complete","wuId":"WU-2263","timestamp":"2026-02-27T17:26:31.730Z"}
+{"type":"complete","wuId":"WU-2231","timestamp":"2026-02-27T17:28:10.675Z"}
