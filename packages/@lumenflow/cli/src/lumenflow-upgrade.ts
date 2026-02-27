@@ -38,6 +38,7 @@ import {
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { runCLI } from './cli-entry-point.js';
+import { generateScriptsFromManifest } from './public-manifest.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[lumenflow:upgrade]';
@@ -402,6 +403,57 @@ export async function validateMainCheckout(): Promise<MainCheckoutValidationResu
 }
 
 /**
+ * WU-2226: Result of syncing scripts from the public manifest
+ */
+export interface ScriptSyncResult {
+  /** Script names that were added */
+  added: string[];
+  /** Whether package.json was modified */
+  modified: boolean;
+}
+
+/**
+ * WU-2226: Sync pnpm script entries from the CLI public-manifest into
+ * the consumer project's package.json.
+ *
+ * Adds missing scripts without overwriting or removing existing entries.
+ * Uses the same script generation logic as `lumenflow init` to ensure
+ * consistency between init-scaffolded and upgrade-synced scripts.
+ *
+ * @param dir - Directory containing the package.json to update
+ * @returns ScriptSyncResult indicating what was changed
+ */
+export function syncScriptsToPackageJson(dir: string): ScriptSyncResult {
+  const pkgPath = path.join(dir, 'package.json');
+  const content = readFileSync(pkgPath, 'utf-8');
+  const packageJson = JSON.parse(content) as Record<string, unknown>;
+
+  // Ensure scripts object exists
+  if (!packageJson.scripts || typeof packageJson.scripts !== 'object') {
+    packageJson.scripts = {};
+  }
+
+  const scripts = packageJson.scripts as Record<string, string>;
+  const manifestScripts = generateScriptsFromManifest();
+  const added: string[] = [];
+
+  for (const [name, command] of Object.entries(manifestScripts)) {
+    if (!(name in scripts)) {
+      scripts[name] = command;
+      added.push(name);
+    }
+  }
+
+  const modified = added.length > 0;
+
+  if (modified) {
+    writeFileSync(pkgPath, JSON.stringify(packageJson, null, 2) + '\n');
+  }
+
+  return { added, modified };
+}
+
+/**
  * WU-1127: Execute the upgrade in a micro-worktree
  *
  * Uses the shared micro-worktree pattern (like wu:create, wu:edit) to:
@@ -439,6 +491,18 @@ export async function executeUpgradeInMicroWorktree(args: UpgradeArgs): Promise<
       });
 
       console.log(`${LOG_PREFIX} Package installation complete`);
+
+      // WU-2226: Sync missing pnpm script entries from the public manifest.
+      // New CLI versions may introduce new commands (e.g., wu:escalate) that
+      // need corresponding script entries in the consumer's package.json.
+      const scriptSync = syncScriptsToPackageJson(worktreePath);
+      if (scriptSync.modified) {
+        console.log(
+          `${LOG_PREFIX} Added ${scriptSync.added.length} new script entries: ${scriptSync.added.join(', ')}`,
+        );
+      } else {
+        console.log(`${LOG_PREFIX} All script entries already present`);
+      }
 
       // Return files to stage and commit message
       return {
