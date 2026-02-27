@@ -6,7 +6,7 @@ import type { Disposable, KernelEvent, KernelRuntime, ReplayFilter } from '@lume
 import { createEventStreamRouter, type EventSubscriber } from './event-stream.js';
 import { createRunAgentRouter } from './run-agent.js';
 import { createTaskApiRouter } from './task-api.js';
-import { createToolApiRouter, type ToolApiRouterOptions } from './tool-api.js';
+import { createToolApiRouter } from './tool-api.js';
 import {
   DEFAULT_CONTROL_PLANE_SYNC_INTERVAL_MS,
   type ControlPlaneSyncPortLike,
