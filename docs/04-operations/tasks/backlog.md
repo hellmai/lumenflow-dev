@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2248 — wu:done --already-merged writes directly to local main bypassing micro-worktree isolation](wu/WU-2248.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml) — Framework: Core State Recovery

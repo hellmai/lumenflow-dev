@@ -1,0 +1,32 @@
+id: WU-2248
+title: wu:done --already-merged writes directly to local main bypassing micro-worktree isolation
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-done-already-merged-isolation.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2248.done
+dependencies: []
+initiative: INIT-047
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: wu:done --already-merged commits metadata (YAML status, stamps, backlog, wu-events) directly to local main instead of using micro-worktree atomic push to origin. This causes local main to diverge from origin and bleeds WU state onto the shared checkout.
+acceptance:
+  - wu:done --already-merged uses micro-worktree isolation same as normal wu:done
+  - No direct commits to local main from any wu:done code path
