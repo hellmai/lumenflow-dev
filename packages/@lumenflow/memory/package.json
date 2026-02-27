@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/memory",
-  "version": "3.6.4",
+  "version": "3.6.5",
   "description": "Memory layer for LumenFlow workflow framework - session tracking, context recovery, and agent coordination",
   "keywords": [
     "lumenflow",

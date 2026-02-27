@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/runtime",
-  "version": "3.6.4",
+  "version": "3.6.5",
   "description": "Runtime daemon, scheduler, sessions, and IPC transport for LumenFlow",
   "type": "module",
   "main": "./dist/index.js",
