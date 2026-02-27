@@ -2,7 +2,7 @@ id: WU-2264
 title: Populate INIT-048 plan file with technical content
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-27
 code_paths: []
@@ -36,3 +36,6 @@ session_id: 06530872-f3ce-4ec3-93da-3b9fc487ce40
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T17:03:22.417Z
+locked: true
+completed_at: 2026-02-27T17:05:24.156Z
+completed: 2026-02-27
