@@ -8,7 +8,11 @@ created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/wu-recover.ts
 tests:
-  manual: []
+  manual:
+    - Verify wu:recover --action reset --force aborts with dirty files listing when worktree has
+      uncommitted changes
+    - Verify wu:recover --action reset --force --discard-changes proceeds with deletion when
+      worktree has uncommitted changes
   unit:
     - packages/@lumenflow/cli/__tests__/wu-recover-reset-dirty-check.test.ts
   e2e: []
@@ -26,7 +30,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:recover --action reset --force deletes the worktree directory without checking if it contains uncommitted changes. This can destroy work in progress. Should check git status in worktree before deletion and abort if dirty, or require a second confirmation flag.
+description: wu:recover --action reset --force deletes the worktree directory without checking if it
+  contains uncommitted changes. This can destroy work in progress. Should check git status in
+  worktree before deletion and abort if dirty, or require a second confirmation flag.
 acceptance:
   - wu:recover --action reset checks worktree for uncommitted changes before deletion
-  - If uncommitted changes exist, abort with list of dirty files and instruction to commit or use --discard-changes
+  - If uncommitted changes exist, abort with list of dirty files and instruction to commit or use
+    --discard-changes
