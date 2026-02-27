@@ -1,0 +1,34 @@
+id: WU-2228
+title: Add command discovery to onboarding and fix wu:escalate doc parity
+lane: 'Content: Framework Docs'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+tests:
+  manual:
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2228.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Two issues: (1) pnpm lumenflow:commands is not mentioned anywhere in agent onboarding docs. Agents conclude commands dont exist instead of discovering them. (2) wu:escalate was added to CLAUDE.md and quick-ref-commands.md but NOT to starting-prompt.md, breaking parity.'
+acceptance:
+  - starting-prompt.md includes pnpm lumenflow:commands as mandatory command discovery step
+  - starting-prompt.md includes wu:escalate in the WU lifecycle command table
+  - quick-ref-commands.md includes pnpm lumenflow:commands prominently at the top
+  - All onboarding docs have parity with CLAUDE.md for new commands
