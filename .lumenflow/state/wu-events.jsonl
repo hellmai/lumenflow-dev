@@ -2428,7 +2428,4 @@
 {"type":"claim","wuId":"WU-2247","timestamp":"2026-02-27T14:54:18.453Z","lane":"Framework: Core Lifecycle","title":"worktree_path stores absolute home paths in version-controlled YAML"}
 {"type":"complete","wuId":"WU-2247","timestamp":"2026-02-27T15:02:14.328Z"}
 {"type":"claim","wuId":"WU-2239","timestamp":"2026-02-27T15:10:39.983Z","lane":"Framework: CLI WU Commands","title":"wu:edit --spec-file silently overwrites runtime fields"}
-{"type":"claim","wuId":"WU-2240","timestamp":"2026-02-27T15:11:19.439Z","lane":"Framework: Core State Recovery","title":"wu:recover --action resume does not emit claim event to state store"}
-{"type":"claim","wuId":"WU-2250","timestamp":"2026-02-27T15:11:35.769Z","lane":"Framework: CLI WU Commands","title":"Prevent absolute path writes in claim metadata and plan linking"}
-{"type":"release","wuId":"WU-2243","timestamp":"2026-02-27T15:12:22.140Z","reason":"Reset via wu:recover --action reset"}
-{"type":"claim","wuId":"WU-2244","timestamp":"2026-02-27T15:13:12.530Z","lane":"Framework: Initiatives","title":"initiative:create blocked from non-main branch"}
+{"type":"checkpoint","wuId":"WU-2239","timestamp":"2026-02-27T15:14:19.684Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
