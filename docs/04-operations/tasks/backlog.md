@@ -57,7 +57,6 @@ sections:
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
-- [WU-2237 — Sidekick validation, gates, smoke flow, and publish readiness](wu/WU-2237.yaml) — Framework: Core Validation
 - [WU-2254 — macOS sandbox read confinement and deny overlays](wu/WU-2254.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -1214,6 +1213,7 @@ sections:
 - [WU-2252 — Network allowlist enforcement in bwrap](wu/WU-2252.yaml)
 - [WU-2234 — Implement Sidekick channel, routine, and system tool groups](wu/WU-2234.yaml)
 - [WU-2253 — macOS sandbox posture-aware network rules](wu/WU-2253.yaml)
+- [WU-2237 — Sidekick validation, gates, smoke flow, and publish readiness](wu/WU-2237.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

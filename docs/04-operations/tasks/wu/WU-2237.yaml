@@ -2,7 +2,7 @@ id: WU-2237
 title: Sidekick validation, gates, smoke flow, and publish readiness
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -56,3 +56,6 @@ acceptance:
   - Targeted sidekick and HTTP surface tests are green
   - Manual smoke flow is documented in pack README/docs
   - Release/changelog artifacts are updated with repo-safe wording
+locked: true
+completed_at: 2026-02-27T18:03:30.007Z
+completed: 2026-02-27

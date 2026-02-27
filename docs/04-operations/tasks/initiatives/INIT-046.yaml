@@ -16,7 +16,7 @@ phases:
     status: pending
   - id: 3
     title: 'Phase 3: Validation and publish readiness'
-    status: pending
+    status: done
 success_metrics:
   - Sidekick pack contract is defined with 16 tools and validated
   - Storage abstraction supports pluggable ports with fs default
