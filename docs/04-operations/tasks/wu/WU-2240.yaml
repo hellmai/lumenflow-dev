@@ -1,0 +1,34 @@
+id: WU-2240
+title: wu:recover --action resume does not emit claim event to state store
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/core/src/state-doctor-core.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-recover-resume-state.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2240.done
+dependencies: []
+initiative: INIT-047
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: wu:recover --action resume updates YAML status to in_progress but does not emit a claim event to wu-events.jsonl. This leaves state store and YAML permanently out of sync. wu:done then fails with 'status ready, expected in_progress'. state:doctor detects the mismatch but says 'manual reconciliation required'. No CLI command can fix this without manual JSONL editing.
+acceptance:
+  - wu:recover --action resume emits a corrective claim event to wu-events.jsonl
+  - state:doctor --fix can resolve claim/release mismatches
+  - wu:done succeeds after wu:recover resume without manual intervention
