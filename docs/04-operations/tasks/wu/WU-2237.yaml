@@ -2,7 +2,7 @@ id: WU-2237
 title: Sidekick validation, gates, smoke flow, and publish readiness
 lane: 'Framework: Core Validation'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - Targeted sidekick and HTTP surface tests are green
   - Manual smoke flow is documented in pack README/docs
   - Release/changelog artifacts are updated with repo-safe wording
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-validation-wu-2237
+claimed_at: 2026-02-27T17:58:16.951Z
+baseline_main_sha: 0fa4353ed52663d003e21a184a1a5bd7b64b54df
+session_id: 561c04a5-9e99-4717-806d-2c7641db2482
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T17:58:16.957Z
