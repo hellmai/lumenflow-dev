@@ -149,18 +149,12 @@ export function validatePlanExists(worktreePath: string, planUri: string): void 
 export function normalizePlanUri(planUri: string): string {
   const raw = planUri.trim();
   if (!raw.startsWith(PLAN_URI_SCHEME)) {
-    die(
-      `Invalid plan URI: "${planUri}"\n\n` +
-        `Expected format: lumenflow://plans/<filename>.md`,
-    );
+    die(`Invalid plan URI: "${planUri}"\n\n` + `Expected format: lumenflow://plans/<filename>.md`);
   }
 
   const filename = raw.slice(PLAN_URI_SCHEME.length).replaceAll('\\', '/').trim();
   if (!filename) {
-    die(
-      `Invalid plan URI: "${planUri}"\n\n` +
-        `Expected format: lumenflow://plans/<filename>.md`,
-    );
+    die(`Invalid plan URI: "${planUri}"\n\n` + `Expected format: lumenflow://plans/<filename>.md`);
   }
 
   if (filename.startsWith('/') || filename.includes('/../') || filename.startsWith('../')) {
@@ -171,10 +165,7 @@ export function normalizePlanUri(planUri: string): string {
   }
 
   if (filename.includes('/./') || filename.startsWith('./')) {
-    die(
-      `Invalid plan URI: "${planUri}"\n\n` +
-        `Plan URI must not contain dot segments.`,
-    );
+    die(`Invalid plan URI: "${planUri}"\n\n` + `Plan URI must not contain dot segments.`);
   }
 
   return `${PLAN_URI_SCHEME}${filename}`;
