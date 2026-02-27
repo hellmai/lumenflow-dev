@@ -22,6 +22,7 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml) — Framework: Core Lifecycle
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
 - [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml) — Framework: Memory
 - [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml) — Framework: CLI WU Commands
@@ -52,7 +53,6 @@ sections:
 - [WU-2232 — Sidekick StoragePort and filesystem storage adapter](wu/WU-2232.yaml) — Framework: Core Lifecycle
 - [WU-2233 — Implement Sidekick task and memory tool groups](wu/WU-2233.yaml) — Framework: Core Lifecycle
 - [WU-2234 — Implement Sidekick channel, routine, and system tool groups](wu/WU-2234.yaml) — Framework: Core Lifecycle
-- [WU-2235 — Define Sidekick consumer abstraction contract package](wu/WU-2235.yaml) — Framework: Core Lifecycle
 - [WU-2236 — Add generic HTTP runtime dispatch endpoint POST /tools/:name](wu/WU-2236.yaml) — Operations: Runtime
 - [WU-2237 — Sidekick validation, gates, smoke flow, and publish readiness](wu/WU-2237.yaml) — Framework: Core Validation
 - [WU-2251 — Network allowlist schema and scope intersection](wu/WU-2251.yaml) — Framework: Core Lifecycle
@@ -67,7 +67,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
-- [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml) — Framework: Core Lifecycle
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
 - [WU-2262 — wu:done leaves bulk staged WU metadata on main](wu/WU-2262.yaml) — Framework: CLI Enforcement
 

@@ -2,7 +2,7 @@ id: WU-2231
 title: Sidekick pack scaffold and manifest contract
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -35,11 +35,6 @@ acceptance:
   - Pack folder scaffolded under packages/@lumenflow/packs/sidekick
   - 16 tool declarations exist with schemas, permissions, and scopes
   - pack:validate passes for sidekick
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-core-lifecycle-wu-2231
-claimed_at: 2026-02-27T13:45:22.959Z
-baseline_main_sha: 9e1ec8389406bbce275641a3977e8bb1257048be
-session_id: 8de56ee0-65cc-496d-9eac-dbbb751fb8a2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T13:45:22.965Z

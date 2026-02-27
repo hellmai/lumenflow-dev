@@ -2471,3 +2471,4 @@
 {"type":"complete","wuId":"WU-2260","timestamp":"2026-02-27T16:37:38.582Z"}
 {"type":"complete","wuId":"WU-2259","timestamp":"2026-02-27T16:45:20.840Z"}
 {"type":"claim","wuId":"WU-2262","timestamp":"2026-02-27T16:51:47.545Z","lane":"Framework: CLI Enforcement","title":"wu:done leaves bulk staged WU metadata on main"}
+{"type":"release","wuId":"WU-2231","timestamp":"2026-02-27T16:59:01.334Z","reason":"Reset via wu:recover --action reset"}

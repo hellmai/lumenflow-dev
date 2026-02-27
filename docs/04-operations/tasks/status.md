@@ -5,7 +5,6 @@ _Last updated: 2026-02-27_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
-- [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
 - [WU-2262 — wu:done leaves bulk staged WU metadata on main](wu/WU-2262.yaml)
 
