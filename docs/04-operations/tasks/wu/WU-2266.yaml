@@ -1,7 +1,7 @@
 id: WU-2266
 title: 'INIT-048 kernel hardening documentation: network allowlist, macOS sandbox, argument-level policy'
 lane: 'Content: Framework Docs'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-27
@@ -11,7 +11,8 @@ code_paths:
   - apps/docs/src/content/docs/guides/
   - apps/docs/src/content/docs/kernel/
 tests:
-  manual: []
+  manual:
+    - Verify all five MDX files render correctly in Starlight docs site
   unit: []
   e2e: []
 artifacts:
@@ -19,7 +20,7 @@ artifacts:
 dependencies: []
 initiative: INIT-048
 risks: []
-notes: ''
+notes: 'tdd-exception: documentation-only WU with no testable code'
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
