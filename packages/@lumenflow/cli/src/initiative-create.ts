@@ -305,14 +305,24 @@ export async function main() {
       console.log(`  File:   ${INIT_PATHS.INITIATIVE(initId)}`);
 
       // WU-1211: Check completeness and emit warnings
+      // WU-2243: Use actual flag values (not hardcoded empty arrays) so
+      // completeness validation reflects what was written to the YAML.
+      const completenessPhases = args.initPhase
+        ? (args.initPhase as string[]).map((phaseTitle: string, idx: number) => ({
+            id: idx + 1,
+            title: phaseTitle,
+            status: 'pending',
+          }))
+        : [];
+      const completenessMetrics = args.successMetric ? (args.successMetric as string[]) : [];
       const initContent = {
         id: initId,
         slug: args.slug,
         title: args.title,
-        description: '',
+        description: args.initDescription || '',
         status: INIT_DEFAULTS.STATUS,
-        phases: [],
-        success_metrics: [],
+        phases: completenessPhases,
+        success_metrics: completenessMetrics,
       };
       const completenessResult = validateInitiativeCompleteness(initContent);
       if (completenessResult.warnings.length > 0) {
