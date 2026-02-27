@@ -20,7 +20,10 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2237.done
-dependencies: []
+dependencies:
+  - WU-2233
+  - WU-2234
+  - WU-2236
 initiative: INIT-046
 phase: 3
 spec_refs:
@@ -35,7 +38,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Define and execute validation strategy for Sidekick pack and runtime surface, including contract tests, dry_run checks, routine plan-only checks, and release readiness artifacts.
+description: Define and execute validation strategy for Sidekick pack and runtime surface, including
+  contract tests, dry_run checks, routine plan-only checks, and release readiness artifacts.
 acceptance:
   - pack:validate is green for sidekick
   - Targeted sidekick and HTTP surface tests are green
