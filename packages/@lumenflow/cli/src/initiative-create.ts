@@ -9,8 +9,7 @@
  *
  * Canonical sequence:
  * 1) Validate inputs (id, slug, title)
- * 2) Ensure on main branch
- * 3) Use micro-worktree to atomically:
+ * 2) Use micro-worktree to atomically:
  *    a) Create temp branch without switching main checkout
  *    b) Create INIT-{id}.yaml in micro-worktree
  *    c) Commit with "docs: create init-{id} for <title>" message
@@ -29,7 +28,6 @@
  * Context: WU-1247 (original implementation), WU-1439 (micro-worktree migration)
  */
 
-import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
 import { existsSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -44,7 +42,6 @@ import {
 // WU-1211: Import initiative validation for completeness warnings
 import { validateInitiativeCompleteness } from '@lumenflow/initiatives/initiative-validation';
 import { ENV_VARS, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
-import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 // WU-1428: Use date-utils for consistent YYYY-MM-DD format (library-first)
 import { todayISO } from '@lumenflow/core/date-utils';
@@ -252,7 +249,8 @@ export async function main() {
   validateInitIdFormat(initId);
   validateSlugFormat(args.slug);
   checkInitiativeExists(initId);
-  await ensureOnMain(getGitForCwd());
+  // WU-2244: Removed ensureOnMain() check - micro-worktree isolation
+  // handles branch safety, so initiative:create works from any branch.
 
   // WU-1748: initiative:create does not design lanes.
   // It remains allowed pre-lane-lock but emits deterministic guidance.
