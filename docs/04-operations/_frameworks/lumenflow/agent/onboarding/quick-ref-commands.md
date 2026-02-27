@@ -1,18 +1,25 @@
 # Quick Reference: LumenFlow Commands
 
-**Last updated:** 2026-02-25
+**Last updated:** 2026-02-27
 
 Reference for CLI commands. Organized by category for quick discovery.
 
-> **Rule (WU-1358, WU-1530):** Always run `<command> --help` before first use of any unfamiliar command.
-> This document may not include all available options or may contain outdated examples.
+> **Rule (WU-1358, WU-1530, WU-2228):** This document is a quick reference, not the complete list.
+> LumenFlow has 100+ commands. To see ALL available commands:
 >
 > ```bash
-> # Examples
-> pnpm wu:edit --help      # See all wu:edit options
-> npm run wu:claim -- --help
-> yarn wu:create --help
+> pnpm lumenflow:commands    # List ALL CLI commands — the authoritative source
 > ```
+>
+> Before using any unfamiliar command, run `--help` first:
+>
+> ```bash
+> pnpm wu:edit --help      # See all wu:edit options
+> pnpm wu:delete --help    # See wu:delete options
+> pnpm wu:escalate --help  # See wu:escalate options
+> ```
+>
+> **Never conclude a command doesn't exist without running `pnpm lumenflow:commands` first.**
 
 ## Help-First Usage Examples By Category
 
