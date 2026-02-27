@@ -422,11 +422,7 @@ describe('state-doctor-core', () => {
   describe('orphan backlog reference detection (WU-2229)', () => {
     it('should detect backlog references to non-existent WU YAML files', async () => {
       const deps = createMockDeps({
-        listWUs: vi
-          .fn()
-          .mockResolvedValue([
-            { id: 'WU-100', status: 'ready', title: 'Exists' },
-          ]),
+        listWUs: vi.fn().mockResolvedValue([{ id: 'WU-100', status: 'ready', title: 'Exists' }]),
         listBacklogRefs: vi.fn().mockResolvedValue(['WU-100', 'WU-999']),
       });
 
@@ -442,12 +438,10 @@ describe('state-doctor-core', () => {
 
     it('should not flag when all backlog refs have matching YAML files', async () => {
       const deps = createMockDeps({
-        listWUs: vi
-          .fn()
-          .mockResolvedValue([
-            { id: 'WU-100', status: 'ready', title: 'A' },
-            { id: 'WU-101', status: 'done', title: 'B' },
-          ]),
+        listWUs: vi.fn().mockResolvedValue([
+          { id: 'WU-100', status: 'ready', title: 'A' },
+          { id: 'WU-101', status: 'done', title: 'B' },
+        ]),
         listStamps: vi.fn().mockResolvedValue(['WU-101']),
         listBacklogRefs: vi.fn().mockResolvedValue(['WU-100', 'WU-101']),
       });
@@ -461,11 +455,7 @@ describe('state-doctor-core', () => {
     it('should skip orphan backlog detection when listBacklogRefs is not provided', async () => {
       // Backward compatibility: deps without listBacklogRefs should not break
       const deps = createMockDeps({
-        listWUs: vi
-          .fn()
-          .mockResolvedValue([
-            { id: 'WU-100', status: 'ready', title: 'A' },
-          ]),
+        listWUs: vi.fn().mockResolvedValue([{ id: 'WU-100', status: 'ready', title: 'A' }]),
         // No listBacklogRefs provided
       });
 
@@ -477,11 +467,7 @@ describe('state-doctor-core', () => {
 
     it('should include orphan backlog refs in summary count', async () => {
       const deps = createMockDeps({
-        listWUs: vi
-          .fn()
-          .mockResolvedValue([
-            { id: 'WU-100', status: 'ready', title: 'A' },
-          ]),
+        listWUs: vi.fn().mockResolvedValue([{ id: 'WU-100', status: 'ready', title: 'A' }]),
         listBacklogRefs: vi.fn().mockResolvedValue(['WU-100', 'WU-888', 'WU-999']),
       });
 

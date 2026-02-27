@@ -417,10 +417,7 @@ function detectBrokenEvents(events: MockEvent[], wuIds: Set<string>): DiagnosisI
  * Finds WU IDs referenced in backlog.md that have no corresponding YAML file.
  * This catches stale entries left behind by wu:delete or manual edits.
  */
-function detectOrphanBacklogRefs(
-  backlogRefs: string[],
-  wuIds: Set<string>,
-): DiagnosisIssue[] {
+function detectOrphanBacklogRefs(backlogRefs: string[], wuIds: Set<string>): DiagnosisIssue[] {
   const issues: DiagnosisIssue[] = [];
 
   for (const refId of backlogRefs) {
