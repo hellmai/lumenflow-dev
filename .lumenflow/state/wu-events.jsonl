@@ -2428,3 +2428,4 @@
 {"type":"claim","wuId":"WU-2247","timestamp":"2026-02-27T14:54:18.453Z","lane":"Framework: Core Lifecycle","title":"worktree_path stores absolute home paths in version-controlled YAML"}
 {"type":"complete","wuId":"WU-2247","timestamp":"2026-02-27T15:02:14.328Z"}
 {"type":"claim","wuId":"WU-2239","timestamp":"2026-02-27T15:10:39.983Z","lane":"Framework: CLI WU Commands","title":"wu:edit --spec-file silently overwrites runtime fields"}
+{"type":"claim","wuId":"WU-2240","timestamp":"2026-02-27T15:11:19.439Z","lane":"Framework: Core State Recovery","title":"wu:recover --action resume does not emit claim event to state store"}
