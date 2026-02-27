@@ -1,0 +1,32 @@
+id: WU-2239
+title: wu:edit --spec-file silently overwrites runtime fields
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-edit.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-edit-spec-file-runtime.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2239.done
+dependencies: []
+initiative: INIT-047
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'wu:edit --spec-file replaces the entire YAML including runtime fields (worktree_path, assigned_to, claimed_mode, session_id). This creates a chicken-and-egg: subsequent wu:edit calls fail because worktree_path is gone. Should merge user-provided fields with existing runtime fields, or reject spec-file that strips required runtime fields.'
+acceptance:
+  - wu:edit --spec-file preserves runtime fields (worktree_path, assigned_to, claimed_mode, session_id, claimed_at)
+  - 'Or: wu:edit --spec-file rejects input that would strip required runtime fields with clear error'
