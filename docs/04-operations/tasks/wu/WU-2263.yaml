@@ -2,7 +2,7 @@ id: WU-2263
 title: wu:create validate diverges from wu:claim manual-test requirement
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
     relaxed) per single documented policy
   - Validation behavior is consistent across wu:create --validate and wu:claim
   - Regression tests cover the mismatched scenario (manual empty + unit tests present)
+locked: true
+completed_at: 2026-02-27T17:26:27.276Z
+completed: 2026-02-27
