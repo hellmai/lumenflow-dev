@@ -6,7 +6,19 @@ This is the complete onboarding document for AI agents working with LumenFlow. R
 
 ---
 
-## Mandatory: Help-First CLI Usage
+## Mandatory: Command Discovery and Help-First CLI Usage
+
+### Discover Available Commands
+
+Before concluding a command doesn't exist, **always check what's available**:
+
+```bash
+pnpm lumenflow:commands    # List ALL available CLI commands (100+)
+```
+
+LumenFlow has commands for WU lifecycle, maintenance, memory, initiatives, orchestration, metrics, packs, and more. Never guess or assume — run `pnpm lumenflow:commands` first.
+
+### Help-First Rule
 
 Before using any LumenFlow CLI command for the first time in a session, run `--help` first.
 
@@ -18,9 +30,10 @@ pnpm initiative:status --help
 
 Rules:
 
-1. Run `<command> --help` before first use of that command.
-2. Copy exact flags from help output; do not guess option names.
-3. If you hit an argument/flag error, rerun `--help` before retrying.
+1. Run `pnpm lumenflow:commands` to discover what commands exist.
+2. Run `<command> --help` before first use of that command.
+3. Copy exact flags from help output; do not guess option names.
+4. If you hit an argument/flag error, rerun `--help` before retrying.
 
 Optional Claude Code enforcement layer (recommended for teams):
 
@@ -473,6 +486,9 @@ pnpm wu:delegate --id WU-XXXX --parent-wu WU-YYYY --client <client-type>
 | `pnpm gates --docs-only`                       | Run docs-only gates                      | For documentation WUs       |
 | `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, cleanup)       | After gates pass            |
 | `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr)           | After PR merge (cloud only) |
+| `pnpm wu:escalate --id WU-XXX`                 | Show or resolve escalation status        | Escalation-triggered WUs    |
+| `pnpm wu:escalate --resolve --id WU-XXX`       | Resolve human escalation                 | Before wu:done (escalation) |
+| `pnpm wu:delete --id WU-XXX`                   | Delete WU spec and cleanup               | Cancel stale/throwaway WUs  |
 | `pnpm wu:recover --id WU-XXX`                  | Fix inconsistent WU state                | When state is broken        |
 
 ---

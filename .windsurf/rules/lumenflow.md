@@ -44,16 +44,20 @@ pnpm wu:done --id WU-XXX
 | `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (no execution)      |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage |
 | `pnpm wu:recover --id WU-XXX`                  | Fix WU state inconsistencies                |
+| `pnpm wu:escalate --id WU-XXX`                 | Show or resolve WU escalation status        |
+| `pnpm wu:delete --id WU-XXX`                   | Delete WU spec and cleanup                  |
 
 ### Gates & Orchestration
 
-| Command                                    | Description                  |
-| ------------------------------------------ | ---------------------------- |
-| `pnpm gates`                               | Run all quality gates        |
-| `pnpm orchestrate:init-status -i INIT-XXX` | Initiative progress view     |
-| `pnpm orchestrate:monitor`                 | Monitor spawn/agent activity |
-| `pnpm mem:inbox --since 30m`               | Check coordination signals   |
-| `pnpm mem:checkpoint --wu WU-XXX`          | Save progress checkpoint     |
+| Command                                    | Description                                        |
+| ------------------------------------------ | -------------------------------------------------- |
+| `pnpm gates`                               | Run all quality gates                              |
+| `pnpm lumenflow:commands`                  | List all public commands (primary + alias + legacy) |
+| `pnpm orchestrate:init-status -i INIT-XXX` | Initiative progress view                           |
+| `pnpm orchestrate:monitor`                 | Monitor spawn/agent activity                       |
+| `pnpm mem:inbox --since 30m`               | Check coordination signals                         |
+| `pnpm mem:checkpoint --wu WU-XXX`          | Save progress checkpoint                           |
+| `pnpm mem:recover --wu WU-XXX`             | Generate recovery context                          |
 
 ---
 

@@ -1,6 +1,6 @@
 # LumenFlow OS Development Guide
 
-**Last updated:** 2026-02-25
+**Last updated:** 2026-02-27
 
 This repo contains LumenFlow source code. We dogfood LumenFlow to build LumenFlow.
 
@@ -86,8 +86,11 @@ pnpm wu:infer-lane --paths "packages/@lumenflow/cli/src/init.ts" --desc "Fix ini
 | `pnpm wu:prep`            | Run gates in worktree, prep for wu:done             |
 | `pnpm wu:done`            | Complete WU (merge, stamp, cleanup)                 |
 | `pnpm wu:status`          | Show WU status, location, valid commands            |
+| `pnpm wu:brief`           | Generate handoff prompt + record evidence           |
+| `pnpm wu:delegate`        | Generate prompt + record delegation lineage         |
 | `pnpm wu:recover`         | Analyze and fix WU state inconsistencies            |
 | `pnpm wu:escalate`        | Show or resolve WU escalation status                |
+| `pnpm wu:delete`          | Delete WU spec and cleanup                          |
 | `pnpm gates`              | Run quality gates                                   |
 | `pnpm lumenflow:commands` | List all public commands (primary + alias + legacy) |
 | `pnpm docs:generate`      | Regenerate CLI/config reference docs from source    |

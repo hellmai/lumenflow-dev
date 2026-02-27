@@ -4,14 +4,19 @@
 
 Reference for CLI commands. Organized by category for quick discovery.
 
-> **Rule (WU-1358, WU-1530):** Always run `<command> --help` before first use of any unfamiliar command.
-> This document may not include all available options or may contain outdated examples.
+> **Rule (WU-1358, WU-1530, WU-2228):** This document is a quick reference, not the complete list.
+> LumenFlow has 100+ commands. To see ALL available commands:
 >
 > ```bash
-> # Examples
+> pnpm lumenflow:commands    # List ALL CLI commands — the authoritative source
+> ```
+>
+> Before using any unfamiliar command, run `--help` first:
+>
+> ```bash
 > pnpm wu:edit --help      # See all wu:edit options
-> npm run wu:claim -- --help
-> yarn wu:create --help
+> pnpm wu:delete --help    # See wu:delete options
+> pnpm wu:escalate --help  # See wu:escalate options
 > ```
 
 ## Help-First Usage Examples By Category
@@ -94,6 +99,8 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm wu:brief --id WU-XXX --evidence-only`     | Record wu:brief evidence only (self-implementation path)     |
 | `pnpm wu:brief --id WU-XXX --no-context`        | Generate prompt without memory context injection             |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>`  | Generate prompt and record delegation lineage                |
+| `pnpm wu:escalate --id WU-XXX`                  | Show escalation status for a WU                              |
+| `pnpm wu:escalate --resolve --id WU-XXX`        | Resolve escalation (sets resolved_by/resolved_at)            |
 
 ### WU Maintenance
 
