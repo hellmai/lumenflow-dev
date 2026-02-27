@@ -36,6 +36,8 @@ export const ISSUE_TYPES = {
   BROKEN_EVENT: 'broken_event',
   /** WU YAML status differs from state store derived status (WU-1420) */
   STATUS_MISMATCH: 'status_mismatch',
+  /** WU ID referenced in backlog.md but no matching YAML exists (WU-2229) */
+  ORPHAN_BACKLOG_REF: 'orphan_backlog_ref',
 } as const;
 
 /**
@@ -150,6 +152,8 @@ export interface StateDoctorDeps {
   createStamp?: (wuId: string, title: string) => Promise<void>;
   /** Emit an event to fix status mismatch (WU-1420) */
   emitEvent?: (event: EmitEventPayload) => Promise<void>;
+  /** List WU IDs referenced in backlog.md (WU-2229) */
+  listBacklogRefs?: () => Promise<string[]>;
 }
 
 /**
@@ -200,6 +204,8 @@ export interface DiagnosisSummary {
   brokenEvents: number;
   /** Number of status mismatches (WU-1420) */
   statusMismatches: number;
+  /** Number of orphan backlog references (WU-2229) */
+  orphanBacklogRefs: number;
   /** Total number of issues */
   totalIssues: number;
 }
