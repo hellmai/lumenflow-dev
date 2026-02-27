@@ -54,7 +54,6 @@ sections:
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2226 — lumenflow:upgrade should sync new pnpm script entries from CLI public-manifest](wu/WU-2226.yaml) — Framework: CLI WU Commands
-- [WU-2227 — wu:escalate should be worktree-aware to prevent YAML rebase conflicts](wu/WU-2227.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -1178,6 +1177,7 @@ sections:
 - [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml)
 - [WU-2224 — Add post-command sync flush for WU lifecycle events to control plane](wu/WU-2224.yaml)
 - [WU-2225 — Fix misleading Invalid lane format error when workspace.yaml missing](wu/WU-2225.yaml)
+- [WU-2227 — wu:escalate should be worktree-aware to prevent YAML rebase conflicts](wu/WU-2227.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

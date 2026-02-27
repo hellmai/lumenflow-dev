@@ -6,7 +6,6 @@ _Last updated: 2026-02-27_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2226 — lumenflow:upgrade should sync new pnpm script entries from CLI public-manifest](wu/WU-2226.yaml)
-- [WU-2227 — wu:escalate should be worktree-aware to prevent YAML rebase conflicts](wu/WU-2227.yaml)
 
 ## Completed
 
@@ -1126,3 +1125,4 @@ _Last updated: 2026-02-27_
 - [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml) — 2026-02-26
 - [WU-2224 — Add post-command sync flush for WU lifecycle events to control plane](wu/WU-2224.yaml) — 2026-02-26
 - [WU-2225 — Fix misleading Invalid lane format error when workspace.yaml missing](wu/WU-2225.yaml) — 2026-02-27
+- [WU-2227 — wu:escalate should be worktree-aware to prevent YAML rebase conflicts](wu/WU-2227.yaml) — 2026-02-27

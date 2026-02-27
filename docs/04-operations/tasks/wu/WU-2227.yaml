@@ -2,7 +2,7 @@ id: WU-2227
 title: wu:escalate should be worktree-aware to prevent YAML rebase conflicts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -45,3 +45,6 @@ session_id: a769d0e8-b375-4c06-aee9-d0fe1f8274f2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T10:20:11.806Z
+locked: true
+completed_at: 2026-02-27T10:28:20.914Z
+completed: 2026-02-27
