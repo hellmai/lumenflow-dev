@@ -2398,3 +2398,4 @@
 {"type":"complete","wuId":"WU-2227","timestamp":"2026-02-27T10:28:25.257Z"}
 {"type":"complete","wuId":"WU-2226","timestamp":"2026-02-27T10:30:01.675Z"}
 {"type":"claim","wuId":"WU-2228","timestamp":"2026-02-27T10:37:26.321Z","lane":"Content: Framework Docs","title":"Add command discovery to onboarding and fix wu:escalate doc parity"}
+{"type":"checkpoint","wuId":"WU-2228","timestamp":"2026-02-27T10:38:44.581Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
