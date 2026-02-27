@@ -59,7 +59,6 @@ sections:
 - [WU-2244 — initiative:create blocked from non-main branch](wu/WU-2244.yaml) — Framework: Initiatives
 - [WU-2245 — wu:create emits placeholder notes requiring manual cleanup](wu/WU-2245.yaml) — Framework: CLI WU Commands
 - [WU-2246 — initiative:create ignores --description flag](wu/WU-2246.yaml) — Framework: Initiatives
-- [WU-2247 — worktree_path stores absolute home paths in version-controlled YAML](wu/WU-2247.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
@@ -68,6 +67,7 @@ sections:
 - [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml) — Framework: CLI WU Commands
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml) — Framework: Core State Recovery
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
+- [WU-2247 — worktree_path stores absolute home paths in version-controlled YAML](wu/WU-2247.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

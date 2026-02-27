@@ -2419,3 +2419,4 @@
 {"type":"claim","wuId":"WU-2240","timestamp":"2026-02-27T14:17:29.048Z","lane":"Framework: Core State Recovery","title":"wu:recover --action resume does not emit claim event to state store"}
 {"type":"claim","wuId":"WU-2243","timestamp":"2026-02-27T14:18:17.201Z","lane":"Framework: Initiatives","title":"initiative:create ignores --phase and --success-metric flags"}
 {"type":"checkpoint","wuId":"WU-2243","timestamp":"2026-02-27T14:18:54.195Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"claim","wuId":"WU-2247","timestamp":"2026-02-27T14:33:31.266Z","lane":"Framework: Core Lifecycle","title":"worktree_path stores absolute home paths in version-controlled YAML"}

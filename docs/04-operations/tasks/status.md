@@ -9,6 +9,7 @@ _Last updated: 2026-02-27_
 - [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml)
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
+- [WU-2247 — worktree_path stores absolute home paths in version-controlled YAML](wu/WU-2247.yaml)
 
 ## Completed
 
