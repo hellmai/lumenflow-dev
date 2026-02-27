@@ -51,10 +51,18 @@ vi.mock('@lumenflow/core/wu-paths', () => ({
   },
 }));
 
-vi.mock('@lumenflow/core/backlog-generator', () => ({
-  generateBacklog: async () => '# Backlog\n\n- [WU-2000 — Keep me](wu/WU-2000.yaml)\n',
-  generateStatus: async () =>
+const mockGenerateBacklog = vi
+  .fn()
+  .mockResolvedValue('# Backlog\n\n- [WU-2000 — Keep me](wu/WU-2000.yaml)\n');
+const mockGenerateStatus = vi
+  .fn()
+  .mockResolvedValue(
     '# Work Unit Status\n\n## In Progress\n\n- [WU-2000 — Keep me](wu/WU-2000.yaml)\n',
+  );
+
+vi.mock('@lumenflow/core/backlog-generator', () => ({
+  generateBacklog: (...args: unknown[]) => mockGenerateBacklog(...args),
+  generateStatus: (...args: unknown[]) => mockGenerateStatus(...args),
 }));
 
 vi.mock('@lumenflow/core/wu-state-store', () => ({
@@ -312,6 +320,20 @@ describe('wu-delete consistency cleanup', () => {
       const absPath = join(tempDir, file);
       expect(existsSync(absPath), `expected ${file} to exist on disk`).toBe(true);
     }
+  });
+
+  it('passes projectRoot to generateBacklog so YAML resolves from worktree (WU-2229)', async () => {
+    mockGenerateBacklog.mockClear();
+    const { cleanupDeletedWUsInWorktree } = await import('../wu-delete.js');
+
+    await cleanupDeletedWUsInWorktree({ worktreePath: tempDir, ids: [WU_ID_DELETE] });
+
+    // generateBacklog must receive { projectRoot: worktreePath } so it resolves
+    // YAML entries from the micro-worktree, not from process.cwd() / main repo.
+    // Without this, deleted WU YAML still exists in main and gets re-added.
+    expect(mockGenerateBacklog).toHaveBeenCalledTimes(1);
+    const callArgs = mockGenerateBacklog.mock.calls[0];
+    expect(callArgs[1]).toEqual(expect.objectContaining({ projectRoot: tempDir }));
   });
 
   it('purges pre-existing orphaned event streams while deleting a WU', async () => {

@@ -412,6 +412,34 @@ function detectBrokenEvents(events: MockEvent[], wuIds: Set<string>): DiagnosisI
 }
 
 /**
+ * Detect orphan backlog references (WU-2229)
+ *
+ * Finds WU IDs referenced in backlog.md that have no corresponding YAML file.
+ * This catches stale entries left behind by wu:delete or manual edits.
+ */
+function detectOrphanBacklogRefs(
+  backlogRefs: string[],
+  wuIds: Set<string>,
+): DiagnosisIssue[] {
+  const issues: DiagnosisIssue[] = [];
+
+  for (const refId of backlogRefs) {
+    if (!wuIds.has(refId)) {
+      issues.push({
+        type: ISSUE_TYPES.ORPHAN_BACKLOG_REF,
+        severity: ISSUE_SEVERITY.WARNING,
+        wuId: refId,
+        description: `${refId} referenced in backlog.md but no ${refId}.yaml exists`,
+        suggestion: `Regenerate backlog.md from state store, or remove the stale entry manually`,
+        canAutoFix: false,
+      });
+    }
+  }
+
+  return issues;
+}
+
+/**
  * Calculate summary statistics from issues
  */
 function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
@@ -419,6 +447,7 @@ function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
   let danglingSignals = 0;
   let brokenEvents = 0;
   let statusMismatches = 0;
+  let orphanBacklogRefs = 0;
 
   for (const issue of issues) {
     switch (issue.type) {
@@ -434,6 +463,9 @@ function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
       case ISSUE_TYPES.STATUS_MISMATCH:
         statusMismatches++;
         break;
+      case ISSUE_TYPES.ORPHAN_BACKLOG_REF:
+        orphanBacklogRefs++;
+        break;
     }
   }
 
@@ -442,6 +474,7 @@ function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
     danglingSignals,
     brokenEvents,
     statusMismatches,
+    orphanBacklogRefs,
     totalIssues: issues.length,
   };
 }
@@ -620,11 +653,17 @@ export async function diagnoseState(
   const brokenEventIssues = detectBrokenEvents(events, wuIds);
   const statusMismatchIssues = detectStatusMismatches(wus, events);
 
+  // WU-2229: Detect orphan backlog references (optional — backward compatible)
+  const backlogRefs = deps.listBacklogRefs ? await deps.listBacklogRefs() : [];
+  const orphanBacklogRefIssues =
+    backlogRefs.length > 0 ? detectOrphanBacklogRefs(backlogRefs, wuIds) : [];
+
   const issues = [
     ...orphanedWUissues,
     ...danglingSignalIssues,
     ...brokenEventIssues,
     ...statusMismatchIssues,
+    ...orphanBacklogRefIssues,
   ];
   const summary = calculateSummary(issues);
 

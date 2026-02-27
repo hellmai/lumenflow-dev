@@ -419,6 +419,79 @@ describe('state-doctor-core', () => {
     });
   });
 
+  describe('orphan backlog reference detection (WU-2229)', () => {
+    it('should detect backlog references to non-existent WU YAML files', async () => {
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', title: 'Exists' },
+          ]),
+        listBacklogRefs: vi.fn().mockResolvedValue(['WU-100', 'WU-999']),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(false);
+      expect(result.issues).toHaveLength(1);
+      expect(result.issues[0].type).toBe(ISSUE_TYPES.ORPHAN_BACKLOG_REF);
+      expect(result.issues[0].wuId).toBe('WU-999');
+      expect(result.issues[0].severity).toBe(ISSUE_SEVERITY.WARNING);
+      expect(result.issues[0].canAutoFix).toBe(false);
+    });
+
+    it('should not flag when all backlog refs have matching YAML files', async () => {
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', title: 'A' },
+            { id: 'WU-101', status: 'done', title: 'B' },
+          ]),
+        listStamps: vi.fn().mockResolvedValue(['WU-101']),
+        listBacklogRefs: vi.fn().mockResolvedValue(['WU-100', 'WU-101']),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(true);
+      expect(result.issues).toHaveLength(0);
+    });
+
+    it('should skip orphan backlog detection when listBacklogRefs is not provided', async () => {
+      // Backward compatibility: deps without listBacklogRefs should not break
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', title: 'A' },
+          ]),
+        // No listBacklogRefs provided
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(true);
+      expect(result.issues).toHaveLength(0);
+    });
+
+    it('should include orphan backlog refs in summary count', async () => {
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', title: 'A' },
+          ]),
+        listBacklogRefs: vi.fn().mockResolvedValue(['WU-100', 'WU-888', 'WU-999']),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.summary.orphanBacklogRefs).toBe(2);
+      expect(result.summary.totalIssues).toBe(2);
+    });
+  });
+
   describe('status mismatch detection (WU-1420)', () => {
     it('should detect when YAML status is ready but state store says in_progress', async () => {
       // WU YAML says 'ready' but events show it was claimed (in_progress) without release

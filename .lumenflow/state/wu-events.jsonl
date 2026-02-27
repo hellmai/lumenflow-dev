@@ -2401,3 +2401,4 @@
 {"type":"checkpoint","wuId":"WU-2228","timestamp":"2026-02-27T10:38:44.581Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2228","timestamp":"2026-02-27T10:49:55.516Z"}
 {"type":"claim","wuId":"WU-2229","timestamp":"2026-02-27T11:40:06.211Z","lane":"Framework: CLI WU Commands","title":"Fix orphan backlog references and detection gaps"}
+{"type":"checkpoint","wuId":"WU-2229","timestamp":"2026-02-27T11:42:55.579Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}

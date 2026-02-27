@@ -534,6 +534,30 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
     },
 
     /**
+     * List WU IDs referenced in backlog.md (WU-2229)
+     */
+    listBacklogRefs: async (): Promise<string[]> => {
+      try {
+        const backlogPath = path.join(baseDir, config.directories.backlogPath);
+        const content = await fs.readFile(backlogPath, 'utf-8');
+        const wuIds: string[] = [];
+        const pattern = /WU-\d+/g;
+        let match: RegExpExecArray | null;
+        const seen = new Set<string>();
+        while ((match = pattern.exec(content)) !== null) {
+          const wuId = match[0].toUpperCase();
+          if (!seen.has(wuId)) {
+            seen.add(wuId);
+            wuIds.push(wuId);
+          }
+        }
+        return wuIds;
+      } catch {
+        return [];
+      }
+    },
+
+    /**
      * Remove a signal by ID (rewrite signals file without the target)
      */
     removeSignal: async (id: string): Promise<void> => {
@@ -636,6 +660,8 @@ function getIssueTypeLabel(type: string): string {
       return 'Broken Event';
     case ISSUE_TYPES.STATUS_MISMATCH:
       return 'Status Mismatch';
+    case ISSUE_TYPES.ORPHAN_BACKLOG_REF:
+      return 'Orphan Backlog Reference';
     default:
       return type;
   }
@@ -650,6 +676,7 @@ function printSummary(result: StateDiagnosis): void {
   console.log(`  Dangling Signals:  ${result.summary.danglingSignals}`);
   console.log(`  Broken Events:     ${result.summary.brokenEvents}`);
   console.log(`  Status Mismatches: ${result.summary.statusMismatches}`);
+  console.log(`  Orphan Backlog:    ${result.summary.orphanBacklogRefs}`);
   console.log(`  Total Issues:      ${result.summary.totalIssues}`);
 }
 

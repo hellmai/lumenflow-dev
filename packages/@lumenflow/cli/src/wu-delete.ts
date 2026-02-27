@@ -321,7 +321,7 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
   const backlogAbsPath = join(worktreePath, backlogRelPath);
   const statusAbsPath = join(worktreePath, statusRelPath);
 
-  const backlogContent = await generateBacklog(store);
+  const backlogContent = await generateBacklog(store, { projectRoot: worktreePath });
   writeFileSync(backlogAbsPath, backlogContent, FILE_SYSTEM.ENCODING as BufferEncoding);
   existing.add(backlogRelPath);
 
