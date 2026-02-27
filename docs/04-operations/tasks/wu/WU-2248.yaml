@@ -2,7 +2,7 @@ id: WU-2248
 title: wu:done --already-merged writes directly to local main bypassing micro-worktree isolation
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -41,3 +41,6 @@ session_id: 8a509da7-ea1f-4899-93dd-1d4ba2f351a7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T15:50:05.085Z
+locked: true
+completed_at: 2026-02-27T15:55:05.593Z
+completed: 2026-02-27

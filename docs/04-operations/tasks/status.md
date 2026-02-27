@@ -6,7 +6,6 @@ _Last updated: 2026-02-27_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml)
-- [WU-2248 — wu:done --already-merged writes directly to local main bypassing micro-worktree isolation](wu/WU-2248.yaml)
 - [WU-2249 — wu:recover --action reset deletes worktree without checking for uncommitted work](wu/WU-2249.yaml)
 
 ## Completed
@@ -1144,3 +1143,4 @@ _Last updated: 2026-02-27_
 - [WU-2241 — Add state:emit command for manual corrective events](wu/WU-2241.yaml) — 2026-02-27
 - [WU-2246 — initiative:create ignores --description flag](wu/WU-2246.yaml) — 2026-02-27
 - [WU-2257 — Lane lifecycle commands write directly to main, bypass micro-worktree](wu/WU-2257.yaml) — 2026-02-27
+- [WU-2248 — wu:done --already-merged writes directly to local main bypassing micro-worktree isolation](wu/WU-2248.yaml) — 2026-02-27
