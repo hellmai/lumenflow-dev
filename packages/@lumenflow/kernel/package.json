@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/kernel",
-  "version": "3.6.7",
+  "version": "3.6.8",
   "description": "Domain-agnostic runtime primitives and contracts for LumenFlow",
   "keywords": [
     "lumenflow",
