@@ -2,7 +2,7 @@ id: WU-2249
 title: wu:recover --action reset deletes worktree without checking for uncommitted work
 lane: 'Framework: Core State Recovery'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -45,3 +45,6 @@ session_id: 8a509da7-ea1f-4899-93dd-1d4ba2f351a7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T15:51:36.250Z
+locked: true
+completed_at: 2026-02-27T15:57:21.685Z
+completed: 2026-02-27
