@@ -2503,3 +2503,4 @@
 {"type":"claim","wuId":"WU-2253","timestamp":"2026-02-27T17:55:39.910Z","lane":"Framework: Core Lifecycle","title":"macOS sandbox posture-aware network rules"}
 {"type":"checkpoint","wuId":"WU-2253","timestamp":"2026-02-27T17:58:12.059Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2237","timestamp":"2026-02-27T17:58:16.976Z","lane":"Framework: Core Validation","title":"Sidekick validation, gates, smoke flow, and publish readiness"}
+{"type":"complete","wuId":"WU-2253","timestamp":"2026-02-27T18:00:07.109Z"}
