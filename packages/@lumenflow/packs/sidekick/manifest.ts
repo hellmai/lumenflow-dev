@@ -314,8 +314,9 @@ const SIDEKICK_MANIFEST_TEMPLATE = {
   lane_templates: [],
 };
 
-export const SIDEKICK_MANIFEST: SidekickPackManifest =
-  SidekickManifestSchema.parse(SIDEKICK_MANIFEST_TEMPLATE);
+export const SIDEKICK_MANIFEST: SidekickPackManifest = SidekickManifestSchema.parse(
+  SIDEKICK_MANIFEST_TEMPLATE,
+);
 
 export function getSidekickManifestToolByName(name: string): SidekickManifestTool | undefined {
   return SIDEKICK_MANIFEST.tools.find((tool) => tool.name === name);

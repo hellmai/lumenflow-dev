@@ -1,7 +1,12 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { TOOL_PERMISSIONS, TOOL_SCOPE_ACCESS, TOOL_SCOPE_TYPES, createToolDescriptor } from './types.js';
+import {
+  TOOL_PERMISSIONS,
+  TOOL_SCOPE_ACCESS,
+  TOOL_SCOPE_TYPES,
+  createToolDescriptor,
+} from './types.js';
 
 const ROUTINE_READ_SCOPE = {
   type: TOOL_SCOPE_TYPES.PATH,
