@@ -2,7 +2,7 @@ id: WU-2259
 title: wu:claim push-only path leaves local-main metadata drift
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -46,3 +46,6 @@ session_id: 87394ffd-3b29-43a4-bb04-21c769b571ac
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T16:22:42.279Z
+locked: true
+completed_at: 2026-02-27T16:45:16.284Z
+completed: 2026-02-27

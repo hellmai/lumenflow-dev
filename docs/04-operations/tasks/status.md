@@ -7,7 +7,6 @@ _Last updated: 2026-02-27_
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
-- [WU-2259 — wu:claim push-only path leaves local-main metadata drift](wu/WU-2259.yaml)
 
 ## Completed
 
@@ -1147,3 +1146,4 @@ _Last updated: 2026-02-27_
 - [WU-2248 — wu:done --already-merged writes directly to local main bypassing micro-worktree isolation](wu/WU-2248.yaml) — 2026-02-27
 - [WU-2249 — wu:recover --action reset deletes worktree without checking for uncommitted work](wu/WU-2249.yaml) — 2026-02-27
 - [WU-2260 — INIT-047 review follow-ups: silent catch, loose type, redundant error](wu/WU-2260.yaml) — 2026-02-27
+- [WU-2259 — wu:claim push-only path leaves local-main metadata drift](wu/WU-2259.yaml) — 2026-02-27
