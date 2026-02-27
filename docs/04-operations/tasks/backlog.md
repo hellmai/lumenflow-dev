@@ -73,7 +73,6 @@ sections:
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml) — Framework: Core Lifecycle
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml) — Framework: Core State Recovery
 - [WU-2250 — Prevent absolute path writes in claim metadata and plan linking](wu/WU-2250.yaml) — Framework: CLI WU Commands
-- [WU-2256 — Add battle-tested workflow gotchas to starting-prompt onboarding doc](wu/WU-2256.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
@@ -1207,6 +1206,7 @@ sections:
 - [WU-2247 — worktree_path stores absolute home paths in version-controlled YAML](wu/WU-2247.yaml)
 - [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml)
 - [WU-2244 — initiative:create blocked from non-main branch](wu/WU-2244.yaml)
+- [WU-2256 — Add battle-tested workflow gotchas to starting-prompt onboarding doc](wu/WU-2256.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

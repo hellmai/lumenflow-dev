@@ -2,7 +2,7 @@ id: WU-2256
 title: Add battle-tested workflow gotchas to starting-prompt onboarding doc
 lane: 'Content: Framework Docs'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -45,3 +45,6 @@ acceptance:
     anti-pattern'
   - Same changes applied to deployed starting-prompt.md
   - pnpm gates --docs-only passes
+locked: true
+completed_at: 2026-02-27T15:26:25.705Z
+completed: 2026-02-27
