@@ -4,7 +4,8 @@ Created: 2026-02-27
 
 ## Goal
 
-<!-- What is the primary objective? -->
+Deliver Sidekick pack and runtime-surface capabilities in lumenflow-dev with a stable, validated 16-tool contract.
+Complete INIT-046 across phases 1-3 with working storage abstraction, runtime dispatch surface, and publish-readiness verification.
 
 ## Scope
 
