@@ -2,7 +2,7 @@ id: WU-2267
 title: Add package.json to sidekick pack for npm publish
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
     and publishConfig
   - pnpm release --dry-run includes sidekick pack in publish list
   - pack:validate still passes after package.json addition
+locked: true
+completed_at: 2026-02-27T18:51:44.383Z
+completed: 2026-02-27
