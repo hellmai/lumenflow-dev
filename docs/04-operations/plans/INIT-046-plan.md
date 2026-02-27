@@ -18,21 +18,21 @@ Outcome objective:
 
 Initiative scope is organized by the current WU set and phase model.
 
-Phase 1 scope (pack contract and implementation):
+Phase 1 scope (pack contract, implementation, and runtime surface):
 
-1. WU-2231: Sidekick scaffold, manifest contract, schema + registration wiring.
-2. WU-2232: StoragePort abstraction and filesystem default adapter.
-3. WU-2233: Task and memory tool groups (descriptors + implementations + tests).
-4. WU-2234: Channel, routine, and system tool groups (descriptors + implementations + tests).
+1. WU-2231: Sidekick scaffold, manifest contract, schema + registration wiring. .gitignore update for .sidekick/.
+2. WU-2232: StoragePort abstraction and filesystem default adapter. Depends on WU-2231.
+3. WU-2233: Task and memory tool groups (descriptors + implementations + tests). Depends on WU-2232.
+4. WU-2234: Channel, routine, and system tool groups (descriptors + implementations + tests). Depends on WU-2232.
+5. WU-2236: Generic HTTP dispatch endpoint POST /tools/:name with enforcement compatibility. No pack dependency (parallel).
 
-Phase 2 scope (consumer abstraction and runtime surface):
+Phase 2 scope (validation and readiness):
 
-1. WU-2235: Consumer abstraction contract package.
-2. WU-2236: Generic HTTP dispatch endpoint POST /tools/:name with enforcement compatibility.
+1. WU-2237: End-to-end validation, gate convergence, smoke flow, and publish-readiness outputs. Depends on WU-2233, WU-2234, WU-2236.
 
-Phase 3 scope (validation and readiness):
+Removed from scope:
 
-1. WU-2237: End-to-end validation, gate convergence, smoke flow, and publish-readiness outputs.
+- WU-2235 (consumer abstraction contract package) — deleted. Strategy decision: the pack manifest IS the contract. No separate contract package.
 
 Required contract shape:
 
