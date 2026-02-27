@@ -3,15 +3,20 @@ title: Fix misleading Invalid lane format error when workspace.yaml missing
 lane: 'Framework: CLI WU Commands'
 type: bug
 status: ready
-priority: P2
+priority: P1
 created: 2026-02-27
 code_paths:
-  - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/core/src/lane-checker.ts
+  - packages/@lumenflow/cli/src/wu-escalate.ts
+  - packages/@lumenflow/core/src/wu-schema.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/src/commands.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - apps/docs/src/content/docs/packs/software-delivery/workflows/wu-prep-workflow.mdx
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-escalate.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2225.done
@@ -26,8 +31,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu:create catches all lane validation exceptions and wraps them with Invalid lane format prefix. When workspace.yaml is missing the real error is FILE_NOT_FOUND but user sees Invalid lane format: Config file not found which is misleading.'
+description: Implement wu:escalate CLI command. wu:done references pnpm wu:escalate --resolve but
+  the command does not exist (wu-schema.ts:875). Users with escalation_triggers (sensitive_data,
+  security_p0, budget, cross_lane_arch) have no CLI path to resolve escalation - violating
+  constraint 9 (no manual YAML edits). Command should support --resolve to set
+  escalation_resolved_by and escalation_resolved_at on WU YAML via micro-worktree. Also fix the
+  misleading error message in wu-schema.ts and add to public-manifest, quick-ref-commands,
+  CLAUDE.md, and Starlight docs.
 acceptance:
-  - Error message clearly states workspace.yaml is missing when that is the root cause
-  - Lane format errors still show lane-specific guidance
-  - Tests cover both missing-config and bad-format error paths
+  - wu:escalate --resolve --id WU-XXX sets escalation_resolved_by and escalation_resolved_at in WU
+    YAML
+  - wu:escalate --id WU-XXX without --resolve shows current escalation status
+  - wu:done succeeds after wu:escalate --resolve for escalation-triggered WUs
+  - Command registered in public-manifest.ts and package.json scripts
+  - Quick-ref-commands.md, CLAUDE.md, and Starlight docs updated
+  - Unit tests cover resolve, status, missing WU, and already-resolved paths
