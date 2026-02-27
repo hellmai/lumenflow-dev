@@ -837,6 +837,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     description: 'Bootstrap state store',
     category: COMMAND_CATEGORIES.STATE_MANAGEMENT,
   },
+  {
+    name: 'state:emit',
+    binName: 'state-emit',
+    binPath: './dist/state-emit.js',
+    description: 'Emit corrective event to state store (WU-2241)',
+    category: COMMAND_CATEGORIES.STATE_MANAGEMENT,
+  },
 
   // ============================================================================
   // File Operations (for agent-audited file access)

@@ -74,6 +74,7 @@
     "state:cleanup": "node packages/@lumenflow/cli/dist/state-cleanup.js",
     "state:doctor": "node tools/cli-entry.mjs state-doctor",
     "state:bootstrap": "node packages/@lumenflow/cli/dist/state-bootstrap.js",
+    "state:emit": "node packages/@lumenflow/cli/dist/state-emit.js",
     "mem:create": "node packages/@lumenflow/cli/dist/mem-create.js",
     "mem:inbox": "node packages/@lumenflow/cli/dist/mem-inbox.js",
     "mem:summarize": "node packages/@lumenflow/cli/dist/mem-summarize.js",

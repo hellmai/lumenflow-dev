@@ -26,6 +26,7 @@ import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import type { StateDoctorDeps, EmitEventPayload } from '@lumenflow/core/state-doctor-core';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { emitCorrectiveEvent } from './state-emit.js';
 
 /**
  * Operation name for micro-worktree isolation
@@ -220,10 +221,10 @@ export function createStateDoctorFixDeps(
     },
 
     /**
-     * Emit a corrective event to fix status mismatch (WU-1420)
+     * Emit a corrective event to fix status mismatch (WU-1420, WU-2241)
      *
-     * Appends a release or complete event to wu-events.jsonl to reconcile
-     * the state store with the WU YAML status.
+     * Uses emitCorrectiveEvent from state-emit.ts internally for event
+     * construction and validation, wrapped in micro-worktree for atomicity.
      */
     emitEvent: async (event: EmitEventPayload): Promise<void> => {
       await withMicroWorktree({
@@ -233,24 +234,17 @@ export function createStateDoctorFixDeps(
         pushOnly: true,
         execute: async ({ worktreePath }) => {
           const eventsPath = path.join(worktreePath, LUMENFLOW_PATHS.WU_EVENTS);
+          const auditLogPath = path.join(worktreePath, LUMENFLOW_PATHS.AUDIT_LOG);
 
-          // Build the event object
-          // WU-2240: Include lane/title for claim events
-          const eventObj: Record<string, unknown> = {
-            wuId: event.wuId,
+          await emitCorrectiveEvent({
             type: event.type,
-            reason: event.reason,
-            timestamp: event.timestamp || new Date().toISOString(),
-          };
-          if (event.type === 'claim') {
-            eventObj.lane = event.lane ?? '';
-            eventObj.title = event.title ?? `WU ${event.wuId}`;
-          }
-          const eventLine = JSON.stringify(eventObj);
-
-          // Append to events file (create if needed)
-          await fs.mkdir(path.dirname(eventsPath), { recursive: true });
-          await fs.appendFile(eventsPath, eventLine + '\n', 'utf-8');
+            wuId: event.wuId,
+            reason: event.reason ?? `state:doctor --fix: reconciling state for ${event.wuId}`,
+            eventsFilePath: eventsPath,
+            auditLogPath,
+            lane: event.lane,
+            title: event.title,
+          });
 
           return {
             commitMessage: `fix(state-doctor): emit ${event.type} event for ${event.wuId} to reconcile state`,
