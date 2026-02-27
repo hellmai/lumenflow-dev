@@ -2,7 +2,7 @@ id: WU-2226
 title: lumenflow:upgrade should sync new pnpm script entries from CLI public-manifest
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -27,9 +27,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: lumenflow:upgrade updates package.json deps and lockfile but does not add new pnpm script entries when a new CLI version introduces new commands (e.g. wu:escalate in 3.6.3). Consumer projects that upgrade get the binary in node_modules/.bin but pnpm wu:escalate fails because the script entry is missing from their package.json. The upgrade command should read the public-manifest and add any missing script entries.
+description: lumenflow:upgrade updates package.json deps and lockfile but does not add new pnpm
+  script entries when a new CLI version introduces new commands (e.g. wu:escalate in 3.6.3).
+  Consumer projects that upgrade get the binary in node_modules/.bin but pnpm wu:escalate fails
+  because the script entry is missing from their package.json. The upgrade command should read the
+  public-manifest and add any missing script entries.
 acceptance:
-  - lumenflow:upgrade adds missing pnpm script entries from CLI public-manifest to consumer package.json
+  - lumenflow:upgrade adds missing pnpm script entries from CLI public-manifest to consumer
+    package.json
   - Existing script entries are not overwritten or removed
   - New scripts use the same pattern as init-generated scripts
   - 'Unit tests cover: new script added, existing script preserved, no-op when already present'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2226
+claimed_at: 2026-02-27T10:11:08.844Z
+baseline_main_sha: 0adbb941da955e5f3010d6c4027b06d32fcc2f03
+session_id: a769d0e8-b375-4c06-aee9-d0fe1f8274f2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T10:11:08.851Z
