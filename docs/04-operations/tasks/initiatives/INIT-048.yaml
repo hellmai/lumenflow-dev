@@ -1,12 +1,26 @@
 id: INIT-048
 slug: kernel-hardening
 title: 'Kernel Hardening: Network Policy, macOS Sandbox, Advanced Scope Controls'
-description: ''
+description: 'Harden the LumenFlow kernel based on community feedback and competitive analysis.
+  Addresses top gaps: granular network allowlisting, macOS sandbox support, argument-level policy
+  rules, time-boxed permissions, and dynamic policy reload. Maintains four-layer integrated kernel
+  position (scope + evidence + policy + sandbox) against emerging single-layer competitors
+  (AgentBouncr, Reg.Run, Hivemind). See
+  ~/.lumenflow/strategy/lumenflow-dev/strategy/hn-competitive-intelligence.md for full research.'
 status: draft
 priority: P1
 owner: tom
 created: 2026-02-27
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Network Policy and macOS Sandbox'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Advanced Policy Controls'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Compliance and Attestation'
+    status: pending
 success_metrics:
   - Granular network allowlisting (domain/port per scope level)
   - macOS sandbox backend (Seatbelt/sandbox-exec) functional
