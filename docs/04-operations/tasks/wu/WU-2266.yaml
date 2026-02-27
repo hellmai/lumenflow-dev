@@ -2,7 +2,7 @@ id: WU-2266
 title: 'INIT-048 kernel hardening documentation: network allowlist, macOS sandbox, argument-level policy'
 lane: 'Content: Framework Docs'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - tool-execution.mdx documents macOS sandbox backend and deny overlays
   - workspace-spec.mdx updated with allowlist_entries schema and allowlist posture
   - create-a-pack.mdx includes network allowlist examples in tool manifests
+locked: true
+completed_at: 2026-02-27T18:43:43.595Z
+completed: 2026-02-27

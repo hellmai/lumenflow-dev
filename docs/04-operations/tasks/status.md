@@ -6,7 +6,6 @@ _Last updated: 2026-02-27_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
-- [WU-2266 — INIT-048 kernel hardening documentation: network allowlist, macOS sandbox, argument-level policy](wu/WU-2266.yaml)
 - [WU-2267 — Add package.json to sidekick pack for npm publish](wu/WU-2267.yaml)
 
 ## Completed
@@ -1163,3 +1162,4 @@ _Last updated: 2026-02-27_
 - [WU-2254 — macOS sandbox read confinement and deny overlays](wu/WU-2254.yaml) — 2026-02-27
 - [WU-2255 — Argument-level policy evaluation context](wu/WU-2255.yaml) — 2026-02-27
 - [WU-2265 — Publish Sidekick pack to registry](wu/WU-2265.yaml) — 2026-02-27
+- [WU-2266 — INIT-048 kernel hardening documentation: network allowlist, macOS sandbox, argument-level policy](wu/WU-2266.yaml) — 2026-02-27
