@@ -28,7 +28,12 @@ phase: 3
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-046.yaml
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  tdd-exception: Validation-only WU; tests written in WU-2233 (41 tests), WU-2234 (30 tests),
+  WU-2236 (22 tests). This WU verifies they pass and adds docs/changelog.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
