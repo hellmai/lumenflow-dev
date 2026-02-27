@@ -2504,6 +2504,7 @@
 {"type":"checkpoint","wuId":"WU-2253","timestamp":"2026-02-27T17:58:12.059Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2237","timestamp":"2026-02-27T17:58:16.976Z","lane":"Framework: Core Validation","title":"Sidekick validation, gates, smoke flow, and publish readiness"}
 {"type":"complete","wuId":"WU-2253","timestamp":"2026-02-27T18:00:07.109Z"}
-{"type":"checkpoint","wuId":"WU-2237","timestamp":"2026-02-27T18:01:21.417Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2254","timestamp":"2026-02-27T18:02:36.864Z","lane":"Framework: Core Lifecycle","title":"macOS sandbox read confinement and deny overlays"}
+{"type":"checkpoint","wuId":"WU-2254","timestamp":"2026-02-27T18:02:59.001Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2237","timestamp":"2026-02-27T18:01:21.417Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2237","timestamp":"2026-02-27T18:03:34.541Z"}

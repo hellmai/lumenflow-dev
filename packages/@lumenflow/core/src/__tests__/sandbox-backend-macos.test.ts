@@ -165,4 +165,134 @@ describe('sandbox-backend-macos', () => {
       expect(policy).toContain('(allow network*)');
     });
   });
+
+  describe('file-read confinement', () => {
+    it('does not use broad (allow file-read*) rule', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      // Must NOT contain the broad read-all rule
+      expect(policy).not.toMatch(/\(allow file-read\*\)(?!\s*\(subpath)/);
+      // But must contain scoped file-read rules
+      expect(policy).toContain('(allow file-read*');
+    });
+
+    it('allows file-read for workspace path', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      expect(policy).toContain(`(allow file-read* (subpath "${baseProfileInput.projectRoot}"))`);
+    });
+
+    it('allows file-read for system paths', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      expect(policy).toContain('(allow file-read* (subpath "/usr"))');
+      expect(policy).toContain('(allow file-read* (subpath "/System"))');
+      expect(policy).toContain('(allow file-read* (subpath "/Library"))');
+      expect(policy).toContain('(allow file-read* (subpath "/bin"))');
+      expect(policy).toContain('(allow file-read* (subpath "/sbin"))');
+      expect(policy).toContain('(allow file-read* (subpath "/private"))');
+      expect(policy).toContain('(allow file-read* (subpath "/dev"))');
+      expect(policy).toContain('(allow file-read* (subpath "/tmp"))');
+    });
+
+    it('allows file-read for temp path from profile', () => {
+      const profileWithCustomTemp = buildSandboxProfile({
+        ...baseProfileInput,
+        networkPosture: 'full',
+        tempPath: '/custom/tmp',
+      });
+
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithCustomTemp,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      expect(policy).toContain('(allow file-read* (subpath "/custom/tmp"))');
+    });
+  });
+
+  describe('deny overlays for sensitive paths', () => {
+    it('denies file-read for ~/.ssh', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      expect(policy).toMatch(/\(deny file-read\* \(subpath ".*\/\.ssh"\)\)/);
+    });
+
+    it('denies file-read for ~/.aws', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      expect(policy).toMatch(/\(deny file-read\* \(subpath ".*\/\.aws"\)\)/);
+    });
+
+    it('denies file-read for ~/.gnupg', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      expect(policy).toMatch(/\(deny file-read\* \(subpath ".*\/\.gnupg"\)\)/);
+    });
+
+    it('places deny overlays after allow rules for deny-wins behavior', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      const lastAllowReadIndex = policy.lastIndexOf('(allow file-read*');
+      const firstDenyReadIndex = policy.indexOf('(deny file-read*');
+      expect(firstDenyReadIndex).toBeGreaterThan(lastAllowReadIndex);
+    });
+  });
+
+  describe('parity with Linux bwrap confinement', () => {
+    it('confines reads to workspace and system paths like bwrap --ro-bind', () => {
+      const plan = backendAvailable.resolveExecution({
+        profile: profileWithNetworkFull,
+        command: ['node', '-v'],
+        allowUnsandboxedFallback: false,
+      });
+
+      const policy = extractPolicy(plan);
+      // Should not have unrestricted file-read
+      expect(policy).not.toContain('(allow file-read*)');
+      // Should have scoped reads
+      expect(policy).toContain('(allow file-read* (subpath');
+      // Should deny sensitive paths (matching bwrap secret deny overlays)
+      expect(policy).toMatch(/\(deny file-read\* \(subpath ".*\/\.ssh"\)\)/);
+      expect(policy).toMatch(/\(deny file-read\* \(subpath ".*\/\.aws"\)\)/);
+      expect(policy).toMatch(/\(deny file-read\* \(subpath ".*\/\.gnupg"\)\)/);
+    });
+  });
 });

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { spawnSync } from 'node:child_process';
+import os from 'node:os';
 import {
   SANDBOX_BACKEND_IDS,
   type SandboxBackend,
@@ -43,6 +44,48 @@ function buildNetworkRules(profile: SandboxExecutionRequest['profile']): string[
   return ['(allow network*)'];
 }
 
+/** macOS system paths required for process execution (parity with bwrap --ro-bind /) */
+const MACOS_SYSTEM_READ_PATHS = [
+  '/usr',
+  '/System',
+  '/Library',
+  '/bin',
+  '/sbin',
+  '/private',
+  '/dev',
+  '/tmp',
+];
+
+/** Sensitive paths denied from read access (parity with bwrap deny overlays) */
+const SENSITIVE_DENY_PATHS = ['.ssh', '.aws', '.gnupg'];
+
+function buildReadRules(profile: SandboxExecutionRequest['profile']): string[] {
+  const readPaths = new Set<string>();
+
+  // Workspace root (covers worktree, state, WU YAML)
+  readPaths.add(profile.projectRoot);
+
+  // System paths required for process execution
+  for (const systemPath of MACOS_SYSTEM_READ_PATHS) {
+    readPaths.add(systemPath);
+  }
+
+  // Temp path from profile
+  readPaths.add(profile.tempPath);
+
+  return [...readPaths].map(
+    (readPath) => `(allow file-read* (subpath "${escapePolicyPath(readPath)}"))`,
+  );
+}
+
+function buildDenyOverlays(): string[] {
+  const homeDir = os.homedir();
+  return SENSITIVE_DENY_PATHS.map(
+    (sensitivePath) =>
+      `(deny file-read* (subpath "${escapePolicyPath(homeDir)}/${sensitivePath}"))`,
+  );
+}
+
 function buildPolicy(profile: SandboxExecutionRequest['profile']): string {
   const writableRules = profile.allowlist.writableRoots.map(
     (entry) => `(allow file-write* (subpath "${escapePolicyPath(entry.normalizedPath)}"))`,
@@ -52,7 +95,8 @@ function buildPolicy(profile: SandboxExecutionRequest['profile']): string {
     '(version 1)',
     '(deny default)',
     '(allow process*)',
-    '(allow file-read*)',
+    ...buildReadRules(profile),
+    ...buildDenyOverlays(),
     '(allow sysctl-read)',
     '(allow mach-lookup)',
     ...buildNetworkRules(profile),
