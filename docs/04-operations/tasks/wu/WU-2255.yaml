@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
 tests:
-  manual: []
+  manual:
+    - Verify PolicyEvaluationContext includes tool_arguments field in type definition
+    - Verify existing policy tests pass unchanged (backward compatibility)
   unit:
     - packages/@lumenflow/kernel/src/__tests__/policy-engine.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
