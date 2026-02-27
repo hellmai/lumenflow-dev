@@ -49,7 +49,6 @@ sections:
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
-- [WU-2255 — Argument-level policy evaluation context](wu/WU-2255.yaml) — Framework: Core Lifecycle
 - [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
 - [WU-2261 — wu:done leaves bulk staged WU metadata on main](wu/WU-2261.yaml) — Framework: CLI Enforcement
 
@@ -57,6 +56,7 @@ sections:
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
+- [WU-2255 — Argument-level policy evaluation context](wu/WU-2255.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

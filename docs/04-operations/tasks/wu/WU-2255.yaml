@@ -2,7 +2,7 @@ id: WU-2255
 title: Argument-level policy evaluation context
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - PolicyEvaluationContext includes tool_arguments field
   - ToolHost.authorize() passes parsed tool input to policy hook
   - Existing policy evaluation unchanged when tool_arguments not provided
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2255
+claimed_at: 2026-02-27T18:09:41.529Z
+baseline_main_sha: 3139bcf7bba1945421fd52c690aad84e20fefc87
+session_id: 4ac8e788-3c6b-4e45-a06e-c321baaff6e4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T18:09:41.536Z
