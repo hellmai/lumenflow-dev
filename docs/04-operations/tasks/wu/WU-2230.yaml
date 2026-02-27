@@ -1,0 +1,34 @@
+id: WU-2230
+title: 'Fix new-user friction: init self-install, template formatting, pack-install default'
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/commands/init.ts
+  - packages/@lumenflow/cli/templates/
+tests:
+  manual: []
+  unit: []
+  e2e:
+    - packages/@lumenflow/cli/src/__tests__/init.e2e.test.ts
+artifacts:
+  - .lumenflow/stamps/WU-2230.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: api
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Testing lumenflow init on a fresh Next.js project revealed 5 friction points. Problem: (1) init does not install lumenflow as devDep so all commands fail post-scaffold, (2) npx lumenflow init fails because init is not a subcommand, (3) pack install fails by default, (4) scaffolded templates are not prettier-formatted so gates fail immediately, (5) pnpm setup collides with built-in pnpm command.'
+acceptance:
+  - lumenflow init on a fresh project results in working CLI commands without manual intervention
+  - Scaffolded files pass prettier format check out of the box
+  - npx lumenflow init works as invocation (init recognized as implicit)
+  - Pack install failure does not block init for new external projects
