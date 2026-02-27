@@ -2,7 +2,7 @@ id: WU-2260
 title: 'INIT-047 review follow-ups: silent catch, loose type, redundant error'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-27
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - emitCorrectiveEvent type parameter uses ValidEmitType only, string accepted only at CLI parse
     layer
   - wu:recover reset prints either the detailed warning or the die message, not both
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2260
+claimed_at: 2026-02-27T16:32:19.396Z
+baseline_main_sha: 64cb20c1156f2491248f591f663ee656df4eaec7
+session_id: 87394ffd-3b29-43a4-bb04-21c769b571ac
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T16:32:19.401Z
