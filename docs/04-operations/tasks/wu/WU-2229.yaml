@@ -58,7 +58,6 @@ description: 'Context: wu:delete claims to regenerate backlog.md/status.md but l
   command. Solution: Fix wu:delete regeneration, wire validateBacklogSync into state:doctor,
   refactor wu:create to use state store pattern.'
 acceptance:
-  - wu:delete leaves no orphan references in backlog.md or status.md after deleting a WU
-  - state:doctor detects orphan backlog references (entries for non-existent WU YAMLs)
-  - wu:create uses state store + generateBacklog() instead of manual markdown splicing
-  - All existing tests pass, new tests cover orphan detection and wu:create backlog generation
+  - wu:delete passes projectRoot to generateBacklog so YAML resolves from worktree
+  - state:doctor detects orphan backlog references (WU IDs in backlog.md with no matching YAML)
+  - Regression tests cover both fixes
