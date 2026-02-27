@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2250 — Prevent absolute path writes in claim metadata and plan linking](wu/WU-2250.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml) — Framework: Core State Recovery
@@ -63,6 +62,7 @@ sections:
 - [WU-2246 — initiative:create ignores --description flag](wu/WU-2246.yaml) — Framework: Initiatives
 - [WU-2248 — wu:done --already-merged writes directly to local main bypassing micro-worktree isolation](wu/WU-2248.yaml) — Framework: CLI WU Commands
 - [WU-2249 — wu:recover --action reset deletes worktree without checking for uncommitted work](wu/WU-2249.yaml) — Framework: Core State Recovery
+- [WU-2250 — Prevent absolute path writes in claim metadata and plan linking](wu/WU-2250.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
