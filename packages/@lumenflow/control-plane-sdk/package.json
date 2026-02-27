@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/control-plane-sdk",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "description": "Control plane sync contracts and adapters for LumenFlow runtime",
   "type": "module",
   "main": "./dist/index.js",

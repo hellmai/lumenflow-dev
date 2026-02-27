@@ -1,11 +1,11 @@
 version: 1
 published_stable:
-  version: 3.6.2
-  release_tag: v3.6.2
+  version: 3.6.3
+  release_tag: v3.6.3
   source_of_truth:
     npm: https://www.npmjs.com/package/@lumenflow/cli
     github_releases: https://github.com/hellmai/lumenflow-dev/releases
-  validated_on: 2026-02-26
+  validated_on: 2026-02-27
 policy:
   latest_channel: published_stable
   allow_unreleased_main_claims: false
