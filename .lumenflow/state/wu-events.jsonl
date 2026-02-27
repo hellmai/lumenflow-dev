@@ -2451,3 +2451,4 @@
 {"type":"checkpoint","wuId":"WU-2241","timestamp":"2026-02-27T15:41:31.268Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2241","timestamp":"2026-02-27T15:42:11.578Z"}
 {"type":"complete","wuId":"WU-2246","timestamp":"2026-02-27T15:46:05.986Z"}
+{"type":"claim","wuId":"WU-2257","timestamp":"2026-02-27T15:48:12.170Z","lane":"Framework: CLI Enforcement","title":"Lane lifecycle commands write directly to main, bypass micro-worktree"}

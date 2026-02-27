@@ -63,13 +63,13 @@ sections:
 - [WU-2253 — macOS sandbox posture-aware network rules](wu/WU-2253.yaml) — Framework: Core Lifecycle
 - [WU-2254 — macOS sandbox read confinement and deny overlays](wu/WU-2254.yaml) — Framework: Core Lifecycle
 - [WU-2255 — Argument-level policy evaluation context](wu/WU-2255.yaml) — Framework: Core Lifecycle
-- [WU-2257 — Lane lifecycle commands write directly to main, bypass micro-worktree](wu/WU-2257.yaml) — Framework: CLI Enforcement
 - [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml) — Framework: Core Lifecycle
+- [WU-2257 — Lane lifecycle commands write directly to main, bypass micro-worktree](wu/WU-2257.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 

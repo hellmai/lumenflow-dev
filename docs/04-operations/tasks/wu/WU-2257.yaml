@@ -2,7 +2,7 @@ id: WU-2257
 title: Lane lifecycle commands write directly to main, bypass micro-worktree
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - lane:lock uses micro-worktree isolation like lane:edit
   - lane:validate and lane:setup --lock use micro-worktree isolation
   - --help flag works on all lane lifecycle commands
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-enforcement-wu-2257
+claimed_at: 2026-02-27T15:48:12.147Z
+baseline_main_sha: f6f53294f067053b308daa5121f095878917d9fe
+session_id: 8a509da7-ea1f-4899-93dd-1d4ba2f351a7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T15:48:12.153Z
