@@ -32,7 +32,7 @@ import {
 } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
 import { normalizeISODateTime } from './date-utils.js';
-import { getConfig } from './lumenflow-config.js';
+// WU-2225: getConfig import removed (getEscalationEmail was the only consumer)
 
 /**
  * Valid WU status values derived from WU_STATUS constant (DRY principle)
@@ -810,18 +810,6 @@ export function validateDoneWU(wu: WUDoneValidationInput): { valid: boolean; err
     valid: errors.length === 0,
     errors,
   };
-}
-
-/**
- * WU-2122: Get escalation email from workspace.yaml configuration.
- *
- * Reads `software_delivery.escalation.email` via getConfig() with a
- * sensible fallback default defined in EscalationConfigSchema.
- *
- * @returns Configured escalation email address
- */
-function getEscalationEmail(): string {
-  return getConfig().escalation.email;
 }
 
 /**
