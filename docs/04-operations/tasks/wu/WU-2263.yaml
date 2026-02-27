@@ -1,0 +1,36 @@
+id: WU-2263
+title: wu:create validate diverges from wu:claim manual-test requirement
+lane: 'Framework: CLI Enforcement'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-create-validation.ts
+  - packages/@lumenflow/cli/src/wu-claim-validation.ts
+  - packages/@lumenflow/core/src/wu-done-validation.ts
+tests:
+  manual:
+    - Run wu:create --validate for a non-doc WU with empty tests.manual and verify behavior matches wu:claim policy
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim-validation.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-create-validation.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2263.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:create --validate allows non-documentation WUs with tests.manual empty when other test buckets are populated. Problem: wu:claim then hard-fails the same WU because tests.manual is mandatory at claim time. Solution: align create-time validation and/or claim requirement so a WU that passes wu:create --validate is claimable without surprise.'
+acceptance:
+  - A non-doc WU with tests.manual empty fails consistently at create-time (or claim rule is relaxed) per single documented policy
+  - Validation behavior is consistent across wu:create --validate and wu:claim
+  - Regression tests cover the mismatched scenario (manual empty + unit tests present)
