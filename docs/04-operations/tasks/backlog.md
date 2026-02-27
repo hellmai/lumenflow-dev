@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2235 — Define Sidekick consumer abstraction contract package](wu/WU-2235.yaml) — Framework: Core Lifecycle
 - [WU-2234 — Implement Sidekick channel, routine, and system tool groups](wu/WU-2234.yaml) — Framework: Core Lifecycle
 - [WU-2233 — Implement Sidekick task and memory tool groups](wu/WU-2233.yaml) — Framework: Core Lifecycle
 - [WU-2232 — Sidekick StoragePort and filesystem storage adapter](wu/WU-2232.yaml) — Framework: Core Lifecycle
