@@ -19,7 +19,9 @@ artifacts:
   - .lumenflow/stamps/WU-2262.done
 dependencies: []
 risks: []
-notes: ''
+notes: >-
+  WU-2262 constrains wu:done to avoid local-main metadata spill caused by repo-wide
+  worktree_path sanitation commit attempts from main checkout.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
