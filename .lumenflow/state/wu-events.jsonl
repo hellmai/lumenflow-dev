@@ -2479,3 +2479,4 @@
 {"type":"claim","wuId":"WU-2263","timestamp":"2026-02-27T17:12:37.641Z","lane":"Framework: CLI Enforcement","title":"wu:create validate diverges from wu:claim manual-test requirement"}
 {"type":"claim","wuId":"WU-2231","timestamp":"2026-02-27T17:16:06.371Z","lane":"Framework: Core Lifecycle","title":"Sidekick pack scaffold and manifest contract"}
 {"type":"claim","wuId":"WU-2236","timestamp":"2026-02-27T17:16:40.898Z","lane":"Operations: Runtime","title":"Add generic HTTP runtime dispatch endpoint POST /tools/:name"}
+{"type":"checkpoint","wuId":"WU-2236","timestamp":"2026-02-27T17:20:28.952Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}

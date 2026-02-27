@@ -6,6 +6,7 @@ import type { Disposable, KernelEvent, KernelRuntime, ReplayFilter } from '@lume
 import { createEventStreamRouter, type EventSubscriber } from './event-stream.js';
 import { createRunAgentRouter } from './run-agent.js';
 import { createTaskApiRouter } from './task-api.js';
+import { createToolApiRouter, type ToolApiRouterOptions } from './tool-api.js';
 import {
   DEFAULT_CONTROL_PLANE_SYNC_INTERVAL_MS,
   type ControlPlaneSyncPortLike,
@@ -15,6 +16,7 @@ import {
 const URL_BASE = 'http://localhost';
 const ROUTE_SEGMENT = {
   TASKS: 'tasks',
+  TOOLS: 'tools',
   EVENTS: 'events',
   AG_UI: 'ag-ui',
 } as const;
@@ -46,6 +48,7 @@ export interface HttpSurfaceOptions {
   workspaceId?: string;
   controlPlaneSyncIntervalMs?: number;
   controlPlaneDiagnosticsLogger?: Pick<Console, 'warn'>;
+  allowlistedTools?: readonly string[];
 }
 
 export interface HttpSurface {
@@ -122,6 +125,9 @@ export function createHttpSurface(
   options: HttpSurfaceOptions = {},
 ): HttpSurface {
   const taskApiRouter = createTaskApiRouter(runtime);
+  const toolApiRouter = options.allowlistedTools
+    ? createToolApiRouter(runtime, { allowlistedTools: options.allowlistedTools })
+    : undefined;
   const eventStreamRouter = createEventStreamRouter(resolveEventSubscriber(runtime, options));
   const runAgentConfig = options.workspaceId ? { workspaceId: options.workspaceId } : undefined;
   const runAgentRouter = createRunAgentRouter(
@@ -141,6 +147,11 @@ export function createHttpSurface(
 
       if (rootSegment === ROUTE_SEGMENT.TASKS) {
         await taskApiRouter.handleRequest(request, response, nestedSegments);
+        return;
+      }
+
+      if (rootSegment === ROUTE_SEGMENT.TOOLS && toolApiRouter) {
+        await toolApiRouter.handleRequest(request, response, nestedSegments);
         return;
       }
 

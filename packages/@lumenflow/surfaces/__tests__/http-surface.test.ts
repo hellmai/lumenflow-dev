@@ -329,4 +329,60 @@ describe('surfaces/http createHttpSurface', () => {
     const payload = parseJsonBody(response.body) as { task: { id: string } };
     expect(payload.task.id).toBe(TASK.ID);
   });
+
+  it('delegates POST /tools/:name to runtime.executeTool when allowlistedTools provided', async () => {
+    const runtime = {
+      ...createRuntimeStub(),
+      executeTool: vi.fn(async () => ({
+        success: true,
+        data: { status: 'ok' },
+      })),
+    };
+
+    const surface = createHttpSurface(runtime as unknown as KernelRuntime, {
+      allowlistedTools: ['task:status'],
+    });
+
+    const request = createRequest({
+      method: HTTP_METHOD.POST,
+      url: '/tools/task:status',
+      body: {
+        input: {},
+        context: {
+          run_id: 'run-1',
+          task_id: TASK.ID,
+          session_id: USER.SESSION_ID,
+          allowed_scopes: [],
+        },
+      },
+    });
+    const response = new MockResponse();
+
+    await surface.handleRequest(
+      request as IncomingMessage,
+      response as unknown as ServerResponse<IncomingMessage>,
+    );
+
+    expect(runtime.executeTool).toHaveBeenCalledTimes(1);
+    expect(response.statusCode).toBe(HTTP_STATUS.OK);
+  });
+
+  it('returns 404 for /tools route when allowlistedTools not provided', async () => {
+    const runtime = createRuntimeStub();
+    const surface = createHttpSurface(runtime as unknown as KernelRuntime);
+
+    const request = createRequest({
+      method: HTTP_METHOD.POST,
+      url: '/tools/task:status',
+      body: {},
+    });
+    const response = new MockResponse();
+
+    await surface.handleRequest(
+      request as IncomingMessage,
+      response as unknown as ServerResponse<IncomingMessage>,
+    );
+
+    expect(response.statusCode).toBe(404);
+  });
 });
