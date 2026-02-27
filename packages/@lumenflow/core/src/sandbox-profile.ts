@@ -19,6 +19,8 @@ export const SANDBOX_BACKEND_IDS = {
 
 export type SandboxBackendId = (typeof SANDBOX_BACKEND_IDS)[keyof typeof SANDBOX_BACKEND_IDS];
 
+export type SandboxNetworkPosture = 'off' | 'allowlist' | 'full';
+
 export interface SandboxProfile {
   projectRoot: string;
   worktreePath: string;
@@ -27,6 +29,8 @@ export interface SandboxProfile {
   statePath: string;
   tempPath: string;
   allowlist: SandboxAllowlist;
+  networkPosture: SandboxNetworkPosture;
+  networkAllowlist: string[];
 }
 
 export interface BuildSandboxProfileInput {
@@ -35,6 +39,8 @@ export interface BuildSandboxProfileInput {
   wuId: string;
   tempPath?: string;
   extraWritableRoots?: string[];
+  networkPosture?: SandboxNetworkPosture;
+  networkAllowlist?: string[];
 }
 
 export interface SandboxBackendResolution {
@@ -110,6 +116,10 @@ export function buildSandboxProfile(input: BuildSandboxProfileInput): SandboxPro
 
   const allowlist = buildSandboxAllowlist(allowlistInput);
 
+  const networkPosture: SandboxNetworkPosture = input.networkPosture ?? 'full';
+  const networkAllowlist: string[] =
+    networkPosture === 'allowlist' && input.networkAllowlist ? [...input.networkAllowlist] : [];
+
   return {
     projectRoot,
     worktreePath,
@@ -118,6 +128,8 @@ export function buildSandboxProfile(input: BuildSandboxProfileInput): SandboxPro
     statePath,
     tempPath,
     allowlist,
+    networkPosture,
+    networkAllowlist,
   };
 }
 

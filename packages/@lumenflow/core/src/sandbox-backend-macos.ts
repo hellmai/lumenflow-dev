@@ -24,6 +24,25 @@ function escapePolicyPath(targetPath: string): string {
   return targetPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
+function buildNetworkRules(profile: SandboxExecutionRequest['profile']): string[] {
+  const posture = profile.networkPosture ?? 'full';
+
+  if (posture === 'off') {
+    return ['(deny network*)'];
+  }
+
+  if (posture === 'allowlist') {
+    const rules: string[] = ['(deny network*)'];
+    for (const host of profile.networkAllowlist) {
+      rules.push(`(allow network-outbound (remote ip "${host}"))`);
+    }
+    return rules;
+  }
+
+  // posture === 'full'
+  return ['(allow network*)'];
+}
+
 function buildPolicy(profile: SandboxExecutionRequest['profile']): string {
   const writableRules = profile.allowlist.writableRoots.map(
     (entry) => `(allow file-write* (subpath "${escapePolicyPath(entry.normalizedPath)}"))`,
@@ -36,7 +55,7 @@ function buildPolicy(profile: SandboxExecutionRequest['profile']): string {
     '(allow file-read*)',
     '(allow sysctl-read)',
     '(allow mach-lookup)',
-    '(allow network*)',
+    ...buildNetworkRules(profile),
     '(allow signal)',
     ...writableRules,
   ].join(' ');
