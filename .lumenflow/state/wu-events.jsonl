@@ -2411,3 +2411,4 @@
 {"type":"complete","wuId":"WU-2230","timestamp":"2026-02-27T13:55:16.214Z"}
 {"type":"claim","wuId":"WU-2238","timestamp":"2026-02-27T14:08:25.438Z","lane":"Framework: Core State Recovery","title":"wu:recover --action reset should require --force for destructive ops"}
 {"type":"claim","wuId":"WU-2239","timestamp":"2026-02-27T14:08:42.768Z","lane":"Framework: CLI WU Commands","title":"wu:edit --spec-file silently overwrites runtime fields"}
+{"type":"claim","wuId":"WU-2242","timestamp":"2026-02-27T14:09:27.485Z","lane":"Framework: Initiatives","title":"initiative:create requires explicit --id despite documenting auto-gen"}

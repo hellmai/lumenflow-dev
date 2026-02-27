@@ -2,7 +2,7 @@ id: WU-2242
 title: initiative:create requires explicit --id despite documenting auto-gen
 lane: 'Framework: Initiatives'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-27
 code_paths:
@@ -35,3 +35,11 @@ description: initiative:create help says 'If not provided, auto-generates next s
 acceptance:
   - initiative:create without --id auto-generates the next sequential INIT-XXX ID
   - Existing --id flag still works for explicit ID override
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-initiatives-wu-2242
+claimed_at: 2026-02-27T14:09:27.446Z
+baseline_main_sha: 06d1a024b503851e0ded2fb5c8cce7c96615df29
+session_id: eecec135-dd2b-41c5-9c75-d8c60c7c5892
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T14:09:27.457Z

@@ -8,6 +8,7 @@ _Last updated: 2026-02-27_
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml)
 - [WU-2238 — wu:recover --action reset should require --force for destructive ops](wu/WU-2238.yaml)
 - [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml)
+- [WU-2242 — initiative:create requires explicit --id despite documenting auto-gen](wu/WU-2242.yaml)
 
 ## Completed
 
