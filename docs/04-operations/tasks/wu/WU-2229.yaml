@@ -1,0 +1,38 @@
+id: WU-2229
+title: Fix orphan backlog references and detection gaps
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-delete.ts
+  - packages/@lumenflow/core/src/state-doctor-core.ts
+  - packages/@lumenflow/cli/src/wu-create-content.ts
+  - packages/@lumenflow/core/src/validators/backlog-sync.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
+    - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-create-content.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2229.done
+dependencies: []
+risks: []
+notes: 'Sizing: ~6 files modified, ~60 tool calls estimated. Medium complexity (checkpoint-resume if needed). The validate-backlog-sync validator already detects orphans — just needs wiring into state:doctor. wu:create refactor should follow the pattern used by wu:block/wu:unblock/wu:release.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:delete claims to regenerate backlog.md/status.md but leaves orphan references to deleted WUs. Three diagnostic tools (state:doctor, wu:repair, backlog:prune) all report healthy despite dangling references. Additionally, wu:create bypasses state store for backlog updates, creating asymmetry with all other state-mutating commands. Problem: (1) wu:delete regeneration timing issue leaves orphan entries. (2) No diagnostic tool validates backlog.md against existing WU YAMLs despite a working validator existing in validators/backlog-sync.ts. (3) wu:create manually splices backlog.md instead of using generateBacklog(store) like every other command. Solution: Fix wu:delete regeneration, wire validateBacklogSync into state:doctor, refactor wu:create to use state store pattern.'
+acceptance:
+  - wu:delete leaves no orphan references in backlog.md or status.md after deleting a WU
+  - state:doctor detects orphan backlog references (entries for non-existent WU YAMLs)
+  - wu:create uses state store + generateBacklog() instead of manual markdown splicing
+  - All existing tests pass, new tests cover orphan detection and wu:create backlog generation
