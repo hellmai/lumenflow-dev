@@ -33,7 +33,7 @@ assigned_to: tom@hellm.ai
 claimed_at: 2026-02-27T09:45:49.982Z
 worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2225
 session_id: 124571a6-8601-4691-8071-2ba38f0b8c65
-exposure: ui
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 approved_by:
