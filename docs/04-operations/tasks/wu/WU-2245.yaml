@@ -8,7 +8,8 @@ created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
 tests:
-  manual: []
+  manual:
+    - Verify wu:create without --notes produces YAML with empty notes
   unit:
     - packages/@lumenflow/cli/__tests__/wu-create-notes.test.ts
   e2e: []
@@ -26,7 +27,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:create sets notes to '(auto) Add implementation notes...' placeholder text. This requires manual cleanup after creation. Should either leave notes empty/null or accept --notes flag to set content at creation time.
+description: wu:create sets notes to '(auto) Add implementation notes...' placeholder text. This
+  requires manual cleanup after creation. Should either leave notes empty/null or accept --notes
+  flag to set content at creation time.
 acceptance:
   - wu:create without --notes leaves notes field empty or null
   - wu:create --notes 'text' sets notes to provided text
