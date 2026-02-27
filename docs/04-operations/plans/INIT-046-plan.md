@@ -23,7 +23,18 @@ Primary work units:
 
 ## Approach
 
-<!-- How will you achieve the goal? Key phases or milestones? -->
+Execution approach:
+
+1. Phase 1 foundation first: WU-2231, WU-2232, WU-2233, WU-2234.
+2. Phase 2 surfaces next: WU-2235 and WU-2236 (parallel when capacity allows).
+3. Phase 3 validation last: WU-2237.
+
+Implementation method:
+
+- TDD per WU with manifest/storage/tool tests authored before final implementation.
+- Keep manifest, descriptor metadata, and tool implementations aligned at each step.
+- Run pack and gate validation frequently to catch scope/schema drift early.
+- Use worktree lifecycle for code WUs and tooling lifecycle commands for plan/initiative metadata updates.
 
 ## Success Criteria
 
