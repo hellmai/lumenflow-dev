@@ -17,6 +17,7 @@ Then read `LUMENFLOW.md` for workflow details.
 | `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt + record evidence (worktree only) |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage               |
 | `pnpm wu:recover --id WU-XXX`                  | Fix WU state inconsistencies                              |
+| `pnpm wu:escalate --id WU-XXX`                 | Show or resolve WU escalation status                      |
 
 ### Gates & Orchestration
 

@@ -115,6 +115,8 @@ files, no manual git, no WU ceremony. Only actual **code changes** need WUs.
 | `pnpm wu:prep --id WU-XXX [--full-tests]`       | Run gates, prep for wu:done (`tests.unit` scoped by default) |
 | `pnpm wu:done --id WU-XXX`                      | Complete WU (merge or PR, stamp, cleanup)                    |
 | `pnpm wu:edit --id WU-XXX --description "..."`  | Edit WU spec fields (run --help for all flags)               |
+| `pnpm wu:escalate --id WU-XXX`                  | Show escalation status for a WU                              |
+| `pnpm wu:escalate --resolve --id WU-XXX`        | Resolve escalation (sets resolved_by/resolved_at)            |
 | `pnpm wu:block --id WU-XXX --reason "..."`      | Block WU with reason                                         |
 | `pnpm wu:unblock --id WU-XXX`                   | Unblock WU                                                   |
 | `pnpm wu:release --id WU-XXX`                   | Release orphaned WU (in_progress to ready)                   |

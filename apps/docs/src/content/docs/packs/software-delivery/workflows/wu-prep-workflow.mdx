@@ -118,6 +118,29 @@ pnpm wu:prep --id WU-123
 cd /path/to/main && pnpm wu:done --id WU-123
 ```
 
+## Escalation Resolution
+
+If a WU has `escalation_triggers` (e.g., `sensitive_data`, `security_p0`), `wu:done` blocks until the escalation is resolved. Use `wu:escalate` to check status or resolve:
+
+```bash
+# Check escalation status
+pnpm wu:escalate --id WU-123
+
+# Resolve escalation (uses git user.email)
+pnpm wu:escalate --resolve --id WU-123
+
+# Resolve with a specific approver email
+pnpm wu:escalate --resolve --id WU-123 --resolver admin@example.com
+```
+
+| Flag         | Description                                      |
+| ------------ | ------------------------------------------------ |
+| `--id`       | WU ID (required)                                 |
+| `--resolve`  | Resolve the escalation                           |
+| `--resolver` | Override resolver email (defaults to git config)  |
+
+After resolving, `wu:done` will succeed for escalation-triggered WUs.
+
 ## FAQ
 
 ### Can I skip wu:prep?

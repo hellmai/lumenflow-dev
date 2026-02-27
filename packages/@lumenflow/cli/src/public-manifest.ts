@@ -176,6 +176,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     description: 'Analyze and fix WU state inconsistencies',
     category: COMMAND_CATEGORIES.WU_LIFECYCLE,
   },
+  {
+    name: 'wu:escalate',
+    binName: 'wu-escalate',
+    binPath: './dist/wu-escalate.js',
+    description: 'Show or resolve WU escalation status',
+    category: COMMAND_CATEGORIES.WU_LIFECYCLE,
+  },
 
   // ============================================================================
   // WU Maintenance - Less frequently used WU commands

@@ -73,6 +73,7 @@ export const LOG_PREFIX = {
   PLAN_LINK: '[plan:link]',
   PLAN_EDIT: '[plan:edit]',
   PLAN_PROMOTE: '[plan:promote]',
+  ESCALATE: '[wu:escalate]',
 };
 
 /**

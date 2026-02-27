@@ -87,6 +87,7 @@ pnpm wu:infer-lane --paths "packages/@lumenflow/cli/src/init.ts" --desc "Fix ini
 | `pnpm wu:done`            | Complete WU (merge, stamp, cleanup)                 |
 | `pnpm wu:status`          | Show WU status, location, valid commands            |
 | `pnpm wu:recover`         | Analyze and fix WU state inconsistencies            |
+| `pnpm wu:escalate`        | Show or resolve WU escalation status                |
 | `pnpm gates`              | Run quality gates                                   |
 | `pnpm lumenflow:commands` | List all public commands (primary + alias + legacy) |
 | `pnpm docs:generate`      | Regenerate CLI/config reference docs from source    |

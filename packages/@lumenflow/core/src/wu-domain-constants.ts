@@ -62,6 +62,7 @@ export const COMMIT_FORMATS = {
     `chore(${id.toLowerCase()}): remove rebased completion artifacts`,
   BACKLOG_REPAIR: (id: string) =>
     `chore(repair): repair backlog duplicates for ${id.toLowerCase()}`,
+  ESCALATE: (id: string) => `wu(${id.toLowerCase()}): resolve escalation`,
 };
 
 /**

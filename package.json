@@ -30,6 +30,7 @@
     "wu:prep": "node tools/cli-entry.mjs wu-prep",
     "wu:create": "node packages/@lumenflow/cli/dist/wu-create.js",
     "wu:edit": "node tools/cli-entry.mjs wu-edit",
+    "wu:escalate": "node tools/cli-entry.mjs wu-escalate",
     "wu:block": "node packages/@lumenflow/cli/dist/wu-block.js",
     "wu:unblock": "node packages/@lumenflow/cli/dist/wu-unblock.js",
     "wu:release": "node packages/@lumenflow/cli/dist/wu-release.js",

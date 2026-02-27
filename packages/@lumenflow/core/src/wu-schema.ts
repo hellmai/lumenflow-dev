@@ -871,8 +871,7 @@ export function validateApprovalGates(wu: WUEscalationInput): {
     if (!resolved) {
       errors.push(
         `Human escalation required for: ${triggers.join(', ')}\n` +
-          `   To resolve: Add escalation_resolved_by: "${getEscalationEmail()}" and escalation_resolved_at to WU YAML\n` +
-          `   Or use: pnpm wu:escalate --resolve --id ${wu.id}`,
+          `   To resolve: pnpm wu:escalate --resolve --id ${wu.id}`,
       );
     }
   }
