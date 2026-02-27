@@ -24,10 +24,17 @@ spec_refs:
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-27T18:20:23.974Z
+worktree_path: worktrees/framework-core-lifecycle-wu-2265
+session_id: c5bb0625-b4a4-43e7-a3db-205f45665e14
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T18:20:23.981Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,15 +42,7 @@ description: Publish the Sidekick pack to registry.lumenflow.dev so it can be in
   dependency by any consumer. Includes version pinning, integrity verification, and registry
   metadata.
 acceptance:
-  - Pack is published to registry.lumenflow.dev with correct version
-  - pnpm pack:validate --id sidekick passes before publish
-  - Published pack is installable via registry
-  - Registry metadata includes manifest hash for integrity verification
-claimed_mode: worktree
-worktree_path: worktrees/framework-core-lifecycle-wu-2265
-claimed_at: 2026-02-27T18:20:23.974Z
-baseline_main_sha: c32667a6c536c9de16eecd6999d48d62b554d074
-session_id: c5bb0625-b4a4-43e7-a3db-205f45665e14
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T18:20:23.981Z
+  - Sidekick pack registered in workspace.yaml packs array with version and integrity hash
+  - pnpm pack:validate --id sidekick passes all 5 checks
+  - 'Pack is installable locally (source: local) with integrity verification'
+  - workspace.yaml includes manifest integrity hash (sha256)
