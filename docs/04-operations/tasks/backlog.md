@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2254 — macOS sandbox read confinement and deny overlays](wu/WU-2254.yaml) — Framework: Core Lifecycle
 - [WU-2253 — macOS sandbox posture-aware network rules](wu/WU-2253.yaml) — Framework: Core Lifecycle
 - [WU-2252 — Network allowlist enforcement in bwrap](wu/WU-2252.yaml) — Framework: Core Lifecycle
 - [WU-2251 — Network allowlist schema and scope intersection](wu/WU-2251.yaml) — Framework: Core Lifecycle
