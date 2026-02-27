@@ -2424,3 +2424,4 @@
 {"type":"release","wuId":"WU-2247","timestamp":"2026-02-27T14:38:17.345Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2247","timestamp":"2026-02-27T14:42:43.234Z","lane":"Framework: Core Lifecycle","title":"worktree_path stores absolute home paths in version-controlled YAML"}
 {"type":"release","wuId":"WU-2239","timestamp":"2026-02-27T14:51:54.010Z","reason":"Reset via wu:recover --action reset"}
+{"type":"release","wuId":"WU-2247","timestamp":"2026-02-27T14:52:14.752Z","reason":"Reset via wu:recover --action reset"}
