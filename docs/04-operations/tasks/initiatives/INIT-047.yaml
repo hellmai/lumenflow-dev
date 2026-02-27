@@ -2,7 +2,7 @@ id: INIT-047
 slug: agent-cli-friction
 title: 'Agent CLI Friction: Safer defaults, recovery paths, and discoverability'
 description: ''
-status: done
+status: in_progress
 priority: P2
 owner: tom@hellm.ai
 created: 2026-02-27

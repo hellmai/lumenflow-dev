@@ -2465,3 +2465,4 @@
 {"type":"claim","wuId":"WU-2259","timestamp":"2026-02-27T16:22:42.297Z","lane":"Framework: CLI Enforcement","title":"wu:claim push-only path leaves local-main metadata drift"}
 {"type":"claim","wuId":"WU-2260","timestamp":"2026-02-27T16:32:19.422Z","lane":"Framework: CLI WU Commands","title":"INIT-047 review follow-ups: silent catch, loose type, redundant error"}
 {"type":"checkpoint","wuId":"WU-2260","timestamp":"2026-02-27T16:32:38.678Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"complete","wuId":"WU-2260","timestamp":"2026-02-27T16:37:38.582Z"}
