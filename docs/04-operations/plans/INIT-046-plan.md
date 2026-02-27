@@ -42,18 +42,98 @@ Required contract shape:
 
 ## Approach
 
-Execution approach:
+Execution proceeds in strict phase order with early contract validation and incremental test expansion.
 
-1. Phase 1 foundation first: WU-2231, WU-2232, WU-2233, WU-2234.
-2. Phase 2 surfaces next: WU-2235 and WU-2236 (parallel when capacity allows).
-3. Phase 3 validation last: WU-2237.
+Detailed sequence:
 
-Implementation method:
+1. Contract-first baseline:
 
-- TDD per WU with manifest/storage/tool tests authored before final implementation.
-- Keep manifest, descriptor metadata, and tool implementations aligned at each step.
-- Run pack and gate validation frequently to catch scope/schema drift early.
-- Use worktree lifecycle for code WUs and tooling lifecycle commands for plan/initiative metadata updates.
+- Establish Sidekick package layout under packages/@lumenflow/packs/sidekick.
+- Define manifest and manifest schema/parser wiring before full tool implementation.
+- Run pack validation early to catch schema/scope defects before deeper coding.
+
+2. Storage foundation:
+
+- Implement StoragePort abstraction with minimal durable interface.
+- Implement filesystem-backed default adapter with lock/atomic write behavior.
+- Validate concurrency behavior in unit tests before wiring full write-heavy tools.
+
+3. Tool-group delivery waves:
+
+- Wave A: task + memory groups.
+- Wave B: channel + routine + system groups.
+- Each wave includes descriptor metadata, implementation behavior, and unit tests in the same WU.
+
+4. Surface + contract integration:
+
+- Add consumer abstraction package interfaces once core pack behavior is stable.
+- Add runtime HTTP dispatch endpoint with explicit enforcement compatibility checks.
+
+5. Initiative closure:
+
+- Consolidate test coverage, pack validation, and smoke path.
+- Capture publish-readiness evidence and gates output for WU-2237.
+
+Architecture baseline to maintain across waves:
+
+Planned package layout:
+
+- packages/@lumenflow/packs/sidekick/manifest.yaml
+- packages/@lumenflow/packs/sidekick/constants.ts
+- packages/@lumenflow/packs/sidekick/index.ts
+- packages/@lumenflow/packs/sidekick/manifest.ts
+- packages/@lumenflow/packs/sidekick/manifest-schema.ts
+- packages/@lumenflow/packs/sidekick/pack-registration.ts
+- packages/@lumenflow/packs/sidekick/tools/\*
+- packages/@lumenflow/packs/sidekick/tool-impl/\*
+- packages/@lumenflow/packs/sidekick/**tests**/\*
+
+Target tool groups and count:
+
+- Task: 4 tools.
+- Memory: 3 tools.
+- Channel: 3 tools.
+- Routine: 3 tools.
+- System: 3 tools.
+- Total: 16 tools.
+
+Workspace-local data model baseline:
+
+- .sidekick/tasks/tasks.json
+- .sidekick/memory/memory.json
+- .sidekick/channels/channels.json
+- .sidekick/channels/outbox.json
+- .sidekick/routines/routines.json
+- .sidekick/audit/events.jsonl
+
+Implementation discipline:
+
+- TDD-first for each WU.
+- Keep descriptor metadata, manifest declarations, and implementation behavior synchronized.
+- Run plan/initiative updates through LumenFlow CLI lifecycle commands.
+- Use worktree lifecycle commands for code WUs and keep main clean.
+
+Validation cadence:
+
+- After WU-2231: manifest-focused unit tests + pack:validate.
+- After WU-2232: storage tests (including contention scenarios).
+- After WU-2233/2234: tool-group tests + manifest resolution tests.
+- After WU-2235/2236: contract and runtime integration tests.
+- Before WU-2237 completion: full gates + smoke flow evidence.
+
+Smoke flow sequence target:
+
+1. sidekick:init
+2. task:create
+3. task:list
+4. memory:store
+5. memory:recall
+6. channel:configure
+7. channel:send
+8. routine:create
+9. routine:run
+10. sidekick:status
+11. sidekick:export
 
 ## Success Criteria
 
