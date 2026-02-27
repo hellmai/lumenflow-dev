@@ -20,7 +20,7 @@ initiative: INIT-048
 phase: 1
 blocked_by:
   - WU-2251
-plan: docs/04-operations/plans/INIT-048-plan.md
+plan: docs/04-operations/plans/INIT-048-kernel-hardening-network-polic.md
 spec_refs:
   - .claude/plans/groovy-percolating-galaxy.md
 risks: []
