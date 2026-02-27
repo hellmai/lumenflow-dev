@@ -42,37 +42,39 @@ Required contract shape:
 
 ## Approach
 
-Execution proceeds in strict phase order with early contract validation and incremental test expansion.
+Execution proceeds in strict dependency order with early contract validation and incremental test expansion. WU-2236 (HTTP surface) runs in parallel with the pack WUs since it is a generic kernel feature.
 
 Detailed sequence:
 
-1. Contract-first baseline:
+1. Contract-first baseline (WU-2231):
 
 - Establish Sidekick package layout under packages/@lumenflow/packs/sidekick.
 - Define manifest and manifest schema/parser wiring before full tool implementation.
+- Add .sidekick/ to .gitignore.
 - Run pack validation early to catch schema/scope defects before deeper coding.
 
-2. Storage foundation:
+2. Storage foundation (WU-2232, depends on WU-2231):
 
 - Implement StoragePort abstraction with minimal durable interface.
 - Implement filesystem-backed default adapter with lock/atomic write behavior.
 - Validate concurrency behavior in unit tests before wiring full write-heavy tools.
 
-3. Tool-group delivery waves:
+3. Tool-group delivery waves (depend on WU-2232):
 
-- Wave A: task + memory groups.
-- Wave B: channel + routine + system groups.
+- Wave A (WU-2233): task + memory groups.
+- Wave B (WU-2234): channel + routine + system groups.
+- Waves A and B can run in parallel once WU-2232 is done.
 - Each wave includes descriptor metadata, implementation behavior, and unit tests in the same WU.
 
-4. Surface + contract integration:
+4. Runtime HTTP surface (WU-2236, parallel with pack WUs):
 
-- Add consumer abstraction package interfaces once core pack behavior is stable.
 - Add runtime HTTP dispatch endpoint with explicit enforcement compatibility checks.
+- Generic kernel feature, benefits all packs. No dependency on Sidekick pack WUs.
 
-5. Initiative closure:
+5. Initiative closure (WU-2237, depends on WU-2233 + WU-2234 + WU-2236):
 
 - Consolidate test coverage, pack validation, and smoke path.
-- Capture publish-readiness evidence and gates output for WU-2237.
+- Capture publish-readiness evidence and gates output.
 
 Architecture baseline to maintain across waves:
 
@@ -118,7 +120,7 @@ Validation cadence:
 - After WU-2231: manifest-focused unit tests + pack:validate.
 - After WU-2232: storage tests (including contention scenarios).
 - After WU-2233/2234: tool-group tests + manifest resolution tests.
-- After WU-2235/2236: contract and runtime integration tests.
+- After WU-2236: runtime integration tests.
 - Before WU-2237 completion: full gates + smoke flow evidence.
 
 Smoke flow sequence target:
