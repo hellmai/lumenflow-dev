@@ -1,0 +1,14 @@
+id: INIT-047
+slug: agent-cli-friction
+title: 'Agent CLI Friction: Safer defaults, recovery paths, and discoverability'
+description: ''
+status: draft
+priority: P2
+owner: tom@hellm.ai
+created: 2026-02-27
+phases: []
+success_metrics:
+  - Zero manual JSONL edits needed for state recovery
+  - All destructive actions require --force flag
+  - Agent can complete full WU lifecycle without human intervention on recovery
+labels: []
