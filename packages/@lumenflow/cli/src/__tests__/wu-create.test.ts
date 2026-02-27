@@ -90,7 +90,7 @@ describe('wu:create helpers (WU-1429)', () => {
     expect(wu.notes).toBe('Implementation notes for test');
   });
 
-  it('auto-injects manual test intent for non-code plan-first scopes', () => {
+  it('rejects non-doc feature WU without manual tests even for non-code paths (WU-2263)', () => {
     const validation = validateCreateSpec({
       id: 'WU-2000',
       lane: 'Framework: CLI',
@@ -102,7 +102,7 @@ describe('wu:create helpers (WU-1429)', () => {
           'Context: test context.\nProblem: test problem.\nSolution: test solution that exceeds minimum.',
         acceptance: ['Acceptance criterion'],
         exposure: 'backend-only',
-        // Non-code file path: manual-only tests are acceptable.
+        // Non-code file path — still requires manual tests per WU-2263 alignment
         codePaths: ['docs/README.md'],
         // No testPathsManual/unit/e2e provided.
         specRefs: ['lumenflow://plans/WU-2000-plan.md'],
@@ -110,8 +110,8 @@ describe('wu:create helpers (WU-1429)', () => {
       },
     });
 
-    expect(validation.valid).toBe(true);
-    expect(validation.errors).toEqual([]);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.some((e) => e.includes('tests.manual'))).toBe(true);
   });
 
   it('should warn when initiative has phases but no --phase is provided', () => {

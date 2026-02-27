@@ -94,7 +94,7 @@ describe('wu:create required field aggregation (WU-1366)', () => {
       expect(result.errors.some((e) => e.includes('--spec-refs'))).toBe(true);
     });
 
-    it('accepts automated-only test intent for non-documentation WUs', () => {
+    it('rejects automated-only test intent for non-documentation WUs (WU-2263)', () => {
       const result = validateCreateSpec({
         id: TEST_WU_ID,
         lane: TEST_LANE,
@@ -106,14 +106,15 @@ describe('wu:create required field aggregation (WU-1366)', () => {
           acceptance: TEST_ACCEPTANCE,
           exposure: 'backend-only',
           codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
-          // unit test provided, but no manual test
+          // unit test provided, but no manual test — must be rejected per WU-2263
           testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create.test.ts'],
           specRefs: ['docs/04-operations/tasks/initiatives/INIT-017.yaml'],
           strict: false,
         },
       });
 
-      expect(result.valid).toBe(true);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('tests.manual'))).toBe(true);
     });
 
     it('accepts manual-only test intent for metadata/non-code scope', () => {

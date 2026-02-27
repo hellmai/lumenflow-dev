@@ -18,7 +18,7 @@ import { validateSpecCompleteness } from '@lumenflow/core/wu-done-validators';
 import { validateWURulesSync } from '@lumenflow/core/wu-rules-engine';
 import { validateNoPlaceholders, buildPlaceholderErrorMessage } from '@lumenflow/core/wu-validator';
 import { isCodeFile } from '@lumenflow/core/manual-test-validator';
-import { isDocsOrProcessType } from '@lumenflow/core/wu-type-helpers';
+import { isDocsOrProcessType, hasManualTests } from '@lumenflow/core/wu-type-helpers';
 import { buildWUContent } from './wu-create-content.js';
 
 /** Log prefix for console output */
@@ -123,6 +123,22 @@ export function validateCreateSpec({
     const codePaths = opts.codePaths ?? [];
     if (codePaths.length === 0) {
       errors.push('--code-paths is required for non-documentation WUs');
+    }
+  }
+
+  // WU-2263: Enforce tests.manual for non-doc/process WUs at create time
+  // (aligns with wu:claim's validateManualTestsForClaim, WU-1508)
+  if (!isDocsOrProcessType(effectiveType)) {
+    const tests = {
+      manual: opts.testPathsManual,
+      unit: opts.testPathsUnit,
+      e2e: opts.testPathsE2e,
+    };
+    if (!hasManualTests(tests)) {
+      errors.push(
+        '--test-paths-manual is required for non-documentation WUs.\n' +
+          '    Add at least one manual verification step under tests.manual.',
+      );
     }
   }
 
