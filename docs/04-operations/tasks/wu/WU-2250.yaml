@@ -1,0 +1,34 @@
+id: WU-2250
+title: Prevent absolute path writes in claim metadata and plan linking
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim-state.ts
+  - packages/@lumenflow/cli/src/plan-link.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/src/__tests__/plan-link.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2250.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: YAML metadata can still get absolute paths in two places. Problem: applyCanonicalClaimUpdate resolves worktree_path to absolute before writing, and plan:link accepts arbitrary --plan values that can be absolute local paths. Solution: normalize claim-time worktree_path to repo-relative and enforce lumenflow://plans/ URI validation before writing plan/related_plan fields.'
+acceptance:
+  - Canonical claim metadata never writes absolute worktree_path to WU YAML.
+  - plan:link rejects non-lumenflow://plans/ URIs and path-traversal/absolute path attempts.
+  - Existing plan:link and wu:claim behaviors remain green via updated unit tests.
