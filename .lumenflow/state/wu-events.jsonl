@@ -2410,3 +2410,4 @@
 {"type":"claim","wuId":"WU-2230","timestamp":"2026-02-27T13:54:55.841Z","lane":"Framework: CLI WU Commands","title":"Fix new-user friction: init self-install, template formatting, pack-install default"}
 {"type":"complete","wuId":"WU-2230","timestamp":"2026-02-27T13:55:16.214Z"}
 {"type":"claim","wuId":"WU-2238","timestamp":"2026-02-27T14:08:25.438Z","lane":"Framework: Core State Recovery","title":"wu:recover --action reset should require --force for destructive ops"}
+{"type":"claim","wuId":"WU-2239","timestamp":"2026-02-27T14:08:42.768Z","lane":"Framework: CLI WU Commands","title":"wu:edit --spec-file silently overwrites runtime fields"}

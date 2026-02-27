@@ -55,7 +55,6 @@ sections:
 - [WU-2235 — Define Sidekick consumer abstraction contract package](wu/WU-2235.yaml) — Framework: Core Lifecycle
 - [WU-2236 — Add generic HTTP runtime dispatch endpoint POST /tools/:name](wu/WU-2236.yaml) — Operations: Runtime
 - [WU-2237 — Sidekick validation, gates, smoke flow, and publish readiness](wu/WU-2237.yaml) — Framework: Core Validation
-- [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml) — Framework: CLI WU Commands
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml) — Framework: Core State Recovery
 - [WU-2241 — Add state:emit command for manual corrective events](wu/WU-2241.yaml) — Framework: Core State Recovery
 - [WU-2242 — initiative:create requires explicit --id despite documenting auto-gen](wu/WU-2242.yaml) — Framework: Initiatives
@@ -69,6 +68,7 @@ sections:
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml) — Framework: Core Lifecycle
 - [WU-2238 — wu:recover --action reset should require --force for destructive ops](wu/WU-2238.yaml) — Framework: Core State Recovery
+- [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
