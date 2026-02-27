@@ -35,6 +35,7 @@ import {
   resolveDefaultClaimSandboxCommand,
   resolveClaimSandboxCommand,
   maybeLaunchClaimSandboxSession,
+  toRelativeWorktreePathForStorage,
 } from '../wu-claim.js';
 import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
 import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
@@ -137,6 +138,26 @@ describe('wu-claim cloud branch execution resolution (WU-1596)', () => {
 
     expect(result.executionBranch).toBe('lane/framework-cli-wu-commands/wu-1596');
     expect(result.shouldCreateBranch).toBe(true);
+  });
+});
+
+describe('WU-2247: claim worktree_path storage normalization', () => {
+  it('converts absolute worktree path to repo-relative path for YAML storage', () => {
+    const value = toRelativeWorktreePathForStorage(
+      '/home/USER/source/hellmai/lumenflow-dev/worktrees/framework-core-lifecycle-wu-2247',
+      '/home/USER/source/hellmai/lumenflow-dev',
+    );
+
+    expect(value).toBe('worktrees/framework-core-lifecycle-wu-2247');
+  });
+
+  it('keeps already-relative paths unchanged (normalized separators)', () => {
+    const value = toRelativeWorktreePathForStorage(
+      'worktrees\\framework-core-lifecycle-wu-2247',
+      '/home/USER/source/hellmai/lumenflow-dev',
+    );
+
+    expect(value).toBe('worktrees/framework-core-lifecycle-wu-2247');
   });
 });
 

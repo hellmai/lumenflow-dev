@@ -59,7 +59,15 @@ import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
 import { die, getErrorMessage, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
-import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSync } from 'node:fs';
+import {
+  existsSync,
+  readFileSync,
+  mkdirSync,
+  appendFileSync,
+  unlinkSync,
+  statSync,
+  readdirSync,
+} from 'node:fs';
 import path from 'node:path';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
 import { validateWUCodePaths } from '@lumenflow/core/code-path-validator';
@@ -189,6 +197,7 @@ import {
 } from './wu-done-git-ops.js';
 import { flushWuLifecycleSync } from './wu-lifecycle-sync/service.js';
 import { WU_LIFECYCLE_COMMANDS } from './wu-lifecycle-sync/constants.js';
+import { shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
 
 export {
   buildGatesCommand,
@@ -316,6 +325,129 @@ interface WUDocLike extends Record<string, unknown> {
   code_paths?: string[];
   notes?: string | string[];
   assigned_to?: string | null;
+  worktree_path?: string;
+}
+
+interface WorktreePathSanitizeResult {
+  changed: boolean;
+  action: 'none' | 'removed' | 'relativized';
+}
+
+export interface WorktreePathMigrationResult {
+  filesScanned: number;
+  filesUpdated: number;
+  removedFromDone: number;
+  relativizedActive: number;
+}
+
+interface SanitizeWorktreePathMetadataOptions {
+  projectRoot?: string;
+  wuDirRelativePath?: string;
+  repoRootForRelativize?: string;
+}
+
+const WU_FILE_NAME_PATTERN = /^WU-\d+\.ya?ml$/;
+
+function normalizeRepoRelativePathForYaml(rawPath: string): string {
+  return rawPath.replaceAll('\\', '/').replace(/^\.\/+/, '');
+}
+
+function toRepoRelativePathForYaml(worktreePath: string, repoRoot: string): string {
+  const candidate = path.isAbsolute(worktreePath)
+    ? path.relative(repoRoot, worktreePath)
+    : worktreePath;
+  const normalized = normalizeRepoRelativePathForYaml(candidate);
+  return normalized.length > 0 ? normalized : '.';
+}
+
+/**
+ * WU-2247: sanitize a single WU document's worktree_path metadata.
+ *
+ * - done WUs: strip worktree_path entirely
+ * - active WUs: relativize absolute worktree_path for portability/privacy
+ */
+export function sanitizeWUDocWorktreePath(
+  doc: WUDocLike,
+  repoRootForRelativize: string = process.cwd(),
+): WorktreePathSanitizeResult {
+  const currentPath = typeof doc.worktree_path === 'string' ? doc.worktree_path.trim() : '';
+  if (!currentPath) {
+    return { changed: false, action: 'none' };
+  }
+
+  if (doc.status === WU_STATUS.DONE) {
+    delete doc.worktree_path;
+    return { changed: true, action: 'removed' };
+  }
+
+  if (path.isAbsolute(currentPath)) {
+    doc.worktree_path = toRepoRelativePathForYaml(currentPath, repoRootForRelativize);
+    return { changed: doc.worktree_path !== currentPath, action: 'relativized' };
+  }
+
+  const normalizedRelative = normalizeRepoRelativePathForYaml(currentPath);
+  if (normalizedRelative !== currentPath) {
+    doc.worktree_path = normalizedRelative;
+    return { changed: true, action: 'relativized' };
+  }
+
+  return { changed: false, action: 'none' };
+}
+
+/**
+ * WU-2247: batch-sanitize tracked WU YAML metadata in repo.
+ */
+export function sanitizeWorktreePathMetadataInRepo(
+  options: SanitizeWorktreePathMetadataOptions = {},
+): WorktreePathMigrationResult {
+  const projectRoot = options.projectRoot || process.cwd();
+  const wuDirRelativePath = options.wuDirRelativePath || WU_PATHS.WU_DIR();
+  const repoRootForRelativize = options.repoRootForRelativize || projectRoot;
+  const wuDirAbsolutePath = path.resolve(projectRoot, wuDirRelativePath);
+
+  if (!existsSync(wuDirAbsolutePath)) {
+    return {
+      filesScanned: 0,
+      filesUpdated: 0,
+      removedFromDone: 0,
+      relativizedActive: 0,
+    };
+  }
+
+  const result: WorktreePathMigrationResult = {
+    filesScanned: 0,
+    filesUpdated: 0,
+    removedFromDone: 0,
+    relativizedActive: 0,
+  };
+
+  for (const entry of readdirSync(wuDirAbsolutePath, { withFileTypes: true })) {
+    if (!entry.isFile() || !WU_FILE_NAME_PATTERN.test(entry.name)) {
+      continue;
+    }
+
+    result.filesScanned += 1;
+    const wuPath = path.join(wuDirAbsolutePath, entry.name);
+    const raw = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+    const parsed = parseYAML(raw);
+    const doc = normalizeWUDocLike(parsed);
+    const sanitizeResult = sanitizeWUDocWorktreePath(doc, repoRootForRelativize);
+
+    if (!sanitizeResult.changed) {
+      continue;
+    }
+
+    writeWU(wuPath, doc);
+    result.filesUpdated += 1;
+    if (sanitizeResult.action === 'removed') {
+      result.removedFromDone += 1;
+    }
+    if (sanitizeResult.action === 'relativized') {
+      result.relativizedActive += 1;
+    }
+  }
+
+  return result;
 }
 
 function normalizeWUDocLike(doc: unknown): WUDocLike {
@@ -2575,6 +2707,28 @@ export async function main() {
     }
   } else {
     await ensureNoAutoStagedOrNoop([WU_PATH, STATUS_PATH, BACKLOG_PATH, STAMPS_DIR]);
+  }
+
+  // WU-2247: strip worktree_path from done WUs and relativize absolute active paths.
+  // Commit and push this metadata migration atomically when mutations are present.
+  const worktreePathMigration = sanitizeWorktreePathMetadataInRepo({
+    projectRoot: mainCheckoutPath,
+    repoRootForRelativize: mainCheckoutPath,
+  });
+  if (worktreePathMigration.filesUpdated > 0) {
+    const gitMain = createGitForPath(mainCheckoutPath);
+    await gitMain.add(WU_PATHS.WU_DIR());
+    await gitMain.commit(`chore(wu): sanitize worktree_path metadata [${id.toLowerCase()}]`);
+    if (!shouldSkipRemoteOperations()) {
+      await gitMain.push();
+    } else {
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Local-only mode: skipping push for worktree_path migration commit`,
+      );
+    }
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-2247 sanitized worktree_path metadata (${worktreePathMigration.filesUpdated} files; removed=${worktreePathMigration.removedFromDone}, relativized=${worktreePathMigration.relativizedActive})`,
+    );
   }
 
   // Step 6 & 7: Cleanup (remove worktree, delete branch) - WU-1215

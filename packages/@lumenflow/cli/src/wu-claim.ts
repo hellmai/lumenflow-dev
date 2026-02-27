@@ -151,6 +151,27 @@ interface ResolveClaimCloudActivationInput {
   currentBranch: string;
 }
 
+function normalizePathForYamlStorage(rawPath: string): string {
+  return rawPath.replaceAll('\\', '/').replace(/^\.\/+/, '');
+}
+
+/**
+ * WU-2247: Store worktree_path as repo-relative path in version-controlled YAML.
+ *
+ * Converts absolute user-home paths (e.g. <home>/.../worktrees/lane-wu-1234) to
+ * repo-relative paths (e.g. worktrees/lane-wu-1234) for portability and privacy.
+ */
+export function toRelativeWorktreePathForStorage(
+  worktreePath: string,
+  repoRoot: string = process.cwd(),
+): string {
+  const trimmed = worktreePath.trim();
+  if (!trimmed) return trimmed;
+  const candidate = path.isAbsolute(trimmed) ? path.relative(repoRoot, trimmed) : trimmed;
+  const normalized = normalizePathForYamlStorage(candidate);
+  return normalized.length > 0 ? normalized : '.';
+}
+
 /**
  * Resolve branch-aware cloud activation for wu:claim.
  *
@@ -418,7 +439,8 @@ export async function main() {
     const title = (await readWUTitle(id)) || '';
     const branch = args.branch || `lane/${laneK}/${idK}`;
     const configuredWorktreesDir = getConfig({ projectRoot: process.cwd() }).directories.worktrees;
-    const worktree = args.worktree || path.join(configuredWorktreesDir, `${laneK}-${idK}`);
+    const requestedWorktree = args.worktree || path.join(configuredWorktreesDir, `${laneK}-${idK}`);
+    const worktree = toRelativeWorktreePathForStorage(requestedWorktree, process.cwd());
     const currentBranch = preflightBranch;
     const cloudEffective = preflightCloudEffective;
     const effectiveCloud = cloudEffective.isCloud;

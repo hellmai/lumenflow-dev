@@ -3,6 +3,9 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFile } from 'node:fs/promises';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { ensureCleanWorktree } from '../wu-done-check.js';
 import {
   CHECKPOINT_GATE_MODES,
@@ -10,6 +13,8 @@ import {
   enforceCheckpointGateForDone,
   getYamlStatusForDisplay,
   resolveCheckpointGateMode,
+  sanitizeWUDocWorktreePath,
+  sanitizeWorktreePathMetadataInRepo,
 } from '../wu-done.js';
 import {
   buildMissingWuBriefEvidenceMessage,
@@ -37,6 +42,104 @@ vi.mock('@lumenflow/core/git-adapter');
 vi.mock('@lumenflow/core/error-handler');
 
 describe('wu-done', () => {
+  describe('WU-2247: worktree_path metadata sanitation', () => {
+    it('strips worktree_path for done WUs', () => {
+      const doc = {
+        id: 'WU-2247',
+        status: 'done',
+        worktree_path: 'worktrees/framework-core-lifecycle-wu-2247',
+      };
+
+      const result = sanitizeWUDocWorktreePath(doc, '/repo');
+
+      expect(result.changed).toBe(true);
+      expect(result.action).toBe('removed');
+      expect(doc.worktree_path).toBeUndefined();
+    });
+
+    it('relativizes absolute worktree_path for non-done WUs', () => {
+      const doc = {
+        id: 'WU-2247',
+        status: 'in_progress',
+        worktree_path: '/repo/worktrees/framework-core-lifecycle-wu-2247',
+      };
+
+      const result = sanitizeWUDocWorktreePath(doc, '/repo');
+
+      expect(result.changed).toBe(true);
+      expect(result.action).toBe('relativized');
+      expect(doc.worktree_path).toBe('worktrees/framework-core-lifecycle-wu-2247');
+    });
+
+    it('batch migration removes done worktree_path and relativizes active absolute paths', () => {
+      const root = mkdtempSync(path.join(tmpdir(), 'wu-2247-sanitize-'));
+      const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
+      mkdirSync(wuDir, { recursive: true });
+
+      try {
+        writeFileSync(
+          path.join(wuDir, 'WU-1.yaml'),
+          `id: WU-1
+title: Test done WU
+lane: 'Framework: Core Lifecycle'
+created: 2026-02-27
+description: Test fixture used to verify WU-2247 done-path migration behavior.
+acceptance:
+  - Remove worktree_path from done WUs
+status: done
+worktree_path: /repo/worktrees/framework-core-lifecycle-wu-1
+`,
+          'utf-8',
+        );
+        writeFileSync(
+          path.join(wuDir, 'WU-2.yaml'),
+          `id: WU-2
+title: Test active WU
+lane: 'Framework: Core Lifecycle'
+created: 2026-02-27
+description: Test fixture used to verify WU-2247 active-path relativization behavior.
+acceptance:
+  - Relativize absolute worktree_path for active WUs
+status: in_progress
+worktree_path: /repo/worktrees/framework-core-lifecycle-wu-2
+`,
+          'utf-8',
+        );
+        writeFileSync(
+          path.join(wuDir, 'WU-3.yaml'),
+          `id: WU-3
+title: Test done WU no worktree path
+lane: 'Framework: Core Lifecycle'
+created: 2026-02-27
+description: Test fixture used to verify unchanged done WU migration behavior.
+acceptance:
+  - Leave unchanged done WUs untouched
+status: done
+`,
+          'utf-8',
+        );
+
+        const result = sanitizeWorktreePathMetadataInRepo({
+          projectRoot: root,
+          wuDirRelativePath: 'docs/04-operations/tasks/wu',
+          repoRootForRelativize: '/repo',
+        });
+
+        expect(result.filesScanned).toBe(3);
+        expect(result.filesUpdated).toBe(2);
+        expect(result.removedFromDone).toBe(1);
+        expect(result.relativizedActive).toBe(1);
+
+        const doneYaml = readFileSync(path.join(wuDir, 'WU-1.yaml'), 'utf-8');
+        const activeYaml = readFileSync(path.join(wuDir, 'WU-2.yaml'), 'utf-8');
+        expect(doneYaml).not.toContain('worktree_path:');
+        expect(activeYaml).toContain('worktree_path: worktrees/framework-core-lifecycle-wu-2');
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    });
+  });
+
   describe('WU-1630: post-merge dirty-main remediation removal', () => {
     it('does not retain post-merge dirty-state cleanup flow in main execution path', async () => {
       const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
