@@ -6,7 +6,6 @@ _Last updated: 2026-02-27_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
-- [WU-2234 — Implement Sidekick channel, routine, and system tool groups](wu/WU-2234.yaml)
 
 ## Completed
 
@@ -1156,3 +1155,4 @@ _Last updated: 2026-02-27_
 - [WU-2251 — Network allowlist schema and scope intersection](wu/WU-2251.yaml) — 2026-02-27
 - [WU-2233 — Implement Sidekick task and memory tool groups](wu/WU-2233.yaml) — 2026-02-27
 - [WU-2252 — Network allowlist enforcement in bwrap](wu/WU-2252.yaml) — 2026-02-27
+- [WU-2234 — Implement Sidekick channel, routine, and system tool groups](wu/WU-2234.yaml) — 2026-02-27

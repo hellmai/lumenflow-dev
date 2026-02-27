@@ -2,7 +2,7 @@ id: WU-2234
 title: Implement Sidekick channel, routine, and system tool groups
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -47,3 +47,6 @@ session_id: c34c4bc3-d629-4f87-be91-79e1b25679da
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T17:48:21.969Z
+locked: true
+completed_at: 2026-02-27T17:55:01.052Z
+completed: 2026-02-27

@@ -10,7 +10,7 @@ created: 2026-02-27
 phases:
   - id: 1
     title: 'Phase 1: Sidekick pack contract and implementation'
-    status: in_progress
+    status: done
   - id: 2
     title: 'Phase 2: Consumer abstraction contract and runtime surface'
     status: pending
