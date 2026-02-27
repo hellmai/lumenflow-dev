@@ -2442,3 +2442,4 @@
 {"type":"complete","wuId":"WU-2256","timestamp":"2026-02-27T15:26:30.154Z"}
 {"type":"complete","wuId":"WU-2240","timestamp":"2026-02-27T15:27:56.112Z"}
 {"type":"complete","wuId":"WU-2250","timestamp":"2026-02-27T15:30:08.801Z"}
+{"type":"claim","wuId":"WU-2245","timestamp":"2026-02-27T15:32:56.499Z","lane":"Framework: CLI WU Commands","title":"wu:create emits placeholder notes requiring manual cleanup"}

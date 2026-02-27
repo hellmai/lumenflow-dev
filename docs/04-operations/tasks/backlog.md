@@ -57,7 +57,6 @@ sections:
 - [WU-2236 — Add generic HTTP runtime dispatch endpoint POST /tools/:name](wu/WU-2236.yaml) — Operations: Runtime
 - [WU-2237 — Sidekick validation, gates, smoke flow, and publish readiness](wu/WU-2237.yaml) — Framework: Core Validation
 - [WU-2241 — Add state:emit command for manual corrective events](wu/WU-2241.yaml) — Framework: Core State Recovery
-- [WU-2245 — wu:create emits placeholder notes requiring manual cleanup](wu/WU-2245.yaml) — Framework: CLI WU Commands
 - [WU-2246 — initiative:create ignores --description flag](wu/WU-2246.yaml) — Framework: Initiatives
 - [WU-2248 — wu:done --already-merged writes directly to local main bypassing micro-worktree isolation](wu/WU-2248.yaml) — Framework: CLI WU Commands
 - [WU-2249 — wu:recover --action reset deletes worktree without checking for uncommitted work](wu/WU-2249.yaml) — Framework: Core State Recovery
@@ -71,6 +70,7 @@ sections:
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml) — Framework: Core Lifecycle
+- [WU-2245 — wu:create emits placeholder notes requiring manual cleanup](wu/WU-2245.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

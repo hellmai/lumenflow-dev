@@ -2,7 +2,7 @@ id: WU-2245
 title: wu:create emits placeholder notes requiring manual cleanup
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-27
 code_paths:
@@ -33,3 +33,11 @@ description: wu:create sets notes to '(auto) Add implementation notes...' placeh
 acceptance:
   - wu:create without --notes leaves notes field empty or null
   - wu:create --notes 'text' sets notes to provided text
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2245
+claimed_at: 2026-02-27T15:32:56.461Z
+baseline_main_sha: 3cbcbcaa11ed339dc97c44e79a0e1c8277485182
+session_id: 8a509da7-ea1f-4899-93dd-1d4ba2f351a7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T15:32:56.468Z
