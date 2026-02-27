@@ -2,7 +2,7 @@ id: WU-2228
 title: Add command discovery to onboarding and fix wu:escalate doc parity
 lane: 'Content: Framework Docs'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -26,9 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Two issues: (1) pnpm lumenflow:commands is not mentioned anywhere in agent onboarding docs. Agents conclude commands dont exist instead of discovering them. (2) wu:escalate was added to CLAUDE.md and quick-ref-commands.md but NOT to starting-prompt.md, breaking parity.'
+description: 'Two issues: (1) pnpm lumenflow:commands is not mentioned anywhere in agent onboarding
+  docs. Agents conclude commands dont exist instead of discovering them. (2) wu:escalate was added
+  to CLAUDE.md and quick-ref-commands.md but NOT to starting-prompt.md, breaking parity.'
 acceptance:
   - starting-prompt.md includes pnpm lumenflow:commands as mandatory command discovery step
   - starting-prompt.md includes wu:escalate in the WU lifecycle command table
   - quick-ref-commands.md includes pnpm lumenflow:commands prominently at the top
   - All onboarding docs have parity with CLAUDE.md for new commands
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/content-framework-docs-wu-2228
+claimed_at: 2026-02-27T10:37:26.300Z
+baseline_main_sha: 66d6617caaa96fafa110d2d46687cef06a6dd04c
+session_id: b8908169-4666-4197-adf4-4f3fd1315499
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T10:37:26.306Z
