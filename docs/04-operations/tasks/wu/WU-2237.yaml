@@ -6,8 +6,7 @@ status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
-  - packages/@lumenflow/packs/sidekick/__tests__/**
-  - packages/@lumenflow/surfaces/http/__tests__/tool-api.test.ts
+  - packages/@lumenflow/packs/sidekick/README.md
   - CHANGELOG.md
 tests:
   manual:
@@ -31,10 +30,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-27T17:58:16.951Z
+worktree_path: worktrees/framework-core-validation-wu-2237
+session_id: 561c04a5-9e99-4717-806d-2c7641db2482
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T17:58:16.957Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +51,3 @@ acceptance:
   - Targeted sidekick and HTTP surface tests are green
   - Manual smoke flow is documented in pack README/docs
   - Release/changelog artifacts are updated with repo-safe wording
-claimed_mode: worktree
-worktree_path: worktrees/framework-core-validation-wu-2237
-claimed_at: 2026-02-27T17:58:16.951Z
-baseline_main_sha: 0fa4353ed52663d003e21a184a1a5bd7b64b54df
-session_id: 561c04a5-9e99-4717-806d-2c7641db2482
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T17:58:16.957Z
