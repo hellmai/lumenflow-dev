@@ -25,6 +25,6 @@ success_metrics:
   - Granular network allowlisting (domain/port per scope level)
   - macOS sandbox backend (Seatbelt/sandbox-exec) functional
   - Argument-level policy rules for MCP tool calls
-  - Dynamic policy hot-reload without kernel restart
+  - Time-boxed permissions with auto-expiry
   - NIST AI RMF alignment documented
 labels: []
