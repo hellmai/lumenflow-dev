@@ -38,7 +38,13 @@ Implementation method:
 
 ## Success Criteria
 
-<!-- How will you know when this is complete? Measurable outcomes? -->
+INIT-046 is complete when:
+
+1. Sidekick manifest contract defines 16 tools with schemas, permissions, and scopes, and validates cleanly.
+2. Storage abstraction supports pluggable ports with filesystem default and tested locking semantics.
+3. Runtime dispatch endpoint POST /tools/:name is available with enforcement preserved.
+4. Sidekick validation, smoke flow, and publish-readiness checks pass.
+5. WU-2231 through WU-2237 are completed in initiative state and delivery artifacts are present.
 
 ## Risks
 
