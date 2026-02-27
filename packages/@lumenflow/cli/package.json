@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/cli",
-  "version": "3.6.6",
+  "version": "3.6.7",
   "description": "Command-line interface for LumenFlow workflow framework",
   "keywords": [
     "lumenflow",

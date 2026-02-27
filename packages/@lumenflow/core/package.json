@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/core",
-  "version": "3.6.6",
+  "version": "3.6.7",
   "description": "Core WU lifecycle tools for LumenFlow workflow framework",
   "keywords": [
     "lumenflow",
