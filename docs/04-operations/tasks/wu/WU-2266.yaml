@@ -9,6 +9,7 @@ code_paths:
   - apps/docs/src/content/docs/kernel/
   - apps/docs/src/content/docs/reference/
   - apps/docs/src/content/docs/guides/
+  - apps/docs/src/content/docs/kernel/
 tests:
   manual: []
   unit: []
@@ -20,10 +21,17 @@ initiative: INIT-048
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-27T18:34:18.959Z
+worktree_path: worktrees/content-framework-docs-wu-2266
+session_id: 773cb4e6-c10f-478e-8b86-bfc1ca818ece
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T18:34:18.965Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +46,3 @@ acceptance:
   - tool-execution.mdx documents macOS sandbox backend and deny overlays
   - workspace-spec.mdx updated with allowlist_entries schema and allowlist posture
   - create-a-pack.mdx includes network allowlist examples in tool manifests
-claimed_mode: worktree
-worktree_path: worktrees/content-framework-docs-wu-2266
-claimed_at: 2026-02-27T18:34:18.959Z
-baseline_main_sha: 2e530334233aea9094154bfe9436fef701ea0dab
-session_id: 773cb4e6-c10f-478e-8b86-bfc1ca818ece
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T18:34:18.965Z
