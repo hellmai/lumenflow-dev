@@ -186,9 +186,9 @@ INIT-046 is complete when all of the following are true:
 
 ## Open Questions
 
-1. Confirm canonical schema ownership for each tool group file as Phase 1 progresses.
-2. Confirm any additional smoke cases needed beyond task/memory/channel/routine/system happy path.
-3. Confirm expected report format for WU-2237 publish-readiness output artifacts.
+1. Confirm whether any additional schema constraints are required for tool inputs beyond current manifest shape.
+2. Confirm preferred artifact format for WU-2237 publish-readiness evidence bundle.
+3. Confirm whether runtime dispatch metrics should be included in WU-2236 acceptance outputs.
 
 ## References
 
