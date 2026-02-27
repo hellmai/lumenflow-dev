@@ -25,15 +25,26 @@ artifacts:
   - .lumenflow/stamps/WU-2229.done
 dependencies: []
 risks: []
-notes: 'Sizing: ~6 files modified, ~60 tool calls estimated. Medium complexity (checkpoint-resume if
+notes: >-
+  Sizing: ~6 files modified, ~60 tool calls estimated. Medium complexity (checkpoint-resume if
   needed). The validate-backlog-sync validator already detects orphans — just needs wiring into
-  state:doctor. wu:create refactor should follow the pattern used by
-  wu:block/wu:unblock/wu:release.'
+  state:doctor. wu:create refactor should follow the pattern used by wu:block/wu:unblock/wu:release.
+
+
+  Bug 3 (wu:create manual markdown splicing) deferred to follow-up WU — touches 4 callsites across
+  wu-create.ts and wu-proto.ts, requires separate scope.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-27T11:40:06.187Z
+worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2229
+session_id: a4427649-9366-49bd-a5b3-30c8e9ac0890
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T11:40:06.192Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +62,3 @@ acceptance:
   - state:doctor detects orphan backlog references (entries for non-existent WU YAMLs)
   - wu:create uses state store + generateBacklog() instead of manual markdown splicing
   - All existing tests pass, new tests cover orphan detection and wu:create backlog generation
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2229
-claimed_at: 2026-02-27T11:40:06.187Z
-baseline_main_sha: 2b1135beadfa99044e8aa2850af182b608c0071a
-session_id: a4427649-9366-49bd-a5b3-30c8e9ac0890
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T11:40:06.192Z
