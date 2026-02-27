@@ -169,17 +169,20 @@ INIT-046 is complete when all of the following are true:
 
 ## Risks
 
-1. Contract drift between manifest declarations and tool implementation behavior.
-   Mitigation: manifest tests + pack validation in each phase.
+1. Contract drift across files.
+   Mitigation: compare manifest declarations against descriptor exports and implementation registry in every wave.
 
-2. Concurrent write hazards in filesystem-backed storage.
-   Mitigation: explicit lock path and concurrent write tests in storage suite.
+2. Storage race conditions.
+   Mitigation: enforce lock semantics in adapter and maintain dedicated concurrency tests in WU-2232.
 
-3. Scope mismatch causing runtime deny behavior.
-   Mitigation: verify permissions/scopes per tool descriptor and validate through pack:validate.
+3. Scope/policy mismatches.
+   Mitigation: verify read/write scopes at descriptor + manifest level and re-run pack validation after scope edits.
 
-4. Late integration surprises for runtime dispatch.
-   Mitigation: land endpoint tests and enforcement checks before final validation phase.
+4. Runtime integration regressions.
+   Mitigation: endpoint tests added with enforcement checks in WU-2236 before final readiness wave.
+
+5. Late-stage gate failures.
+   Mitigation: run incremental validation during each WU and keep WU-2237 focused on convergence rather than first-time integration.
 
 ## Open Questions
 
