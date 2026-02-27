@@ -8,8 +8,7 @@ created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/wu-delete.ts
   - packages/@lumenflow/core/src/state-doctor-core.ts
-  - packages/@lumenflow/cli/src/wu-create-content.ts
-  - packages/@lumenflow/core/src/validators/backlog-sync.ts
+  - packages/@lumenflow/cli/src/state-doctor.ts
 tests:
   manual:
     - Run wu:delete on a WU
