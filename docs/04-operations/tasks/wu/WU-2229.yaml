@@ -18,9 +18,6 @@ tests:
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
     - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
-    - packages/@lumenflow/cli/src/__tests__/wu-create-content.test.ts
-    - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
-    - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2229.done
