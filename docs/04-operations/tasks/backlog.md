@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2256 — Add battle-tested workflow gotchas to starting-prompt onboarding doc](wu/WU-2256.yaml) — Content: Framework Docs
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
