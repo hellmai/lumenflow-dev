@@ -7,6 +7,7 @@ _Last updated: 2026-02-27_
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml)
 - [WU-2245 — wu:create emits placeholder notes requiring manual cleanup](wu/WU-2245.yaml)
+- [WU-2241 — Add state:emit command for manual corrective events](wu/WU-2241.yaml)
 
 ## Completed
 

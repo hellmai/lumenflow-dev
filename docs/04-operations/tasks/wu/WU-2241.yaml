@@ -2,7 +2,7 @@ id: WU-2241
 title: Add state:emit command for manual corrective events
 lane: 'Framework: Core State Recovery'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - state:emit --type release --wu WU-XXX appends a corrective release event
   - All emitted events include reason field and audit trail
   - state:doctor --fix uses state:emit internally for auto-repair
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-state-recovery-wu-2241
+claimed_at: 2026-02-27T15:33:01.050Z
+baseline_main_sha: 1ee45622a4a35fc08db212197717464f4ccd857e
+session_id: 8a509da7-ea1f-4899-93dd-1d4ba2f351a7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T15:33:01.058Z

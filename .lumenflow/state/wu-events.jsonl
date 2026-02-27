@@ -2443,3 +2443,4 @@
 {"type":"complete","wuId":"WU-2240","timestamp":"2026-02-27T15:27:56.112Z"}
 {"type":"complete","wuId":"WU-2250","timestamp":"2026-02-27T15:30:08.801Z"}
 {"type":"claim","wuId":"WU-2245","timestamp":"2026-02-27T15:32:56.499Z","lane":"Framework: CLI WU Commands","title":"wu:create emits placeholder notes requiring manual cleanup"}
+{"type":"claim","wuId":"WU-2241","timestamp":"2026-02-27T15:33:01.079Z","lane":"Framework: Core State Recovery","title":"Add state:emit command for manual corrective events"}
