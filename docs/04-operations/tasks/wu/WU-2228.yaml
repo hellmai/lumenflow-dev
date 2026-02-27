@@ -2,7 +2,7 @@ id: WU-2228
 title: Add command discovery to onboarding and fix wu:escalate doc parity
 lane: 'Content: Framework Docs'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - starting-prompt.md includes wu:escalate in the WU lifecycle command table
   - quick-ref-commands.md includes pnpm lumenflow:commands prominently at the top
   - All onboarding docs have parity with CLAUDE.md for new commands
+locked: true
+completed_at: 2026-02-27T10:49:51.176Z
+completed: 2026-02-27
