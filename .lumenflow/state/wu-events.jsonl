@@ -2393,3 +2393,4 @@
 {"type":"checkpoint","wuId":"WU-2225","timestamp":"2026-02-27T09:46:12.169Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2225","timestamp":"2026-02-27T10:02:23.394Z"}
 {"type":"claim","wuId":"WU-2226","timestamp":"2026-02-27T10:11:08.868Z","lane":"Framework: CLI WU Commands","title":"lumenflow:upgrade should sync new pnpm script entries from CLI public-manifest"}
+{"type":"claim","wuId":"WU-2227","timestamp":"2026-02-27T10:20:11.826Z","lane":"Framework: CLI WU Commands","title":"wu:escalate should be worktree-aware to prevent YAML rebase conflicts"}

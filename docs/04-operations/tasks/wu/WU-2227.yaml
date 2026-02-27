@@ -2,14 +2,15 @@ id: WU-2227
 title: wu:escalate should be worktree-aware to prevent YAML rebase conflicts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/wu-escalate.ts
 tests:
   manual:
-    - Run wu:escalate --resolve on an in_progress WU with active worktree, then wu:done succeeds without rebase conflict
+    - Run wu:escalate --resolve on an in_progress WU with active worktree, then wu:done succeeds
+      without rebase conflict
   unit:
     - packages/@lumenflow/cli/__tests__/wu-escalate.test.ts
   e2e: []
@@ -26,9 +27,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu:escalate always uses micro-worktree to push escalation resolution fields to main. When the WU is in_progress with an active worktree, the same WU YAML is modified on both main (by wu:escalate) and the worktree branch (by the agent). This causes rebase conflicts during wu:done. Fix: wu:escalate should detect active worktrees (like wu:edit does at wu-edit.ts:534) and edit in-place when the WU is in_progress.'
+description: 'wu:escalate always uses micro-worktree to push escalation resolution fields to main.
+  When the WU is in_progress with an active worktree, the same WU YAML is modified on both main (by
+  wu:escalate) and the worktree branch (by the agent). This causes rebase conflicts during wu:done.
+  Fix: wu:escalate should detect active worktrees (like wu:edit does at wu-edit.ts:534) and edit
+  in-place when the WU is in_progress.'
 acceptance:
   - wu:escalate detects in_progress WUs with active worktrees and edits YAML in-place
   - wu:escalate still uses micro-worktree for non-in_progress WUs
   - No rebase conflicts when running wu:escalate then wu:done on the same WU
   - Unit tests cover worktree-aware path and micro-worktree fallback
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2227
+claimed_at: 2026-02-27T10:20:11.801Z
+baseline_main_sha: 67fe12d7fc96b1c1fc0b94d34d9dd6368d38eba9
+session_id: a769d0e8-b375-4c06-aee9-d0fe1f8274f2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T10:20:11.806Z
