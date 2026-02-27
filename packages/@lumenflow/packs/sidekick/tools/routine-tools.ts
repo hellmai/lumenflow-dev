@@ -26,11 +26,13 @@ const AUDIT_WRITE_SCOPE = {
   access: TOOL_SCOPE_ACCESS.WRITE,
 } as const;
 
+const ROUTINE_TOOLS_ENTRY = 'tool-impl/routine-tools.ts';
+
 export const routineCreateDescriptor = createToolDescriptor({
   name: 'routine:create',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [ROUTINE_READ_SCOPE, ROUTINE_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/routine-tools.ts',
+  entry: ROUTINE_TOOLS_ENTRY,
   description: 'Create a named routine with ordered tool+input steps and optional cron.',
 });
 
@@ -38,7 +40,7 @@ export const routineListDescriptor = createToolDescriptor({
   name: 'routine:list',
   permission: TOOL_PERMISSIONS.READ,
   required_scopes: [ROUTINE_READ_SCOPE],
-  entry: 'tool-impl/routine-tools.ts',
+  entry: ROUTINE_TOOLS_ENTRY,
   description: 'List routines with optional enabled_only filter.',
 });
 
@@ -46,6 +48,6 @@ export const routineRunDescriptor = createToolDescriptor({
   name: 'routine:run',
   permission: TOOL_PERMISSIONS.READ,
   required_scopes: [ROUTINE_READ_SCOPE],
-  entry: 'tool-impl/routine-tools.ts',
+  entry: ROUTINE_TOOLS_ENTRY,
   description: 'Generate an execution plan for a routine (plan-only, does not execute).',
 });

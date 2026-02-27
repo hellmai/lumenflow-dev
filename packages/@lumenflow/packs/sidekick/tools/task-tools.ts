@@ -26,11 +26,13 @@ const AUDIT_WRITE_SCOPE = {
   access: TOOL_SCOPE_ACCESS.WRITE,
 } as const;
 
+const TASK_TOOLS_ENTRY = 'tool-impl/task-tools.ts';
+
 export const taskCreateDescriptor = createToolDescriptor({
   name: 'task:create',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [SIDEKICK_READ_SCOPE, SIDEKICK_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/task-tools.ts',
+  entry: TASK_TOOLS_ENTRY,
   description: 'Create a new task with title, priority, due date, and tags.',
 });
 
@@ -38,7 +40,7 @@ export const taskListDescriptor = createToolDescriptor({
   name: 'task:list',
   permission: TOOL_PERMISSIONS.READ,
   required_scopes: [SIDEKICK_READ_SCOPE],
-  entry: 'tool-impl/task-tools.ts',
+  entry: TASK_TOOLS_ENTRY,
   description: 'List tasks with optional filters: status, priority, tag, due_before.',
 });
 
@@ -46,7 +48,7 @@ export const taskCompleteDescriptor = createToolDescriptor({
   name: 'task:complete',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [SIDEKICK_READ_SCOPE, SIDEKICK_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/task-tools.ts',
+  entry: TASK_TOOLS_ENTRY,
   description: 'Mark a task as complete. Supports dry_run.',
 });
 
@@ -54,6 +56,6 @@ export const taskScheduleDescriptor = createToolDescriptor({
   name: 'task:schedule',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [SIDEKICK_READ_SCOPE, SIDEKICK_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/task-tools.ts',
+  entry: TASK_TOOLS_ENTRY,
   description: 'Set or update a task due date or cron schedule.',
 });

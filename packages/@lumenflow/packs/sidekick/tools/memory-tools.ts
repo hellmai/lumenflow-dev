@@ -26,11 +26,13 @@ const AUDIT_WRITE_SCOPE = {
   access: TOOL_SCOPE_ACCESS.WRITE,
 } as const;
 
+const MEMORY_TOOLS_ENTRY = 'tool-impl/memory-tools.ts';
+
 export const memoryStoreDescriptor = createToolDescriptor({
   name: 'memory:store',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [MEMORY_READ_SCOPE, MEMORY_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/memory-tools.ts',
+  entry: MEMORY_TOOLS_ENTRY,
   description: 'Store a typed memory entry (fact, preference, note, snippet) with optional tags.',
 });
 
@@ -38,7 +40,7 @@ export const memoryRecallDescriptor = createToolDescriptor({
   name: 'memory:recall',
   permission: TOOL_PERMISSIONS.READ,
   required_scopes: [MEMORY_READ_SCOPE],
-  entry: 'tool-impl/memory-tools.ts',
+  entry: MEMORY_TOOLS_ENTRY,
   description: 'Recall memory entries by substring search and/or tag filter.',
 });
 
@@ -46,6 +48,6 @@ export const memoryForgetDescriptor = createToolDescriptor({
   name: 'memory:forget',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [MEMORY_READ_SCOPE, MEMORY_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/memory-tools.ts',
+  entry: MEMORY_TOOLS_ENTRY,
   description: 'Remove a memory entry by ID. Supports dry_run.',
 });

@@ -26,11 +26,13 @@ const AUDIT_WRITE_SCOPE = {
   access: TOOL_SCOPE_ACCESS.WRITE,
 } as const;
 
+const CHANNEL_TOOLS_ENTRY = 'tool-impl/channel-tools.ts';
+
 export const channelConfigureDescriptor = createToolDescriptor({
   name: 'channel:configure',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [CHANNEL_READ_SCOPE, CHANNEL_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/channel-tools.ts',
+  entry: CHANNEL_TOOLS_ENTRY,
   description: 'Configure a messaging channel (terminal-only in v0.1).',
 });
 
@@ -38,7 +40,7 @@ export const channelSendDescriptor = createToolDescriptor({
   name: 'channel:send',
   permission: TOOL_PERMISSIONS.WRITE,
   required_scopes: [CHANNEL_READ_SCOPE, CHANNEL_WRITE_SCOPE, AUDIT_WRITE_SCOPE],
-  entry: 'tool-impl/channel-tools.ts',
+  entry: CHANNEL_TOOLS_ENTRY,
   description: 'Send a message to a channel. Supports dry_run.',
 });
 
@@ -46,6 +48,6 @@ export const channelReceiveDescriptor = createToolDescriptor({
   name: 'channel:receive',
   permission: TOOL_PERMISSIONS.READ,
   required_scopes: [CHANNEL_READ_SCOPE],
-  entry: 'tool-impl/channel-tools.ts',
+  entry: CHANNEL_TOOLS_ENTRY,
   description: 'Receive messages from a channel with optional limit and since filter.',
 });

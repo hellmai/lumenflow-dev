@@ -63,23 +63,29 @@ const TOOL_PERMISSIONS_MAP = {
 
 type SidekickToolName = keyof typeof TOOL_PERMISSIONS_MAP;
 
+const TASK_TOOLS_ENTRY = 'tool-impl/task-tools.ts';
+const MEMORY_TOOLS_ENTRY = 'tool-impl/memory-tools.ts';
+const CHANNEL_TOOLS_ENTRY = 'tool-impl/channel-tools.ts';
+const ROUTINE_TOOLS_ENTRY = 'tool-impl/routine-tools.ts';
+const SYSTEM_TOOLS_ENTRY = 'tool-impl/system-tools.ts';
+
 const TOOL_ENTRIES: Record<SidekickToolName, string> = {
-  'task:create': 'tool-impl/task-tools.ts',
-  'task:list': 'tool-impl/task-tools.ts',
-  'task:complete': 'tool-impl/task-tools.ts',
-  'task:schedule': 'tool-impl/task-tools.ts',
-  'memory:store': 'tool-impl/memory-tools.ts',
-  'memory:recall': 'tool-impl/memory-tools.ts',
-  'memory:forget': 'tool-impl/memory-tools.ts',
-  'channel:configure': 'tool-impl/channel-tools.ts',
-  'channel:send': 'tool-impl/channel-tools.ts',
-  'channel:receive': 'tool-impl/channel-tools.ts',
-  'routine:create': 'tool-impl/routine-tools.ts',
-  'routine:list': 'tool-impl/routine-tools.ts',
-  'routine:run': 'tool-impl/routine-tools.ts',
-  'sidekick:init': 'tool-impl/system-tools.ts',
-  'sidekick:status': 'tool-impl/system-tools.ts',
-  'sidekick:export': 'tool-impl/system-tools.ts',
+  'task:create': TASK_TOOLS_ENTRY,
+  'task:list': TASK_TOOLS_ENTRY,
+  'task:complete': TASK_TOOLS_ENTRY,
+  'task:schedule': TASK_TOOLS_ENTRY,
+  'memory:store': MEMORY_TOOLS_ENTRY,
+  'memory:recall': MEMORY_TOOLS_ENTRY,
+  'memory:forget': MEMORY_TOOLS_ENTRY,
+  'channel:configure': CHANNEL_TOOLS_ENTRY,
+  'channel:send': CHANNEL_TOOLS_ENTRY,
+  'channel:receive': CHANNEL_TOOLS_ENTRY,
+  'routine:create': ROUTINE_TOOLS_ENTRY,
+  'routine:list': ROUTINE_TOOLS_ENTRY,
+  'routine:run': ROUTINE_TOOLS_ENTRY,
+  'sidekick:init': SYSTEM_TOOLS_ENTRY,
+  'sidekick:status': SYSTEM_TOOLS_ENTRY,
+  'sidekick:export': SYSTEM_TOOLS_ENTRY,
 };
 
 // ---------------------------------------------------------------------------
