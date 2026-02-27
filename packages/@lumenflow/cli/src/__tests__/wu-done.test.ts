@@ -148,6 +148,14 @@ status: done
     });
   });
 
+  describe('WU-2262: local-main cleanliness after completion', () => {
+    it('does not run repository-wide worktree_path migration commit from local main', async () => {
+      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      expect(source).not.toContain('await gitMain.add(WU_PATHS.WU_DIR())');
+      expect(source).not.toContain('chore(wu): sanitize worktree_path metadata');
+    });
+  });
+
   describe('WU-1634: mode-execution failure messaging', () => {
     it('surfaces root error context and retry guidance before exiting', async () => {
       const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');

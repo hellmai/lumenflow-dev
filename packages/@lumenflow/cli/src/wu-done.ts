@@ -196,7 +196,6 @@ import {
 } from './wu-done-git-ops.js';
 import { flushWuLifecycleSync } from './wu-lifecycle-sync/service.js';
 import { WU_LIFECYCLE_COMMANDS } from './wu-lifecycle-sync/constants.js';
-import { shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
 
 export {
   buildGatesCommand,
@@ -2712,27 +2711,8 @@ export async function main() {
     await ensureNoAutoStagedOrNoop([WU_PATH, STATUS_PATH, BACKLOG_PATH, STAMPS_DIR]);
   }
 
-  // WU-2247: strip worktree_path from done WUs and relativize absolute active paths.
-  // Commit and push this metadata migration atomically when mutations are present.
-  const worktreePathMigration = sanitizeWorktreePathMetadataInRepo({
-    projectRoot: mainCheckoutPath,
-    repoRootForRelativize: mainCheckoutPath,
-  });
-  if (worktreePathMigration.filesUpdated > 0) {
-    const gitMain = createGitForPath(mainCheckoutPath);
-    await gitMain.add(WU_PATHS.WU_DIR());
-    await gitMain.commit(`chore(wu): sanitize worktree_path metadata [${id.toLowerCase()}]`);
-    if (!shouldSkipRemoteOperations()) {
-      await gitMain.push();
-    } else {
-      console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Local-only mode: skipping push for worktree_path migration commit`,
-      );
-    }
-    console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-2247 sanitized worktree_path metadata (${worktreePathMigration.filesUpdated} files; removed=${worktreePathMigration.removedFromDone}, relativized=${worktreePathMigration.relativizedActive})`,
-    );
-  }
+  // WU-2262: Do not run repository-wide worktree_path sanitation from local main during wu:done.
+  // The prior flow could leave staged residue on main when direct-commit guards blocked commit hooks.
 
   // Step 6 & 7: Cleanup (remove worktree, delete branch) - WU-1215
   // WU-1811: Only run cleanup if all completion steps succeeded
