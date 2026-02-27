@@ -8,7 +8,8 @@ created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/wu-recover.ts
 tests:
-  manual: []
+  manual:
+    - Run wu:recover --action reset --id WU-TEST without --force and verify it aborts with warning
   unit:
     - packages/@lumenflow/cli/__tests__/wu-recover-reset-guard.test.ts
   e2e: []
