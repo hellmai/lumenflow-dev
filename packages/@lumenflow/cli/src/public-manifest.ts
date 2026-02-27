@@ -1069,3 +1069,33 @@ export function generatePackageJsonBin(): Record<string, string> {
   }
   return bin;
 }
+
+/**
+ * WU-2226: Script argument overrides for pnpm script entries.
+ *
+ * Most commands map directly to their binName (e.g., 'wu:create' -> 'wu-create').
+ * Some commands need custom arguments in the script entry. This map defines those
+ * overrides. Kept in sync with init-templates.ts SCRIPT_ARG_OVERRIDES.
+ */
+export const SCRIPT_ARG_OVERRIDES: Record<string, string> = {
+  'gates:docs': 'gates --docs-only',
+};
+
+/**
+ * WU-2226: Generate pnpm script entries from the public manifest.
+ *
+ * Returns a Record<scriptName, scriptCommand> mapping suitable for
+ * injection into a consumer project's package.json "scripts" field.
+ *
+ * This is the canonical source used by both `init` and `lumenflow:upgrade`
+ * to ensure script entries stay consistent.
+ *
+ * @returns Record mapping command names to their script commands
+ */
+export function generateScriptsFromManifest(): Record<string, string> {
+  const scripts: Record<string, string> = {};
+  for (const cmd of PUBLIC_MANIFEST) {
+    scripts[cmd.name] = SCRIPT_ARG_OVERRIDES[cmd.name] ?? cmd.binName;
+  }
+  return scripts;
+}
