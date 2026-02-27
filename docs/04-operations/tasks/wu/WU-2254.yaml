@@ -8,7 +8,9 @@ created: 2026-02-27
 code_paths:
   - packages/@lumenflow/core/src/sandbox-backend-macos.ts
 tests:
-  manual: []
+  manual:
+    - Verify sandbox policy output includes scoped file-read rules and deny overlays for sensitive
+      paths
   unit:
     - packages/@lumenflow/core/src/__tests__/sandbox-backend-macos.test.ts
   e2e: []
