@@ -1,0 +1,36 @@
+id: WU-2265
+title: Publish Sidekick pack to registry
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/packs/sidekick
+tests:
+  manual:
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2265.done
+dependencies: []
+initiative: INIT-046
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-046.yaml
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Publish the Sidekick pack to registry.lumenflow.dev so it can be installed as a dependency by any consumer. Includes version pinning, integrity verification, and registry metadata.
+acceptance:
+  - Pack is published to registry.lumenflow.dev with correct version
+  - pnpm pack:validate --id sidekick passes before publish
+  - Published pack is installable via registry
+  - Registry metadata includes manifest hash for integrity verification
