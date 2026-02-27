@@ -13,7 +13,9 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - apps/docs/src/content/docs/packs/software-delivery/workflows/wu-prep-workflow.mdx
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:escalate --resolve --id WU-14 against a WU with escalation_triggers and verify
+      wu:done succeeds after
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
     - packages/@lumenflow/cli/__tests__/wu-escalate.test.ts
