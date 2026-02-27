@@ -19,6 +19,7 @@ initiative: INIT-048
 phase: 1
 blocked_by:
   - WU-2253
+plan: docs/04-operations/plans/INIT-048-plan.md
 spec_refs:
   - .claude/plans/groovy-percolating-galaxy.md
 risks: []
@@ -31,7 +32,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Replace (allow file-read*) with scoped read rules (workspace plus system paths only). Add deny overlay support for sensitive paths like ~/.ssh. Bring macOS backend to parity with Linux bwrap behavior.
+description: Replace (allow file-read*) with scoped read rules (workspace plus system paths only).
+  Add deny overlay support for sensitive paths like ~/.ssh. Bring macOS backend to parity with Linux
+  bwrap behavior.
 acceptance:
   - macOS sandbox restricts file-read to workspace and system paths
   - Deny overlays block reads to sensitive paths like ~/.ssh
