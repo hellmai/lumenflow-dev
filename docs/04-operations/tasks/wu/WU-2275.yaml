@@ -2,7 +2,7 @@ id: WU-2275
 title: Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-28
 code_paths:
@@ -65,3 +65,11 @@ acceptance:
   - wu:edit writes an edit stamp to wu-events.jsonl for each modified WU YAML path
   - lumenflow:integrate --sync re-scaffolds pre-commit and CI templates for existing repos without
     requiring a full re-init
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-enforcement-wu-2275
+claimed_at: 2026-02-28T12:17:54.684Z
+baseline_main_sha: f66da7ec3bc0b6aca57ace578f6a017a7dd07fa1
+session_id: a92226d5-e99f-4efe-879e-098de0e0732b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T12:17:54.689Z

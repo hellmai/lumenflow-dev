@@ -51,12 +51,12 @@ sections:
 - [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
 - [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
 - [WU-2261 — wu:done leaves bulk staged WU metadata on main](wu/WU-2261.yaml) — Framework: CLI Enforcement
-- [WU-2275 — Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit](wu/WU-2275.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
+- [WU-2275 — Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit](wu/WU-2275.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 

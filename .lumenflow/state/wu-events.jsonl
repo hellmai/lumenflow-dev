@@ -2541,3 +2541,4 @@
 {"type":"claim","wuId":"WU-2274","timestamp":"2026-02-28T11:32:11.105Z","lane":"Content: Framework Docs","title":"Document pack registry publishing workflow"}
 {"type":"checkpoint","wuId":"WU-2274","timestamp":"2026-02-28T11:32:32.708Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2274","timestamp":"2026-02-28T11:35:31.616Z"}
+{"type":"claim","wuId":"WU-2275","timestamp":"2026-02-28T12:17:54.706Z","lane":"Framework: CLI Enforcement","title":"Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit"}
