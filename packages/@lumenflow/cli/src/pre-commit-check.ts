@@ -171,7 +171,9 @@ function readUpgradeMarker(projectRoot: string): UpgradeMarker {
   try {
     parsed = JSON.parse(readFileSync(absolutePath, 'utf-8'));
   } catch (error) {
-    throw new Error(`${LOG_PREFIX} Invalid JSON in upgrade marker: ${(error as Error).message}`);
+    throw new Error(`${LOG_PREFIX} Invalid JSON in upgrade marker: ${(error as Error).message}`, {
+      cause: error,
+    });
   }
 
   const validation = validateUpgradeMarker(parsed);

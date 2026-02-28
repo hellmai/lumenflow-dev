@@ -74,7 +74,6 @@ import {
   applyEdits,
   applyEditsInWorktree,
   appendWuEditStampEvent,
-  buildWuEditStampNote,
   getWuEditCommitFiles,
   regenerateBacklogFromState,
   normalizeWUDates,
