@@ -73,6 +73,8 @@ import {
 import {
   applyEdits,
   applyEditsInWorktree,
+  appendWuEditStampEvent,
+  buildWuEditStampNote,
   getWuEditCommitFiles,
   regenerateBacklogFromState,
   normalizeWUDates,
@@ -92,6 +94,7 @@ export {
 export {
   applyExposureEdit,
   applyEdits,
+  buildWuEditStampNote,
   mergeStringField,
   getWuEditCommitFiles,
 } from './wu-edit-operations.js';
@@ -610,6 +613,10 @@ export async function main() {
 
           writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
           console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
+
+          const wuEventsPath = await appendWuEditStampEvent(worktreePath, id, WU_PATHS.WU(id));
+          extraFiles.push(wuEventsPath);
+          console.log(`${PREFIX} Appended wu:edit stamp event for ${id}`);
 
           // WU-1929: Handle bidirectional initiative updates
           if (initiativeChanged) {

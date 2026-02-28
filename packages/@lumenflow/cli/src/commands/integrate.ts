@@ -37,6 +37,7 @@ import {
   generateWarnIncompleteScript,
   type GeneratedHooks,
 } from '../hooks/enforcement-generator.js';
+import { loadTemplate } from '../init-scaffolding.js';
 import { runCLI } from '../cli-entry-point.js';
 
 /**
@@ -56,6 +57,12 @@ const INTEGRATE_OPTIONS = {
     name: 'client',
     flags: '--client <type>',
     description: `Client type to integrate (${SUPPORTED_CLIENTS.join(', ')})`,
+  },
+  sync: {
+    name: 'sync',
+    flags: '--sync',
+    description:
+      'Re-scaffold vendor-agnostic pre-commit/CI delegators for existing repositories',
   },
   force: WU_OPTIONS.force,
 };
@@ -116,6 +123,7 @@ interface ClaudeSettings {
  */
 export function parseIntegrateOptions(): {
   client: string;
+  sync: boolean;
   force: boolean;
 } {
   const opts = createWUParser({
@@ -126,8 +134,32 @@ export function parseIntegrateOptions(): {
 
   return {
     client: opts.client ?? LUMENFLOW_CLIENT_IDS.CLAUDE_CODE,
+    sync: opts.sync ?? false,
     force: opts.force ?? false,
   };
+}
+
+const PRE_COMMIT_TEMPLATE_PATH = 'core/.husky/pre-commit.template';
+const CI_TEMPLATE_PATH = 'core/.github/workflows/lumenflow-ci.yml.template';
+const PROJECT_PRE_COMMIT_PATH = '.husky/pre-commit';
+const PROJECT_CI_PATH = '.github/workflows/lumenflow-ci.yml';
+
+export function syncCoreEnforcementDelegators(projectDir: string): string[] {
+  const created: string[] = [];
+
+  const preCommitContent = loadTemplate(PRE_COMMIT_TEMPLATE_PATH);
+  const preCommitPath = path.join(projectDir, PROJECT_PRE_COMMIT_PATH);
+  fs.mkdirSync(path.dirname(preCommitPath), { recursive: true });
+  fs.writeFileSync(preCommitPath, preCommitContent, { mode: 0o755 });
+  created.push(PROJECT_PRE_COMMIT_PATH);
+
+  const ciContent = loadTemplate(CI_TEMPLATE_PATH);
+  const ciPath = path.join(projectDir, PROJECT_CI_PATH);
+  fs.mkdirSync(path.dirname(ciPath), { recursive: true });
+  fs.writeFileSync(ciPath, ciContent, 'utf-8');
+  created.push(PROJECT_CI_PATH);
+
+  return created;
 }
 
 /**
@@ -463,6 +495,13 @@ export function integrateCodexCli(projectDir: string): string[] {
 export async function main(): Promise<void> {
   const opts = parseIntegrateOptions();
   const projectDir = process.cwd();
+
+  if (opts.sync) {
+    const synced = syncCoreEnforcementDelegators(projectDir);
+    for (const file of synced) {
+      console.log(`[integrate] Synced ${file}`);
+    }
+  }
 
   // WU-2157: Support multiple client types
   switch (opts.client) {

@@ -51,6 +51,7 @@ import {
   LUMENFLOW_PACKAGES,
   buildUpgradeCommands,
   UpgradeArgs,
+  createUpgradeMarker,
   executeUpgradeInMicroWorktree,
   validateMainCheckout,
   getInstalledCliVersion,
@@ -203,6 +204,16 @@ describe('lumenflow-upgrade', () => {
         commands.addCommand.includes(pkg),
       ).length;
       expect(packageCount).toBe(7);
+    });
+  });
+
+  describe('createUpgradeMarker', () => {
+    it('creates a pending marker with required metadata', () => {
+      const marker = createUpgradeMarker('3.7.1');
+      expect(marker.kind).toBe('lumenflow-upgrade');
+      expect(marker.status).toBe('pending');
+      expect(marker.version).toBe('3.7.1');
+      expect(marker.created_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     });
   });
 
@@ -365,6 +376,7 @@ describe('lumenflow-upgrade', () => {
       expect(executeResult!.commitMessage).toContain('upgrade @lumenflow packages');
       expect(executeResult!.files).toContain('package.json');
       expect(executeResult!.files).toContain('pnpm-lock.yaml');
+      expect(executeResult!.files).toContain('.lumenflow/state/lumenflow-upgrade-marker.json');
     });
 
     it('should use --latest version specifier when latest flag is set', async () => {

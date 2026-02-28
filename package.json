@@ -123,6 +123,7 @@
     "lumenflow:init": "node packages/@lumenflow/cli/dist/init.js",
     "lumenflow:integrate": "node packages/@lumenflow/cli/dist/commands/integrate.js",
     "lumenflow:upgrade": "node packages/@lumenflow/cli/dist/lumenflow-upgrade.js",
+    "lumenflow:pre-commit-check": "node packages/@lumenflow/cli/dist/pre-commit-check.js",
     "lumenflow:doctor": "node packages/@lumenflow/cli/dist/doctor.js",
     "lumenflow:commands": "node packages/@lumenflow/cli/dist/commands.js",
     "lumenflow:release": "node packages/@lumenflow/cli/dist/release.js",

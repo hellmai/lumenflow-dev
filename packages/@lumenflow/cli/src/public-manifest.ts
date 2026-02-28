@@ -293,6 +293,14 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     surface: 'alias',
   },
   {
+    name: 'lumenflow:pre-commit-check',
+    binName: 'lumenflow-pre-commit-check',
+    binPath: './dist/pre-commit-check.js',
+    description: 'Run enforcement checks used by pre-commit and CI',
+    category: COMMAND_CATEGORIES.GATES_QUALITY,
+    audience: 'advanced',
+  },
+  {
     name: 'lane:edit',
     binName: 'lane-edit',
     binPath: './dist/lane-edit.js',

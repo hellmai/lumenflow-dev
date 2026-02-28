@@ -28,6 +28,50 @@ describe('WU-1367: Integrate Command', () => {
     vi.mocked(fs.mkdirSync).mockReturnValue(undefined);
   });
 
+  describe('WU-2275: --sync core enforcement scaffolding', () => {
+    it('parses --sync option', async () => {
+      const { parseIntegrateOptions } = await import('../../commands/integrate.js');
+      const originalArgv = process.argv;
+      process.argv = ['node', 'integrate', '--client', TEST_CLAUDE_CLIENT_ID, '--sync'];
+      try {
+        const opts = parseIntegrateOptions();
+        expect(opts.sync).toBe(true);
+      } finally {
+        process.argv = originalArgv;
+      }
+    });
+
+    it('writes thin delegator pre-commit and CI workflow when sync is enabled', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockImplementation((filePath) => {
+        const file = String(filePath);
+        if (file.endsWith('pre-commit.template')) {
+          return '#!/bin/sh\npnpm lumenflow:pre-commit-check\n';
+        }
+        if (file.endsWith('lumenflow-ci.yml.template')) {
+          return 'name: LumenFlow CI\n';
+        }
+        return '{}';
+      });
+      const writeSpy = vi.mocked(fs.writeFileSync);
+      writeSpy.mockClear();
+
+      const { syncCoreEnforcementDelegators } = await import('../../commands/integrate.js');
+      const created = syncCoreEnforcementDelegators(TEST_PROJECT_DIR);
+
+      expect(created).toContain('.husky/pre-commit');
+      expect(created).toContain('.github/workflows/lumenflow-ci.yml');
+      const wrotePreCommit = writeSpy.mock.calls.some((call) =>
+        String(call[0]).includes('.husky/pre-commit'),
+      );
+      const wroteCi = writeSpy.mock.calls.some((call) =>
+        String(call[0]).includes('.github/workflows/lumenflow-ci.yml'),
+      );
+      expect(wrotePreCommit).toBe(true);
+      expect(wroteCi).toBe(true);
+    });
+  });
+
   describe('integrateClaudeCode', () => {
     it('should skip integration when enforcement not enabled', async () => {
       const mockWriteFileSync = vi.mocked(fs.writeFileSync);

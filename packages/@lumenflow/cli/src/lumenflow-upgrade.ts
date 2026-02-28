@@ -23,7 +23,7 @@
  */
 
 import { execSync, execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, mkdtempSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
@@ -57,6 +57,7 @@ const ARG_DRY_RUN = '--dry-run';
 const ARG_DRY_RUN_SHORT = '-n';
 const ARG_NO_BOOTSTRAP = '--no-bootstrap';
 const PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
+export const UPGRADE_MARKER_RELATIVE_PATH = '.lumenflow/state/lumenflow-upgrade-marker.json';
 
 /**
  * All @lumenflow/* packages that should be upgraded together
@@ -98,6 +99,29 @@ export interface UpgradeResult {
   addCommand: string;
   /** Version specifier used */
   versionSpec: string;
+}
+
+export interface UpgradeMarker {
+  kind: 'lumenflow-upgrade';
+  status: 'pending' | 'consumed';
+  version: string;
+  created_at: string;
+  consumed_at?: string;
+}
+
+export function createUpgradeMarker(version: string): UpgradeMarker {
+  return {
+    kind: 'lumenflow-upgrade',
+    status: 'pending',
+    version,
+    created_at: new Date().toISOString(),
+  };
+}
+
+function writeUpgradeMarker(worktreePath: string, version: string): void {
+  const markerPath = path.join(worktreePath, UPGRADE_MARKER_RELATIVE_PATH);
+  mkdirSync(path.dirname(markerPath), { recursive: true });
+  writeFileSync(markerPath, JSON.stringify(createUpgradeMarker(version), null, 2) + '\n', 'utf-8');
 }
 
 export interface BuildUpgradeOptions {
@@ -509,10 +533,13 @@ export async function executeUpgradeInMicroWorktree(args: UpgradeArgs): Promise<
         console.log(`${LOG_PREFIX} All script entries already present`);
       }
 
+      // Write marker consumed by lumenflow:pre-commit-check when @lumenflow versions change.
+      writeUpgradeMarker(worktreePath, versionSpec);
+
       // Return files to stage and commit message
       return {
         commitMessage: `chore: upgrade @lumenflow packages to ${versionSpec}`,
-        files: ['package.json', 'pnpm-lock.yaml'],
+        files: ['package.json', 'pnpm-lock.yaml', UPGRADE_MARKER_RELATIVE_PATH],
       };
     },
   });

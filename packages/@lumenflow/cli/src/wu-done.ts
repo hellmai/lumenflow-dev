@@ -147,7 +147,7 @@ import {
 import { checkWUConsistency } from '@lumenflow/core/wu-consistency-checker';
 // WU-1542: Use blocking mode compliance check (replaces non-blocking checkMandatoryAgentsCompliance)
 import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/orchestration-rules';
-import { endSessionForWU } from '@lumenflow/agent/auto-session';
+import { endSessionForWU, getCurrentSessionForWU } from '@lumenflow/agent/auto-session';
 import { runBackgroundProcessCheck } from '@lumenflow/core/process-detector';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 // WU-1588: INIT-007 memory layer integration
@@ -180,6 +180,7 @@ import { markCompletedWUSignalsAsRead } from './hooks/enforcement-generator.js';
 import { evaluateMainDirtyMutationGuard } from './hooks/dirty-guard.js';
 // WU-1474: Decay policy invocation during completion lifecycle
 import { runDecayOnDone } from './wu-done-decay.js';
+import { validateClaimSessionOwnership } from './wu-done-ownership.js';
 import {
   enforceSpawnProvenanceForDone,
   enforceWuBriefEvidenceForDone,
@@ -324,6 +325,7 @@ interface WUDocLike extends Record<string, unknown> {
   notes?: string | string[];
   assigned_to?: string | null;
   worktree_path?: string;
+  session_id?: string;
 }
 
 interface WorktreePathSanitizeResult {
@@ -1347,6 +1349,32 @@ function runWUValidator(
  * @returns {{valid: boolean, error: string|null, auditEntry: object|null}}
  */
 
+async function appendClaimSessionOverrideAuditEvent({
+  wuId,
+  claimedSessionId,
+  activeSessionId,
+  reason,
+  worktreePath,
+}: {
+  wuId: string;
+  claimedSessionId: string;
+  activeSessionId: string | null;
+  reason: string;
+  worktreePath: string;
+}): Promise<void> {
+  const stateDir = resolveStateDir(worktreePath);
+  const stateStore = new WUStateStore(stateDir);
+  await stateStore.load();
+  await stateStore.checkpoint(
+    wuId,
+    `[wu:done] force ownership override claimed_session=${claimedSessionId} active_session=${activeSessionId || 'none'}`,
+    {
+      progress: 'wu:done ownership override',
+      nextSteps: reason,
+    },
+  );
+}
+
 async function checkOwnership(
   id: string,
   doc: WUDocLike,
@@ -1746,6 +1774,36 @@ async function executePreFlightChecks({
 
   // Ownership check (skip in branch-only mode)
   if (!isBranchOnly) {
+    const activeSession = getCurrentSessionForWU();
+    const sessionOwnership = validateClaimSessionOwnership({
+      wuId: id,
+      claimedSessionId:
+        typeof docForValidation.session_id === 'string' ? docForValidation.session_id : null,
+      activeSessionId: activeSession?.session_id ?? null,
+      force: Boolean(args.force),
+    });
+
+    if (!sessionOwnership.valid) {
+      die(sessionOwnership.error ?? 'Claim-session ownership check failed');
+    }
+
+    if (
+      sessionOwnership.auditRequired &&
+      typeof docForValidation.session_id === 'string' &&
+      derivedWorktree
+    ) {
+      await appendClaimSessionOverrideAuditEvent({
+        wuId: id,
+        claimedSessionId: docForValidation.session_id,
+        activeSessionId: activeSession?.session_id ?? null,
+        reason: args.reason || 'force ownership override',
+        worktreePath: derivedWorktree,
+      });
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Claim-session ownership overridden with --force; audit checkpoint recorded.`,
+      );
+    }
+
     const ownershipCheck = await checkOwnership(
       id,
       docForValidation,

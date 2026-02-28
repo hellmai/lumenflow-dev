@@ -174,6 +174,29 @@ export function mergeStringField(
   return `${existing}\n\n${newValue}`;
 }
 
+function normalizeRepoPath(pathValue: string): string {
+  return pathValue.replaceAll('\\', '/').replace(/^\.\/+/, '');
+}
+
+export function buildWuEditStampNote(wuRelativePath: string): string {
+  return `[wu:edit] path=${normalizeRepoPath(wuRelativePath)}`;
+}
+
+export async function appendWuEditStampEvent(
+  worktreePath: string,
+  wuId: string,
+  wuRelativePath: string,
+): Promise<string> {
+  const stateDir = join(worktreePath, '.lumenflow', 'state');
+  const store = new WUStateStore(stateDir);
+  await store.load();
+  await store.checkpoint(wuId, buildWuEditStampNote(wuRelativePath), {
+    progress: 'wu:edit stamp',
+    nextSteps: 'pre-commit enforcement',
+  });
+  return '.lumenflow/state/wu-events.jsonl';
+}
+
 /**
  * WU-1594: Ensure wu:edit commits always include regenerated backlog projection.
  */
@@ -485,6 +508,10 @@ export async function applyEditsInWorktree({ worktreePath, id, updatedWU }: Work
   writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   console.log(`${PREFIX} Updated ${id}.yaml in worktree`);
 
+  const wuEventsRelativePath = await appendWuEditStampEvent(worktreePath, id, WU_PATHS.WU(id));
+  const wuEventsAbsolutePath = join(worktreePath, wuEventsRelativePath);
+  console.log(`${PREFIX} Appended wu:edit stamp event for ${id}`);
+
   // Format the file
   try {
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} "${wuPath}"`, {
@@ -502,7 +529,7 @@ export async function applyEditsInWorktree({ worktreePath, id, updatedWU }: Work
   const commitMsg = COMMIT_FORMATS.SPEC_UPDATE(id);
   try {
     const gitAdapter = createGitForPath(worktreePath);
-    await gitAdapter.add(wuPath);
+    await gitAdapter.add([wuPath, wuEventsAbsolutePath]);
     await gitAdapter.commit(commitMsg);
     console.log(`${PREFIX} Committed: ${commitMsg}`);
   } catch (err: unknown) {

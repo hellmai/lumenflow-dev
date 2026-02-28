@@ -9,8 +9,10 @@
  * across all array options.
  */
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import {
   applyEdits,
+  buildWuEditStampNote,
   getWuEditCommitFiles,
   hasScopeRelevantBranchChanges,
   mergeStringField,
@@ -226,5 +228,17 @@ describe('WU-1618: scope-relevant branch change detection', () => {
       'packages/@lumenflow/cli/src/wu-edit.ts',
     ]);
     expect(result).toBe(true);
+  });
+});
+
+describe('WU-2275: wu:edit stamp notes', () => {
+  it('formats canonical wu:edit stamp note with path', () => {
+    const note = buildWuEditStampNote('docs/04-operations/tasks/wu/WU-2275.yaml');
+    expect(note).toBe('[wu:edit] path=docs/04-operations/tasks/wu/WU-2275.yaml');
+  });
+
+  it('invokes stamp-event append during wu:edit execution paths', () => {
+    const source = readFileSync(new URL('../wu-edit.ts', import.meta.url), 'utf-8');
+    expect(source).toContain('appendWuEditStampEvent');
   });
 });
