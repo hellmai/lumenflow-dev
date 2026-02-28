@@ -1,0 +1,32 @@
+id: WU-2273
+title: Honor tdd-exception in wu:done spec completeness validator
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-28
+code_paths:
+  - packages/@lumenflow/core/src/manual-test-validator.ts
+tests:
+  manual:
+    - Create a WU with tdd-exception in notes and code_paths with .ts files, verify wu:done completes
+  unit:
+    - packages/@lumenflow/core/src/__tests__/manual-test-validator.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2273.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "wu:prep recognizes tdd-exception: in WU notes and passes validation, but wu:done's validateAutomatedTestRequirement in manual-test-validator.ts does not check for tdd-exception. This creates a dead end: wu:prep passes, wu:done blocks, and --skip-gates does not bypass the spec completeness check. Fix: make isExemptFromAutomatedTests also check for tdd-exception: prefix in notes."
+acceptance:
+  - 'wu:done passes spec completeness for WUs with tdd-exception: in notes and no automated tests'
+  - wu:prep and wu:done agree on tdd-exception behavior
