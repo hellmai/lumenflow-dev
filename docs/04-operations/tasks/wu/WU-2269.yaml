@@ -2,7 +2,7 @@ id: WU-2269
 title: Add allowOverwrite to registry blob uploads
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -28,6 +28,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Registry blob upload fails with blob already exists error on re-publish. Add allowOverwrite to Vercel Blob put call.
+description: Registry blob upload fails with blob already exists error on re-publish. Add
+  allowOverwrite to Vercel Blob put call.
 acceptance:
   - Blob upload uses allowOverwrite to prevent conflict errors on re-publish
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2269
+claimed_at: 2026-02-28T10:09:46.226Z
+baseline_main_sha: fe4bc81bfe09ec04ea341ee49665ac5d3c172eb6
+session_id: b1c1d2da-a57e-4f4e-a8cd-47809a7027b0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T10:09:46.232Z
