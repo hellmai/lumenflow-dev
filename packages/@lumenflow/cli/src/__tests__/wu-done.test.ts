@@ -266,6 +266,22 @@ status: done
     });
   });
 
+  describe('WU-2282: checkpoint baseDir scoping in wu:done', () => {
+    it('passes worktree baseDir when marking checkpoint gates passed', async () => {
+      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      expect(source).toMatch(
+        /markGatesPassed\(id,\s*\{\s*baseDir:\s*worktreePath \|\| undefined\s*\}\);/,
+      );
+    });
+
+    it('passes worktree baseDir when clearing completion checkpoint', async () => {
+      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      expect(source).toMatch(
+        /clearCheckpoint\(id,\s*\{\s*baseDir:\s*worktreePath \|\| undefined\s*\}\);/,
+      );
+    });
+  });
+
   describe('WU-2132: wu:brief evidence enforcement', () => {
     it('enforces only feature and bug WU types', () => {
       expect(shouldEnforceWuBriefEvidence({ type: 'feature' })).toBe(true);

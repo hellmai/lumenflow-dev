@@ -2193,7 +2193,7 @@ async function executeGates({
 
   // WU-1747: Mark checkpoint as gates passed for resumption on failure
   // This allows subsequent wu:done attempts to skip gates if nothing changed
-  markGatesPassed(id);
+  markGatesPassed(id, { baseDir: worktreePath || undefined });
 
   return gateResult;
 }
@@ -2853,7 +2853,7 @@ export async function main() {
 
   // WU-1747: Clear checkpoint on successful completion
   // Checkpoint is no longer needed once WU is fully complete
-  clearCheckpoint(id);
+  clearCheckpoint(id, { baseDir: worktreePath || undefined });
 
   // WU-1471 AC4: Remove per-WU hook counter file on completion
   // Fail-safe: cleanupHookCounters never throws

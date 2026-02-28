@@ -2570,3 +2570,4 @@
 {"type":"checkpoint","wuId":"WU-2281","timestamp":"2026-02-28T20:19:16.410Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2281","timestamp":"2026-02-28T20:20:32.531Z"}
 {"type":"claim","wuId":"WU-2282","timestamp":"2026-02-28T23:20:25.887Z","lane":"Framework: CLI WU Commands","title":"Scope wu:done checkpoint writes to worktree instead of main"}
+{"type":"checkpoint","wuId":"WU-2282","timestamp":"2026-02-28T23:23:22.170Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
