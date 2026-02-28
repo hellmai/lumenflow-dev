@@ -2,7 +2,7 @@ id: WU-2278
 title: Sync missing public command aliases during integrate --sync
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/commands/integrate.test.ts
 tests:
   manual:
-    - Run lumenflow-integrate --sync in a fixture repo with partial scripts and verify missing wu:* aliases are added
+    - Run lumenflow-integrate --sync in a fixture repo with partial scripts and verify missing wu:*
+      aliases are added
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands/integrate.test.ts
   e2e: []
@@ -27,9 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Consumer repos may have drifted package.json scripts and miss aliases like wu:status/wu:brief even when binaries are installed. Problem: Agents running pnpm wu:* hit command-not-found friction in older repos. Solution: Extend lumenflow-integrate --sync to also sync missing script aliases from the public command manifest without overwriting custom scripts.'
+description: 'Context: Consumer repos may have drifted package.json scripts and miss aliases like
+  wu:status/wu:brief even when binaries are installed. Problem: Agents running pnpm wu:* hit
+  command-not-found friction in older repos. Solution: Extend lumenflow-integrate --sync to also
+  sync missing script aliases from the public command manifest without overwriting custom scripts.'
 acceptance:
   - lumenflow-integrate --sync adds missing script aliases from public manifest to package.json
   - Existing custom script entries are preserved
   - Integration tests cover alias sync behavior including wu:status and wu:brief
   - No regressions in integrate command flow
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2278
+claimed_at: 2026-02-28T17:57:38.354Z
+baseline_main_sha: f0cf544fe2ecd0d9c9022b97571bfbbfccfd0763
+session_id: ef2abd58-764d-4636-ab71-b1197d355440
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T17:57:38.360Z
