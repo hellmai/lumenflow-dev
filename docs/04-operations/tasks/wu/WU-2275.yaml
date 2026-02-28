@@ -6,10 +6,13 @@ status: in_progress
 priority: P1
 created: 2026-02-28
 code_paths:
-  - packages/@lumenflow/cli/src/commands/wu-done.ts
-  - packages/@lumenflow/cli/src/commands/lumenflow-upgrade.ts
-  - packages/@lumenflow/cli/src/commands/pre-commit-check.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
+  - packages/@lumenflow/cli/src/pre-commit-check.ts
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/src/commands/integrate.ts
+  - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/cli/templates/core/.husky/pre-commit.template
   - packages/@lumenflow/cli/templates/core/.github/workflows/lumenflow-ci.yml.template
 tests:
@@ -40,10 +43,17 @@ risks: []
 notes: 'Manual tests: deduplicate — keep only the 5 from last edit (lines 23-30 in current YAML).
   Old 3 are superseded.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-28T12:17:54.684Z
+worktree_path: worktrees/framework-cli-enforcement-wu-2275
+session_id: a92226d5-e99f-4efe-879e-098de0e0732b
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T12:17:54.689Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -65,11 +75,3 @@ acceptance:
   - wu:edit writes an edit stamp to wu-events.jsonl for each modified WU YAML path
   - lumenflow:integrate --sync re-scaffolds pre-commit and CI templates for existing repos without
     requiring a full re-init
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-enforcement-wu-2275
-claimed_at: 2026-02-28T12:17:54.684Z
-baseline_main_sha: f66da7ec3bc0b6aca57ace578f6a017a7dd07fa1
-session_id: a92226d5-e99f-4efe-879e-098de0e0732b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-28T12:17:54.689Z
