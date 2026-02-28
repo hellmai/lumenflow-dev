@@ -2,7 +2,7 @@ id: WU-2274
 title: Document pack registry publishing workflow
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -42,3 +42,6 @@ session_id: ac4ec103-600e-4f36-a0be-407ddec95e13
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-28T11:32:11.080Z
+locked: true
+completed_at: 2026-02-28T11:35:27.293Z
+completed: 2026-02-28
