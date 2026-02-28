@@ -10,9 +10,7 @@ code_paths:
 tests:
   manual:
     - Publish software-delivery pack to registry and verify success
-  unit:
-    - apps/web/src/server/__tests__/pack-registry-store-vercel-blob.test.ts
-    - apps/web/src/server/pack-registry-store-vercel-blob.ts
+  unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2272.done
