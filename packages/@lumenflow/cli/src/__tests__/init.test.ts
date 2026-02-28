@@ -1170,7 +1170,7 @@ describe('lumenflow init', () => {
   // WU-1519: Stop gitignoring .lumenflow/state/ in scaffold template
   describe('WU-1519: .gitignore should not ignore .lumenflow/state/', () => {
     const GITIGNORE_FILE = '.gitignore';
-    const STATE_PATTERN = '.lumenflow/state/';
+    const STATE_DIR_LINE_PATTERN = /^\.lumenflow\/state\/$/m;
     const TELEMETRY_PATTERN = '.lumenflow/telemetry/';
 
     describe('scaffolded .gitignore content', () => {
@@ -1186,7 +1186,7 @@ describe('lumenflow init', () => {
         expect(fs.existsSync(gitignorePath)).toBe(true);
 
         const content = fs.readFileSync(gitignorePath, 'utf-8');
-        expect(content).not.toContain(STATE_PATTERN);
+        expect(content).not.toMatch(STATE_DIR_LINE_PATTERN);
       });
 
       it('should still include .lumenflow/telemetry/ in scaffolded .gitignore', async () => {
@@ -1233,7 +1233,7 @@ describe('lumenflow init', () => {
         await scaffoldProject(tempDir, options);
 
         const content = fs.readFileSync(path.join(tempDir, GITIGNORE_FILE), 'utf-8');
-        expect(content).not.toContain(STATE_PATTERN);
+        expect(content).not.toMatch(STATE_DIR_LINE_PATTERN);
       });
 
       it('should add .lumenflow/telemetry/ when merging into existing .gitignore', async () => {
