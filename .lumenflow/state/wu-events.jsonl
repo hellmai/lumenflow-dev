@@ -2547,3 +2547,4 @@
 {"type":"claim","wuId":"WU-2276","timestamp":"2026-02-28T13:03:01.974Z","lane":"Framework: CLI Enforcement","title":"Fix non-repo path resolution in write enforcement hooks"}
 {"type":"checkpoint","wuId":"WU-2276","timestamp":"2026-02-28T13:06:52.805Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"checkpoint","wuId":"WU-2276","timestamp":"2026-02-28T13:08:18.140Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2276.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"complete","wuId":"WU-2276","timestamp":"2026-02-28T13:27:44.150Z"}

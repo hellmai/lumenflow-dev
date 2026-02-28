@@ -6,7 +6,6 @@ _Last updated: 2026-02-28_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
-- [WU-2276 — Fix non-repo path resolution in write enforcement hooks](wu/WU-2276.yaml)
 
 ## Completed
 
@@ -1171,3 +1170,4 @@ _Last updated: 2026-02-28_
 - [WU-2272 — Add allowOverwrite to Vercel Blob registry uploads](wu/WU-2272.yaml) — 2026-02-28
 - [WU-2274 — Document pack registry publishing workflow](wu/WU-2274.yaml) — 2026-02-28
 - [WU-2275 — Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit](wu/WU-2275.yaml) — 2026-02-28
+- [WU-2276 — Fix non-repo path resolution in write enforcement hooks](wu/WU-2276.yaml) — 2026-02-28
