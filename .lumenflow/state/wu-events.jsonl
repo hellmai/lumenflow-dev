@@ -2529,3 +2529,4 @@
 {"type":"checkpoint","wuId":"WU-2270","timestamp":"2026-02-28T10:13:54.096Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2270","timestamp":"2026-02-28T10:14:26.834Z"}
 {"type":"claim","wuId":"WU-2271","timestamp":"2026-02-28T10:19:47.374Z","lane":"Framework: CLI WU Commands","title":"Remove false-positive redirect regex from block-bash-file-commands hook"}
+{"type":"claim","wuId":"WU-2272","timestamp":"2026-02-28T10:36:25.863Z","lane":"Framework: Core Lifecycle","title":"Add allowOverwrite to Vercel Blob registry uploads"}
