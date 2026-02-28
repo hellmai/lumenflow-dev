@@ -68,6 +68,7 @@ const LOG_PREFIX = '[state:doctor]';
 const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
 const INITIATIVE_FILE_GLOB = 'INIT-*.yaml';
 const WU_FILE_GLOB = 'WU-*.yaml';
+const STATUS_RECONCILIATION_OPERATION = 'state-doctor';
 const STATUS_RECONCILIATION_OPERATION_ID = 'reconcile-initiative-status';
 const STATUS_RECONCILIATION_COMMIT_MESSAGE =
   'fix(state-doctor): reconcile stale initiative lifecycle statuses';
@@ -320,7 +321,8 @@ export async function applyInitiativeLifecycleStatusFixes(
   );
 
   await withMicroWorktree({
-    operation: TOOL_NAME,
+    // Use a git-ref-safe operation token; TOOL_NAME includes ':' and cannot be used in branch refs.
+    operation: STATUS_RECONCILIATION_OPERATION,
     id: STATUS_RECONCILIATION_OPERATION_ID,
     logPrefix: LOG_PREFIX,
     pushOnly: true,

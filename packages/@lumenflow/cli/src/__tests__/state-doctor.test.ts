@@ -406,6 +406,52 @@ describe('state-doctor CLI (WU-1230)', () => {
 
       expect(updated).toContain('status: done');
       expect(mockWithMicroWorktree).toHaveBeenCalled();
+      expect(mockWithMicroWorktree).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: 'state-doctor',
+          id: 'reconcile-initiative-status',
+          pushOnly: true,
+        }),
+      );
+    });
+
+    it('uses branch-safe operation name for initiative reconciliation micro-worktree', async () => {
+      setupTestState(testDir, {
+        initiatives: [{ id: 'INIT-902', status: 'in_progress' }],
+      });
+
+      const mismatches = [
+        {
+          initiativeId: 'INIT-902',
+          relativePath: `${INITIATIVES_DIR}/INIT-902.yaml`,
+          currentStatus: 'in_progress',
+          derivedStatus: 'done',
+        },
+      ];
+
+      const mockWithMicroWorktree = vi.mocked(withMicroWorktree);
+      mockWithMicroWorktree.mockImplementation(async (options) => {
+        const result = await options.execute({
+          worktreePath: testDir,
+          gitWorktree: {
+            add: vi.fn(),
+            addWithDeletions: vi.fn(),
+            commit: vi.fn(),
+            push: vi.fn(),
+          } as unknown as Parameters<typeof options.execute>[0]['gitWorktree'],
+        });
+        return { ...result, ref: 'main' };
+      });
+
+      await applyInitiativeLifecycleStatusFixes(testDir, mismatches);
+
+      expect(mockWithMicroWorktree).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: 'state-doctor',
+          id: 'reconcile-initiative-status',
+          pushOnly: true,
+        }),
+      );
     });
   });
 });
