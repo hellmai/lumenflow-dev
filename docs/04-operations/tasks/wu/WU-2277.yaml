@@ -19,7 +19,9 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-2277-plan.md
 risks: []
-notes: ''
+notes: >-
+  Scope require-wu to repository writes only; canonicalize file_path in generated
+  hook and runtime parity check. Plan ref: ~/.lumenflow/plans/WU-2277-plan.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

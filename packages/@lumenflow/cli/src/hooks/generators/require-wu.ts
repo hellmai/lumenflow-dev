@@ -64,20 +64,62 @@ fi
 TMPFILE=\$(mktemp)
 echo "\$INPUT" > "\$TMPFILE"
 
-TOOL_NAME=\$(python3 -c "
+PARSE_RESULT=\$(python3 -c "
 import json
 try:
     with open('\$TMPFILE', 'r') as f:
         data = json.load(f)
-    print(data.get('tool_name', ''))
+    tool_name = data.get('tool_name', '')
+    tool_input = data.get('tool_input', {})
+    if not isinstance(tool_input, dict):
+        tool_input = {}
+    file_path = tool_input.get('file_path', '')
+    print('OK')
+    print(tool_name if tool_name else '')
+    print(file_path if file_path else '')
 except:
+    print('ERROR')
     print('')
-" 2>/dev/null || echo "")
+    print('')
+" 2>/dev/null || echo "ERROR")
 
 rm -f "\$TMPFILE"
 
+# Parse result
+PARSE_STATUS=\$(echo "\$PARSE_RESULT" | head -1)
+TOOL_NAME=\$(echo "\$PARSE_RESULT" | sed -n '2p')
+FILE_PATH=\$(echo "\$PARSE_RESULT" | sed -n '3p')
+
+if [[ "\$PARSE_STATUS" != "OK" ]]; then
+  graceful_allow "JSON parse failed"
+fi
+
 # Only check Write and Edit
 if [[ "\$TOOL_NAME" != "Write" && "\$TOOL_NAME" != "Edit" ]]; then
+  exit 0
+fi
+
+if [[ -z "\$FILE_PATH" ]]; then
+  graceful_allow "No file_path in input"
+fi
+
+# Canonicalize tool path before resolution (e.g., "~/" -> "$HOME/")
+CANONICAL_PATH="\$FILE_PATH"
+if [[ "\$CANONICAL_PATH" == "~" ]]; then
+  if [[ -n "\${HOME:-}" ]]; then
+    CANONICAL_PATH="\$HOME"
+  fi
+elif [[ "\$CANONICAL_PATH" == "~/"* || "\$CANONICAL_PATH" == "~\\\\"* ]]; then
+  if [[ -n "\${HOME:-}" ]]; then
+    CANONICAL_PATH="\${HOME}/\${CANONICAL_PATH:2}"
+  fi
+fi
+
+# Resolve the canonicalized file path
+RESOLVED_PATH=\$(realpath -m "\$CANONICAL_PATH" 2>/dev/null || echo "\$CANONICAL_PATH")
+
+# Only enforce WU requirement for writes targeting this repository
+if [[ "\$RESOLVED_PATH" != "\${MAIN_REPO_PATH}/"* && "\$RESOLVED_PATH" != "\${MAIN_REPO_PATH}" ]]; then
   exit 0
 fi
 

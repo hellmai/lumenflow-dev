@@ -229,7 +229,6 @@ export async function checkWuRequirement(
   input: ToolInput,
   projectDir?: string,
 ): Promise<EnforcementCheckResult> {
-  void input;
   const mainRepoPath = projectDir ?? process.env.CLAUDE_PROJECT_DIR;
 
   if (!mainRepoPath) {
@@ -248,6 +247,24 @@ export async function checkWuRequirement(
     return {
       allowed: true,
       reason: 'graceful: LumenFlow not configured',
+    };
+  }
+
+  // Resolve path and scope requirement to writes targeting this repository.
+  let resolvedPath: string;
+  try {
+    resolvedPath = resolveToolInputPath(input.file_path);
+  } catch {
+    return {
+      allowed: true,
+      reason: 'graceful: cannot resolve file path',
+    };
+  }
+
+  if (!resolvedPath.startsWith(mainRepoPath + path.sep) && resolvedPath !== mainRepoPath) {
+    return {
+      allowed: true,
+      reason: 'path is outside repository',
     };
   }
 

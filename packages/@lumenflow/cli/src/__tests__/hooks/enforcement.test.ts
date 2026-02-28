@@ -306,6 +306,65 @@ describe('WU-1367: Hook Graceful Degradation', () => {
   });
 });
 
+describe('WU-2277: WU requirement scopes to repository paths', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  function mockNoClaim(): void {
+    vi.mocked(fs.existsSync).mockImplementation((p) => String(p).endsWith('.lumenflow'));
+  }
+
+  it('should allow Write to /tmp without claimed WU', async () => {
+    const { checkWuRequirement } = await import('../../hooks/enforcement-checks.js');
+    mockNoClaim();
+
+    const result = await checkWuRequirement(
+      { file_path: '/tmp/plan-theming.md', tool_name: 'Write' },
+      '/test/project',
+    );
+
+    expect(result.allowed).toBe(true);
+    expect(result.reason).toContain('outside repository');
+  });
+
+  it('should allow Write to home-relative path outside repo without claimed WU', async () => {
+    const { checkWuRequirement } = await import('../../hooks/enforcement-checks.js');
+    mockNoClaim();
+
+    const previousHome = process.env.HOME;
+    process.env.HOME = '/home/test-user';
+    try {
+      const result = await checkWuRequirement(
+        { file_path: '~/.claude/plans/plan.md', tool_name: 'Write' },
+        '/test/project',
+      );
+
+      expect(result.allowed).toBe(true);
+      expect(result.reason).toContain('outside repository');
+    } finally {
+      if (previousHome === undefined) {
+        delete process.env.HOME;
+      } else {
+        process.env.HOME = previousHome;
+      }
+    }
+  });
+
+  it('should block Write inside repo without claimed WU', async () => {
+    const { checkWuRequirement } = await import('../../hooks/enforcement-checks.js');
+    mockNoClaim();
+
+    const result = await checkWuRequirement(
+      { file_path: '/test/project/packages/@lumenflow/cli/src/index.ts', tool_name: 'Write' },
+      '/test/project',
+    );
+
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toContain('no WU claimed');
+  });
+});
+
 // =================================================================
 // WU-1501: Fail-closed default on main
 // =================================================================
@@ -570,6 +629,19 @@ describe('WU-1501: Fail-closed default on main', () => {
       expect(script).toContain('branch-pr');
       expect(script).toContain('claimed_mode');
     });
+  });
+});
+
+describe('WU-2277: Generated require-wu.sh scopes to repository paths', () => {
+  it('should parse file_path and skip non-repo targets', async () => {
+    const { generateRequireWuScript } = await import('../../hooks/enforcement-generator.js');
+    const script = generateRequireWuScript();
+
+    expect(script).toContain("tool_input = data.get('tool_input', {})");
+    expect(script).toContain('FILE_PATH=$(echo "$PARSE_RESULT" | sed -n \'3p\')');
+    expect(script).toContain('CANONICAL_PATH="$FILE_PATH"');
+    expect(script).toContain('RESOLVED_PATH=$(realpath -m "$CANONICAL_PATH"');
+    expect(script).toContain('if [[ "$RESOLVED_PATH" != "${MAIN_REPO_PATH}/"*');
   });
 });
 
