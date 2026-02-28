@@ -6,13 +6,16 @@ status: in_progress
 priority: P1
 created: 2026-02-28
 code_paths:
+  - package.json
+  - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-done-ownership.ts
   - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
   - packages/@lumenflow/cli/src/pre-commit-check.ts
   - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/wu-edit-operations.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/src/commands/integrate.ts
-  - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/cli/templates/core/.husky/pre-commit.template
   - packages/@lumenflow/cli/templates/core/.github/workflows/lumenflow-ci.yml.template
 tests:
