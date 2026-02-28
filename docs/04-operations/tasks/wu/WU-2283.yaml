@@ -20,12 +20,21 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-2283-plan.md
 risks: []
-notes: ''
+notes: 'Implementation: add retry-path reconciliation in micro-worktree push retry. If ff-only merge
+  of rebased temp branch into local main fails due divergence, rebase local main onto temp branch
+  and continue push retry. Includes unit regressions for pushWithRetry and pushWithRetryConfig.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-28T23:37:02.936Z
+worktree_path: worktrees/framework-cli-wu-commands-wu-2283
+session_id: aab8d306-ad2e-4444-8766-725d6024c726
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T23:37:02.943Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +45,3 @@ acceptance:
   - Upgrade returns success when target commit already exists on origin/main after retry path
   - No duplicate/local-only upgrade commit left behind after successful remote push
   - Regression test covers retry/remote-ahead path
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-wu-commands-wu-2283
-claimed_at: 2026-02-28T23:37:02.936Z
-baseline_main_sha: 9269819ea71a1a21bf194c583b8ce6bffa2b61d9
-session_id: aab8d306-ad2e-4444-8766-725d6024c726
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-28T23:37:02.943Z
