@@ -58,7 +58,6 @@ sections:
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
 - [WU-2271 — Remove false-positive redirect regex from block-bash-file-commands hook](wu/WU-2271.yaml) — Framework: CLI WU Commands
 - [WU-2272 — Add allowOverwrite to Vercel Blob registry uploads](wu/WU-2272.yaml) — Framework: Core Lifecycle
-- [WU-2273 — Honor tdd-exception in wu:done spec completeness validator](wu/WU-2273.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -1222,6 +1221,7 @@ sections:
 - [WU-2267 — Add package.json to sidekick pack for npm publish](wu/WU-2267.yaml)
 - [WU-2268 — Add package.json to software-delivery pack for npm publish and registry](wu/WU-2268.yaml)
 - [WU-2270 — Add Vercel CLI artifacts to apps/web .gitignore](wu/WU-2270.yaml)
+- [WU-2273 — Honor tdd-exception in wu:done spec completeness validator](wu/WU-2273.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
