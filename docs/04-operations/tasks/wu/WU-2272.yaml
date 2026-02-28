@@ -2,7 +2,7 @@ id: WU-2272
 title: Add allowOverwrite to Vercel Blob registry uploads
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -12,6 +12,7 @@ tests:
     - Publish software-delivery pack to registry and verify success
   unit:
     - apps/web/src/server/__tests__/pack-registry-store-vercel-blob.test.ts
+    - apps/web/src/server/pack-registry-store-vercel-blob.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2272.done
@@ -34,11 +35,3 @@ acceptance:
   - put() calls in VercelBlobPackBlobStore and VercelBlobPackRegistryStore include
     allowOverwrite:true
   - Re-publishing a pack version to registry.lumenflow.dev succeeds
-claimed_mode: worktree
-worktree_path: worktrees/framework-core-lifecycle-wu-2272
-claimed_at: 2026-02-28T10:36:25.839Z
-baseline_main_sha: 85bce76d642028adbfe84576d31e339b933ac98e
-session_id: f1911752-c5ea-47d7-bb32-cb996ff3e2f5
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-28T10:36:25.845Z
