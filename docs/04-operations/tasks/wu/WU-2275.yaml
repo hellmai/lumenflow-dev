@@ -1,0 +1,44 @@
+id: WU-2275
+title: Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit
+lane: 'Framework: CLI Enforcement'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-28
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
+  - .husky/hooks/pre-commit.mjs
+  - .github/workflows/ci.yml
+  - packages/@lumenflow/cli/templates/core/.husky/pre-commit.template
+tests:
+  manual:
+    - Attempt wu:done on a WU claimed by another agent/session; verify block and verify --force override logs audit
+    - Attempt raw @lumenflow version bump via package.json/pnpm-lock.yaml edit; verify pre-commit and CI fail without marker
+    - Attempt direct docs/04-operations/tasks/wu/*.yaml edit; verify pre-commit and CI fail without wu:edit stamp
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/cli/src/__tests__/lumenflow-upgrade.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2275.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Problem: agents can bypass workflow by running raw @lumenflow package updates, directly editing WU YAML, or completing WUs they did not claim. Solution: enforce claimant ownership in wu:done, require upgrade markers for @lumenflow version changes, and require wu:edit stamps for WU YAML edits via pre-commit and CI.'
+acceptance:
+  - wu:done blocks completion when current agent/session did not claim the WU, with a --force escape hatch and explicit audit event
+  - lumenflow:upgrade writes an upgrade marker under .lumenflow/state for the current upgrade operation
+  - pre-commit blocks commits that change @lumenflow/* versions in package.json or pnpm-lock.yaml without a valid upgrade marker
+  - CI fails with the same upgrade-marker rule used by pre-commit
+  - wu:edit writes an edit event/stamp for changed WU YAML paths
+  - pre-commit and CI block WU YAML edits that lack corresponding wu:edit event/stamp
