@@ -2523,3 +2523,4 @@
 {"type":"checkpoint","wuId":"WU-2267","timestamp":"2026-02-27T18:45:35.185Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2267","timestamp":"2026-02-27T18:51:48.675Z"}
 {"type":"claim","wuId":"WU-2268","timestamp":"2026-02-28T09:53:10.845Z","lane":"Framework: Core Lifecycle","title":"Add package.json to software-delivery pack for npm publish and registry"}
+{"type":"checkpoint","wuId":"WU-2268","timestamp":"2026-02-28T09:58:04.746Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
