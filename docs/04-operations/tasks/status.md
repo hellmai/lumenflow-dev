@@ -6,7 +6,6 @@ _Last updated: 2026-02-28_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
-- [WU-2272 — Add allowOverwrite to Vercel Blob registry uploads](wu/WU-2272.yaml)
 
 ## Completed
 
@@ -1168,3 +1167,4 @@ _Last updated: 2026-02-28_
 - [WU-2270 — Add Vercel CLI artifacts to apps/web .gitignore](wu/WU-2270.yaml) — 2026-02-28
 - [WU-2273 — Honor tdd-exception in wu:done spec completeness validator](wu/WU-2273.yaml) — 2026-02-28
 - [WU-2271 — Remove false-positive redirect regex from block-bash-file-commands hook](wu/WU-2271.yaml) — 2026-02-28
+- [WU-2272 — Add allowOverwrite to Vercel Blob registry uploads](wu/WU-2272.yaml) — 2026-02-28

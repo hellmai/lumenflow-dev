@@ -2531,9 +2531,10 @@
 {"type":"claim","wuId":"WU-2271","timestamp":"2026-02-28T10:19:47.374Z","lane":"Framework: CLI WU Commands","title":"Remove false-positive redirect regex from block-bash-file-commands hook"}
 {"type":"checkpoint","wuId":"WU-2271","timestamp":"2026-02-28T10:20:54.871Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2272","timestamp":"2026-02-28T10:36:25.863Z","lane":"Framework: Core Lifecycle","title":"Add allowOverwrite to Vercel Blob registry uploads"}
+{"type":"checkpoint","wuId":"WU-2272","timestamp":"2026-02-28T10:37:17.391Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2273","timestamp":"2026-02-28T10:51:54.511Z","lane":"Framework: CLI WU Commands","title":"Honor tdd-exception in wu:done spec completeness validator"}
 {"type":"checkpoint","wuId":"WU-2273","timestamp":"2026-02-28T10:54:51.785Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2273","timestamp":"2026-02-28T10:57:22.268Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2273","timestamp":"2026-02-28T10:59:31.767Z"}
 {"type":"complete","wuId":"WU-2271","timestamp":"2026-02-28T11:08:58.828Z"}
-{"type":"checkpoint","wuId":"WU-2272","timestamp":"2026-02-28T10:37:17.391Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"complete","wuId":"WU-2272","timestamp":"2026-02-28T11:11:27.085Z"}
