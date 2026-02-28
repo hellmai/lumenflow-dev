@@ -6,7 +6,7 @@ status: ready
 priority: P2
 created: 2026-02-28
 code_paths:
-  - apps/web/src/server/pack-registry-store-vercel-blob.ts
+  - apps/web/src/server/
 tests:
   manual:
     - Publish software-delivery pack to registry and verify success
