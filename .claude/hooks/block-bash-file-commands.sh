@@ -194,9 +194,6 @@ is_main_checkout_context() {
 
 is_mutating_filesystem_command() {
   local base_cmd="$1"
-  local raw_command="$2"
-  local redirect_regex='(^|[^0-9-])(>>|>)'
-  local merge_redirect_regex='(^|[^0-9])&>'
 
   case "$base_cmd" in
     cp|mv|rm|mkdir|touch|ln|install|rsync|chmod|chown|chgrp|truncate|dd|tee)
@@ -204,16 +201,11 @@ is_mutating_filesystem_command() {
       ;;
   esac
 
-  # Redirects write files (echo > file, cmd >> file, etc)
-  if [[ "$raw_command" =~ $redirect_regex ]] || [[ "$raw_command" =~ $merge_redirect_regex ]]; then
-    return 0
-  fi
-
   return 1
 }
 
 if is_main_checkout_context && has_active_worktrees && ! is_branch_pr_wu_active && \
-   is_mutating_filesystem_command "$BASE_CMD" "$COMMAND"; then
+   is_mutating_filesystem_command "$BASE_CMD"; then
   block_command "$BASE_CMD" \
     "cd worktrees/<lane>-wu-<id>/ and run the command there" \
     "File-mutating Bash commands on main can bypass worktree safeguards. Run mutations inside the claimed worktree."
