@@ -107,6 +107,7 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
     await put(REGISTRY_INDEX_PATH, content, {
       access: BLOB_ACCESS,
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
   }
 
@@ -190,6 +191,7 @@ export class VercelBlobPackBlobStore implements PackBlobStore {
     const blob = await put(path, Buffer.from(data), {
       access: BLOB_ACCESS,
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
 
     // Compute SHA-256 integrity hash
