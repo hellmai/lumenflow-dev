@@ -1,0 +1,31 @@
+id: WU-2274
+title: Document pack registry publishing workflow
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-28
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2274.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Create clear documentation for the pack registry publishing workflow. Current process requires: (1) deploy apps/web to Vercel via 'vercel link --project web' then 'vercel --prod' from repo root, (2) publish pack tarball via curl POST to /api/registry/packs/<id>/versions, (3) verify via /api/registry/packs. Key gotchas: Vercel root must be linked to 'web' project not 'lumenflow-dev', and deploy must happen BEFORE publish so the allowOverwrite fix (WU-2272) is live."
+acceptance:
+  - Release process doc includes step-by-step pack publishing instructions
+  - Doc covers Vercel deploy prerequisites (linking to correct project)
+  - Doc covers publish, verify, and cleanup steps with copy-paste commands
