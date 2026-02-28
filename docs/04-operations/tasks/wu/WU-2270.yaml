@@ -17,7 +17,12 @@ artifacts:
   - .lumenflow/stamps/WU-2270.done
 dependencies: []
 risks: []
-notes: gitignore-only change, added .vercel and .env*.local to apps/web/.gitignore
+notes: >-
+  gitignore-only change, added .vercel and .env*.local to apps/web/.gitignore
+
+
+  gitignore-only change, added .vercel and .env*.local to apps/web/.gitignore. tdd-exception:
+  gitignore-only change, no testable code modified
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
