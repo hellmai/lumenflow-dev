@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/packs-software-delivery",
-  "version": "3.8.4",
+  "version": "3.8.5",
   "description": "Software delivery pack for LumenFlow — work units, gates, lanes, initiatives, and agent coordination",
   "keywords": [
     "lumenflow",
