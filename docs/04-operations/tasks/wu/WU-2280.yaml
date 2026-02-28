@@ -1,7 +1,7 @@
 id: WU-2280
 title: Document missing CLI bin aliases for pre-release checks
 lane: 'Framework: CLI Memory State'
-type: documentation
+type: bug
 status: in_progress
 priority: P1
 created: 2026-02-28
@@ -19,10 +19,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-28T19:34:12.734Z
+worktree_path: worktrees/framework-cli-memory-state-wu-2280
+session_id: 3fab54ba-f5ee-49cc-b6dc-69f4ecd9a899
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T19:34:12.742Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +38,3 @@ description: Pre-release checks fail because several CLI bin aliases are present
 acceptance:
   - pnpm pre-release:check passes with no missing bin-entry errors
   - README lists wu-escalate, templates-sync, lumenflow-pre-commit-check, and state-emit
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-memory-state-wu-2280
-claimed_at: 2026-02-28T19:34:12.734Z
-baseline_main_sha: dfb58882f3fcaa733c00d7b406833a7348ec493a
-session_id: 3fab54ba-f5ee-49cc-b6dc-69f4ecd9a899
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-28T19:34:12.742Z
