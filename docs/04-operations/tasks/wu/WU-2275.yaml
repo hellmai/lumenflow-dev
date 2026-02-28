@@ -46,10 +46,12 @@ description: 'Problem: agents bypass workflow by running raw @lumenflow package 
 acceptance:
   - wu:done blocks completion when current agent/session did not claim the WU, with a --force escape
     hatch and explicit audit event
-  - lumenflow:upgrade writes an upgrade marker under .lumenflow/state for the current upgrade
-    operation
-  - pre-commit blocks commits that change @lumenflow/* versions in package.json or pnpm-lock.yaml
-    without a valid upgrade marker
-  - CI fails with the same upgrade-marker rule used by pre-commit
-  - wu:edit writes an edit event/stamp for changed WU YAML paths
-  - pre-commit and CI block WU YAML edits that lack corresponding wu:edit event/stamp
+  - lumenflow:upgrade writes an upgrade marker under .lumenflow/state/
+  - 'lumenflow:pre-commit-check CLI command enforces: (a) @lumenflow/* version changes require
+    upgrade marker, (b) WU YAML changes require wu:edit stamp'
+  - "pre-commit template is a thin delegator: 'pnpm lumenflow:pre-commit-check' only — no logic in
+    the script"
+  - CI template calls the same lumenflow:pre-commit-check command so local hook bypasses cannot merge
+  - wu:edit writes an edit stamp to wu-events.jsonl for each modified WU YAML path
+  - lumenflow:integrate --sync re-scaffolds pre-commit and CI templates for existing repos without
+    requiring a full re-init
