@@ -2,7 +2,7 @@ id: WU-2282
 title: Scope wu:done checkpoint writes to worktree instead of main
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -42,3 +42,6 @@ session_id: ef813939-dac4-41ba-980e-ff951880c5e3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-28T23:20:25.870Z
+locked: true
+completed_at: 2026-02-28T23:25:02.136Z
+completed: 2026-03-01

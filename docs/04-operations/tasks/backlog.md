@@ -56,7 +56,6 @@ sections:
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
-- [WU-2282 — Scope wu:done checkpoint writes to worktree instead of main](wu/WU-2282.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -1231,6 +1230,7 @@ sections:
 - [WU-2279 — Fix state:doctor --fix invalid temp branch name](wu/WU-2279.yaml)
 - [WU-2280 — Document missing CLI bin aliases for pre-release checks](wu/WU-2280.yaml)
 - [WU-2281 — Fix pre-existing @lumenflow/cli test failures in gate runs](wu/WU-2281.yaml)
+- [WU-2282 — Scope wu:done checkpoint writes to worktree instead of main](wu/WU-2282.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
