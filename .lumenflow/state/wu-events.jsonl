@@ -2551,3 +2551,4 @@
 {"type":"claim","wuId":"WU-2277","timestamp":"2026-02-28T15:35:01.649Z","lane":"Framework: CLI Enforcement","title":"Fix require-wu path scope to repo"}
 {"type":"checkpoint","wuId":"WU-2277","timestamp":"2026-02-28T15:43:40.027Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"checkpoint","wuId":"WU-2277","timestamp":"2026-02-28T15:44:25.178Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"complete","wuId":"WU-2277","timestamp":"2026-02-28T15:44:55.135Z"}
