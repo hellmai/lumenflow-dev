@@ -19,7 +19,12 @@ artifacts:
   - .lumenflow/stamps/WU-2278.done
 dependencies: []
 risks: []
-notes: ''
+notes: >-
+  Implement in CLI integrate command by adding a package.json script sync step
+  during --sync. Source aliases from public manifest via
+  generateScriptsFromManifest(); add only missing keys and never overwrite
+  existing custom scripts. Keep output explicit about whether aliases were
+  added or already current.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

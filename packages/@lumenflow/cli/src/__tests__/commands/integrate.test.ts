@@ -110,7 +110,9 @@ describe('WU-1367: Integrate Command', () => {
     });
 
     it('does not overwrite existing custom aliases when syncing package.json scripts', async () => {
-      vi.mocked(fs.existsSync).mockImplementation((filePath) => String(filePath).endsWith('package.json'));
+      vi.mocked(fs.existsSync).mockImplementation((filePath) =>
+        String(filePath).endsWith('package.json'),
+      );
       vi.mocked(fs.readFileSync).mockImplementation((filePath) => {
         if (String(filePath).endsWith('package.json')) {
           return JSON.stringify({

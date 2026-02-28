@@ -181,7 +181,10 @@ export function syncPackageJsonScripts(projectDir: string): ScriptSyncResult {
     return { added: [], modified: false };
   }
 
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')) as Record<string, unknown>;
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')) as Record<
+    string,
+    unknown
+  >;
   if (!packageJson.scripts || typeof packageJson.scripts !== 'object') {
     packageJson.scripts = {};
   }
