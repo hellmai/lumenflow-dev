@@ -2,7 +2,7 @@ id: WU-2268
 title: Add package.json to software-delivery pack for npm publish and registry
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/packs/software-delivery/tsconfig.json
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -28,8 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: The sidekick pack was scaffolded for npm publish (WU-2267) but the software-delivery pack still lacks package.json and tsconfig.json. Problem: software-delivery pack cannot be published to npm or the pack registry. Solution: Add package.json, tsconfig.json, build, release, and publish to registry.lumenflow.dev.'
+description: 'Context: The sidekick pack was scaffolded for npm publish (WU-2267) but the
+  software-delivery pack still lacks package.json and tsconfig.json. Problem: software-delivery pack
+  cannot be published to npm or the pack registry. Solution: Add package.json, tsconfig.json, build,
+  release, and publish to registry.lumenflow.dev.'
 acceptance:
   - software-delivery pack builds cleanly
   - pnpm release includes software-delivery in version bump
   - software-delivery pack published to registry.lumenflow.dev
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2268
+claimed_at: 2026-02-28T09:53:10.820Z
+baseline_main_sha: 14e023ef2b5fc38c979c92ca55ef67e8ac961f08
+session_id: 0f111811-151b-44a7-83bf-df5b8270dcb0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T09:53:10.826Z
