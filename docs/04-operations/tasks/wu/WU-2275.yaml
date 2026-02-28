@@ -20,6 +20,14 @@ tests:
       and CI fail without marker
     - Attempt direct docs/04-operations/tasks/wu/*.yaml edit; verify pre-commit and CI fail without
       wu:edit stamp
+    - Attempt wu:done on a WU claimed by another agent/session; verify block and --force override
+      logs audit event
+    - Attempt raw @lumenflow version bump via package.json edit; verify pre-commit fails without
+      upgrade marker
+    - Attempt direct WU YAML edit without wu:edit; verify pre-commit and CI fail
+    - Run lumenflow:upgrade on a fresh repo; verify marker is written then consumed on commit
+    - Run lumenflow:integrate --sync on an existing repo; verify pre-commit and CI templates updated
+      to thin delegator
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - packages/@lumenflow/cli/src/__tests__/lumenflow-upgrade.test.ts
