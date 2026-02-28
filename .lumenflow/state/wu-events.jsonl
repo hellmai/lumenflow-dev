@@ -2543,3 +2543,4 @@
 {"type":"complete","wuId":"WU-2274","timestamp":"2026-02-28T11:35:31.616Z"}
 {"type":"claim","wuId":"WU-2275","timestamp":"2026-02-28T12:17:54.706Z","lane":"Framework: CLI Enforcement","title":"Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit"}
 {"type":"checkpoint","wuId":"WU-2275","timestamp":"2026-02-28T12:18:11.500Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"complete","wuId":"WU-2275","timestamp":"2026-02-28T12:38:34.580Z"}

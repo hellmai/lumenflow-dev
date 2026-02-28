@@ -56,7 +56,6 @@ sections:
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
-- [WU-2275 — Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit](wu/WU-2275.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
@@ -1224,6 +1223,7 @@ sections:
 - [WU-2271 — Remove false-positive redirect regex from block-bash-file-commands hook](wu/WU-2271.yaml)
 - [WU-2272 — Add allowOverwrite to Vercel Blob registry uploads](wu/WU-2272.yaml)
 - [WU-2274 — Document pack registry publishing workflow](wu/WU-2274.yaml)
+- [WU-2275 — Enforce vendor-agnostic workflow controls for wu:done, upgrade, and wu:edit](wu/WU-2275.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
