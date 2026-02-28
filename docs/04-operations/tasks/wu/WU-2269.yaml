@@ -2,7 +2,7 @@ id: WU-2269
 title: Add allowOverwrite to registry blob uploads
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: blocked
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -19,7 +19,9 @@ dependencies: []
 spec_refs:
   - lumenflow://wu/WU-2268
 risks: []
-notes: 'tdd-exception: one-line config fix, no new logic'
+notes: |-
+  tdd-exception: one-line config fix, no new logic
+  Blocked (2026-02-28): Abandoned - fixing inline
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
