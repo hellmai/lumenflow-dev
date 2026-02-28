@@ -311,6 +311,39 @@ export async function mergeWithRetry(
   }
 }
 
+const FAST_FORWARD_FAILURE_PATTERNS = [
+  /not possible to fast-forward/i,
+  /non-fast-forward/i,
+  /diverging branches/i,
+];
+
+function isFastForwardFailure(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return FAST_FORWARD_FAILURE_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+async function reconcileLocalMainFromRebasedTempBranch(
+  mainGit: GitAdapter,
+  tempBranchName: string,
+  branch: string,
+  logPrefix: string,
+): Promise<void> {
+  console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
+  try {
+    await mainGit.merge(tempBranchName, { ffOnly: true });
+  } catch (mergeErr: unknown) {
+    if (!isFastForwardFailure(mergeErr)) {
+      throw mergeErr;
+    }
+
+    console.log(
+      `${logPrefix} ⚠️  Re-merge to ${branch} was not fast-forward. Rebasing local ${branch} onto temp branch...`,
+    );
+    await mainGit.rebase(tempBranchName);
+    console.log(`${logPrefix} ✅ Rebased local ${branch} onto temp branch`);
+  }
+}
+
 /**
  * Push to origin/main with retry logic for race conditions
  *
@@ -380,9 +413,15 @@ export async function pushWithRetry(
           await worktreeGit.rebase(`${remote}/${branch}`);
 
           // Step 3: Re-merge temp branch to local main (ff-only)
-          // This updates local main to include the rebased commits
-          console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
-          await mainGit.merge(tempBranchName, { ffOnly: true });
+          // This updates local main to include the rebased commits.
+          // If local main already has the pre-rebase commit, ff-only merge can fail.
+          // In that case, rebase local main onto the rebased temp branch.
+          await reconcileLocalMainFromRebasedTempBranch(
+            mainGit,
+            tempBranchName,
+            branch,
+            logPrefix,
+          );
         } else {
           const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
           throw createError(
@@ -488,9 +527,15 @@ export async function pushWithRetryConfig(
           await worktreeGit.rebase(`${remote}/${branch}`);
 
           // Re-merge temp branch to local main (ff-only)
-          // This updates local main to include the rebased commits
-          console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
-          await mainGit.merge(tempBranchName, { ffOnly: true });
+          // This updates local main to include the rebased commits.
+          // If local main already has the pre-rebase commit, ff-only merge can fail.
+          // In that case, rebase local main onto the rebased temp branch.
+          await reconcileLocalMainFromRebasedTempBranch(
+            mainGit,
+            tempBranchName,
+            branch,
+            logPrefix,
+          );
 
           // Re-throw to trigger p-retry
           throw pushErr;

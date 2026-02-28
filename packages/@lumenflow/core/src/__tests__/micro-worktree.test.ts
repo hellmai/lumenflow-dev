@@ -266,6 +266,42 @@ describe('micro-worktree', () => {
       expect(mockWorktreeGit.rebase).toHaveBeenCalledWith(ORIGIN_MAIN_REF);
     });
 
+    it('should recover when ff-only re-merge fails by rebasing local main onto temp branch', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      const mockMainGit = {
+        push: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi
+          .fn()
+          .mockRejectedValueOnce(new Error('fatal: Not possible to fast-forward, aborting.')),
+        rebase: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetry(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+      );
+
+      expect(mockMainGit.push).toHaveBeenCalledTimes(2);
+      expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+      expect(mockWorktreeGit.rebase).toHaveBeenCalledWith(ORIGIN_MAIN_REF);
+      expect(mockMainGit.merge).toHaveBeenCalledWith(TEST_TEMP_BRANCH, FF_ONLY_OPTION);
+      expect(mockMainGit.rebase).toHaveBeenCalledWith(TEST_TEMP_BRANCH);
+    });
+
     it('should fail after MAX_PUSH_RETRIES attempts', async () => {
       const { pushWithRetry } = await import('../micro-worktree.js');
       const expectedRetries = 3; // MAX_PUSH_RETRIES value
@@ -583,6 +619,49 @@ describe('micro-worktree', () => {
 
       // Push should be called 5 times (1 initial + 4 retries)
       expect(mockMainGit.push).toHaveBeenCalledTimes(5);
+    });
+
+    it('should recover from ff-only re-merge failure by rebasing local main onto temp branch', async () => {
+      const { pushWithRetryConfig } = await import('../micro-worktree.js');
+
+      const mockMainGit = {
+        push: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi
+          .fn()
+          .mockRejectedValueOnce(new Error('fatal: Not possible to fast-forward, aborting.')),
+        rebase: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetryConfig(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        {
+          enabled: true,
+          retries: TEST_RETRIES,
+          min_delay_ms: 10,
+          max_delay_ms: 20,
+          jitter: false,
+        },
+      );
+
+      expect(mockMainGit.push).toHaveBeenCalledTimes(2);
+      expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+      expect(mockWorktreeGit.rebase).toHaveBeenCalledWith(ORIGIN_MAIN_REF);
+      expect(mockMainGit.merge).toHaveBeenCalledWith(TEST_TEMP_BRANCH, FF_ONLY_OPTION);
+      expect(mockMainGit.rebase).toHaveBeenCalledWith(TEST_TEMP_BRANCH);
     });
 
     it('should not retry when push_retry.enabled is false', async () => {
