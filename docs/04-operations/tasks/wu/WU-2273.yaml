@@ -12,17 +12,26 @@ tests:
     - Create a WU with tdd-exception in notes and code_paths with .ts files, verify wu:done completes
   unit:
     - packages/@lumenflow/core/src/__tests__/manual-test-validator.test.ts
+    - packages/@lumenflow/core/src/__tests__/manual-test-validator.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2273.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'tdd-exception: bug fix adds hasDocumentedTddException() to manual-test-validator.ts,
+  aligning wu:done with wu:prep tdd-exception behavior'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-28T10:51:54.487Z
+worktree_path: worktrees/framework-cli-wu-commands-wu-2273
+session_id: f1911752-c5ea-47d7-bb32-cb996ff3e2f5
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T10:51:54.493Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +43,3 @@ description: "wu:prep recognizes tdd-exception: in WU notes and passes validatio
 acceptance:
   - 'wu:done passes spec completeness for WUs with tdd-exception: in notes and no automated tests'
   - wu:prep and wu:done agree on tdd-exception behavior
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-wu-commands-wu-2273
-claimed_at: 2026-02-28T10:51:54.487Z
-baseline_main_sha: 99e467e6cb2f8adf671e55d34fb9a58628d5fcea
-session_id: f1911752-c5ea-47d7-bb32-cb996ff3e2f5
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-28T10:51:54.493Z
