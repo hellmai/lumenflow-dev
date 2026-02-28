@@ -10,11 +10,11 @@ This document covers the complete release process for LumenFlow, including versi
 
 LumenFlow has several components that need to stay in sync:
 
-| Component      | Location                         | Deployment                          |
-| -------------- | -------------------------------- | ----------------------------------- |
-| npm packages   | `packages/@lumenflow/*`          | Auto via GitHub Actions on tag push |
-| Starlight docs | `apps/docs/`                     | Manual via Vercel CLI               |
-| Pack registry  | `apps/web/` + pack tarballs      | Manual deploy + curl publish        |
+| Component      | Location                    | Deployment                          |
+| -------------- | --------------------------- | ----------------------------------- |
+| npm packages   | `packages/@lumenflow/*`     | Auto via GitHub Actions on tag push |
+| Starlight docs | `apps/docs/`                | Manual via Vercel CLI               |
+| Pack registry  | `apps/web/` + pack tarballs | Manual deploy + curl publish        |
 
 ---
 
@@ -329,12 +329,12 @@ rm packages/@lumenflow/packs/software-delivery/lumenflow-packs-software-delivery
 
 ### Vercel Projects Reference
 
-| Project          | Domain                    | Purpose                 |
-| ---------------- | ------------------------- | ----------------------- |
-| `web`            | registry.lumenflow.dev    | Pack registry + web app |
-| `docs`           | lumenflow.dev             | Starlight documentation |
-| `lumenflow-dev`  | lumenflow-dev.vercel.app  | Monorepo preview        |
-| `lumenflow-cloud`| cloud.lumenflow.dev       | Control plane           |
+| Project           | Domain                   | Purpose                 |
+| ----------------- | ------------------------ | ----------------------- |
+| `web`             | registry.lumenflow.dev   | Pack registry + web app |
+| `docs`            | lumenflow.dev            | Starlight documentation |
+| `lumenflow-dev`   | lumenflow-dev.vercel.app | Monorepo preview        |
+| `lumenflow-cloud` | cloud.lumenflow.dev      | Control plane           |
 
 ### Troubleshooting Pack Publishing
 
