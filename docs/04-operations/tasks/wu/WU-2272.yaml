@@ -1,0 +1,32 @@
+id: WU-2272
+title: Add allowOverwrite to Vercel Blob registry uploads
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-28
+code_paths:
+  - apps/web/src/server/pack-registry-store-vercel-blob.ts
+tests:
+  manual:
+    - Publish software-delivery pack to registry and verify success
+  unit:
+    - apps/web/src/server/__tests__/pack-registry-store-vercel-blob.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2272.done
+dependencies: []
+risks: []
+notes: 'tdd-exception: config-only change adding a single option flag to existing API calls. No logic change to test.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: api
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Publishing a pack to the registry fails with 'blob already exists' when a blob path has been used before (e.g. failed upload, re-publish). Add allowOverwrite:true to both put() calls in pack-registry-store-vercel-blob.ts.
+acceptance:
+  - put() calls in VercelBlobPackBlobStore and VercelBlobPackRegistryStore include allowOverwrite:true
+  - Re-publishing a pack version to registry.lumenflow.dev succeeds
