@@ -2553,3 +2553,4 @@
 {"type":"checkpoint","wuId":"WU-2277","timestamp":"2026-02-28T15:44:25.178Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2277","timestamp":"2026-02-28T15:44:55.135Z"}
 {"type":"claim","wuId":"WU-2278","timestamp":"2026-02-28T17:57:38.377Z","lane":"Framework: CLI WU Commands","title":"Sync missing public command aliases during integrate --sync"}
+{"type":"checkpoint","wuId":"WU-2278","timestamp":"2026-02-28T18:08:28.409Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
