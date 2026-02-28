@@ -17,10 +17,18 @@ artifacts:
   - .lumenflow/stamps/WU-2271.done
 dependencies: []
 risks: []
-notes: Removed the redirect regex pattern from block-bash-file-commands.sh that was falsely matching
+notes: >-
+  Removed the redirect regex pattern from block-bash-file-commands.sh that was falsely matching
   angle brackets in email addresses (e.g. Co-Authored-By trailers in git commit messages). The named
   command blocks for echo and cat already cover redirect-based file writes, making the generic
   redirect regex redundant and harmful.
+
+
+  tdd-exception: Shell hook script has no automated test harness; fix verified by manual git commit
+  with Co-Authored-By trailer. Removed the redirect regex pattern from block-bash-file-commands.sh
+  that was falsely matching angle brackets in email addresses (e.g. Co-Authored-By trailers in git
+  commit messages). The named command blocks for echo and cat already cover redirect-based file
+  writes, making the generic redirect regex redundant and harmful.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
