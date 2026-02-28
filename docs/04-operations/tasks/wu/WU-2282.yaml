@@ -2,7 +2,7 @@ id: WU-2282
 title: Scope wu:done checkpoint writes to worktree instead of main
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -18,7 +18,8 @@ artifacts:
   - .lumenflow/stamps/WU-2282.done
 dependencies: []
 risks: []
-notes: 'Root cause: wu:done calls markGatesPassed(id) and clearCheckpoint(id) without options, defaulting to process.cwd().'
+notes: 'Root cause: wu:done calls markGatesPassed(id) and clearCheckpoint(id) without options,
+  defaulting to process.cwd().'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,8 +28,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix wu:done checkpoint helper calls so mark/clear operations use worktree baseDir, preventing checkpoint files from being created or deleted in main checkout.
+description: Fix wu:done checkpoint helper calls so mark/clear operations use worktree baseDir,
+  preventing checkpoint files from being created or deleted in main checkout.
 acceptance:
   - wu:done passes baseDir when calling markGatesPassed and clearCheckpoint
   - Add or update tests to cover scoped checkpoint behavior
   - No checkpoint artifact appears on main from this path
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2282
+claimed_at: 2026-02-28T23:20:25.865Z
+baseline_main_sha: 53b0d73609ca5d60211824710b373b4d10a01650
+session_id: ef813939-dac4-41ba-980e-ff951880c5e3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T23:20:25.870Z
