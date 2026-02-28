@@ -416,12 +416,7 @@ export async function pushWithRetry(
           // This updates local main to include the rebased commits.
           // If local main already has the pre-rebase commit, ff-only merge can fail.
           // In that case, rebase local main onto the rebased temp branch.
-          await reconcileLocalMainFromRebasedTempBranch(
-            mainGit,
-            tempBranchName,
-            branch,
-            logPrefix,
-          );
+          await reconcileLocalMainFromRebasedTempBranch(mainGit, tempBranchName, branch, logPrefix);
         } else {
           const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
           throw createError(
@@ -530,12 +525,7 @@ export async function pushWithRetryConfig(
           // This updates local main to include the rebased commits.
           // If local main already has the pre-rebase commit, ff-only merge can fail.
           // In that case, rebase local main onto the rebased temp branch.
-          await reconcileLocalMainFromRebasedTempBranch(
-            mainGit,
-            tempBranchName,
-            branch,
-            logPrefix,
-          );
+          await reconcileLocalMainFromRebasedTempBranch(mainGit, tempBranchName, branch, logPrefix);
 
           // Re-throw to trigger p-retry
           throw pushErr;
