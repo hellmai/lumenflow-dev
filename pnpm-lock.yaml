@@ -566,6 +566,22 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@edge-runtime/vm@3.2.0)(@types/node@22.19.6)(jiti@1.21.7)(jsdom@28.1.0)(yaml@2.8.2)
 
+  packages/@lumenflow/packs/software-delivery:
+    dependencies:
+      '@lumenflow/kernel':
+        specifier: workspace:^
+        version: link:../../kernel
+    devDependencies:
+      simple-git:
+        specifier: ^3.27.0
+        version: 3.31.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@edge-runtime/vm@3.2.0)(@types/node@22.19.6)(jiti@1.21.7)(jsdom@28.1.0)(yaml@2.8.2)
+
   packages/@lumenflow/runtime:
     dependencies:
       zod:

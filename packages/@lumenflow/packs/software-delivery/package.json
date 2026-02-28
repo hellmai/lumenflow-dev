@@ -1,0 +1,58 @@
+{
+  "name": "@lumenflow/packs-software-delivery",
+  "version": "3.7.0",
+  "description": "Software delivery pack for LumenFlow — work units, gates, lanes, initiatives, and agent coordination",
+  "keywords": [
+    "lumenflow",
+    "pack",
+    "software-delivery",
+    "work-units",
+    "gates",
+    "lanes"
+  ],
+  "homepage": "https://github.com/hellmai/lumenflow-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/lumenflow-dev.git",
+    "directory": "packages/@lumenflow/packs/software-delivery"
+  },
+  "license": "AGPL-3.0-only",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./tools": "./dist/tools/index.js",
+    "./tool-impl": "./dist/tool-impl/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "manifest.yaml",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist *.tgz",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lumenflow/kernel": "workspace:^"
+  },
+  "devDependencies": {
+    "simple-git": "^3.27.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

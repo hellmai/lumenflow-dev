@@ -228,7 +228,7 @@ function patchConsoleOutput(stdoutChunks: string[], stderrChunks: string[]): () 
 
   return () => {
     for (let index = restoreMethods.length - 1; index >= 0; index -= 1) {
-      restoreMethods[index]();
+      restoreMethods[index]?.();
     }
   };
 }
