@@ -2,14 +2,15 @@ id: WU-2271
 title: Remove false-positive redirect regex from block-bash-file-commands hook
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-28
 code_paths:
   - .claude/hooks/block-bash-file-commands.sh
 tests:
   manual:
-    - Run git commit with Co-Authored-By trailer from main with active worktrees - should not be blocked
+    - Run git commit with Co-Authored-By trailer from main with active worktrees - should not be
+      blocked
   unit: []
   e2e: []
 artifacts:
@@ -25,7 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The redirect detection regex in block-bash-file-commands.sh falsely matches > inside email angle brackets (e.g. Co-Authored-By trailers), blocking legitimate git commits. Remove the regex entirely since named command blocks already cover redirect-based file writes.
+description: The redirect detection regex in block-bash-file-commands.sh falsely matches > inside
+  email angle brackets (e.g. Co-Authored-By trailers), blocking legitimate git commits. Remove the
+  regex entirely since named command blocks already cover redirect-based file writes.
 acceptance:
   - Hook no longer blocks git commits containing Co-Authored-By trailers
   - Named command blocks (echo, cat) still catch redirect-based file writes
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2271
+claimed_at: 2026-02-28T10:19:47.350Z
+baseline_main_sha: 16eb58191d8c88f1a17adf47c30dc310fdfa500e
+session_id: f1911752-c5ea-47d7-bb32-cb996ff3e2f5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T10:19:47.355Z
