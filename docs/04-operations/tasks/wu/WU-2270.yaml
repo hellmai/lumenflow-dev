@@ -17,12 +17,19 @@ artifacts:
   - .lumenflow/stamps/WU-2270.done
 dependencies: []
 risks: []
-notes: ''
+notes: gitignore-only change, added .vercel and .env*.local to apps/web/.gitignore
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-28T10:10:21.618Z
+worktree_path: worktrees/operations-tooling-wu-2270
+session_id: b1c1d2da-a57e-4f4e-a8cd-47809a7027b0
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T10:10:21.626Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +38,3 @@ description: Vercel CLI keeps dirtying apps/web/.gitignore on every deploy by ad
 acceptance:
   - .vercel added to apps/web/.gitignore
   - .env*.local added to apps/web/.gitignore
-claimed_mode: worktree
-worktree_path: worktrees/operations-tooling-wu-2270
-claimed_at: 2026-02-28T10:10:21.618Z
-baseline_main_sha: 3a4e1d22ee4ca18f2ea283560bbaf6d701a460be
-session_id: b1c1d2da-a57e-4f4e-a8cd-47809a7027b0
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-28T10:10:21.626Z
