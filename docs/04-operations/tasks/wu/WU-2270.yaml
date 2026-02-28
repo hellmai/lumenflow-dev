@@ -2,7 +2,7 @@ id: WU-2270
 title: Add Vercel CLI artifacts to apps/web .gitignore
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-28
 code_paths:
@@ -43,3 +43,6 @@ description: Vercel CLI keeps dirtying apps/web/.gitignore on every deploy by ad
 acceptance:
   - .vercel added to apps/web/.gitignore
   - .env*.local added to apps/web/.gitignore
+locked: true
+completed_at: 2026-02-28T10:14:22.491Z
+completed: 2026-02-28

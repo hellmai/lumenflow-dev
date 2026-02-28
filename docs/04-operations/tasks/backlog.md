@@ -57,7 +57,6 @@ sections:
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
 - [WU-2269 — Add allowOverwrite to registry blob uploads](wu/WU-2269.yaml) — Framework: Core Lifecycle
-- [WU-2270 — Add Vercel CLI artifacts to apps/web .gitignore](wu/WU-2270.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
@@ -1220,6 +1219,7 @@ sections:
 - [WU-2266 — INIT-048 kernel hardening documentation: network allowlist, macOS sandbox, argument-level policy](wu/WU-2266.yaml)
 - [WU-2267 — Add package.json to sidekick pack for npm publish](wu/WU-2267.yaml)
 - [WU-2268 — Add package.json to software-delivery pack for npm publish and registry](wu/WU-2268.yaml)
+- [WU-2270 — Add Vercel CLI artifacts to apps/web .gitignore](wu/WU-2270.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
