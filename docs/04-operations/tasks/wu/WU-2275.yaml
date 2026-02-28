@@ -37,7 +37,8 @@ artifacts:
   - .lumenflow/stamps/WU-2275.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Manual tests: deduplicate — keep only the 5 from last edit (lines 23-30 in current YAML).
+  Old 3 are superseded.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
