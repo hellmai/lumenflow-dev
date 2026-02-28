@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/mcp",
-  "version": "3.8.1",
+  "version": "3.8.2",
   "description": "MCP stdio server for LumenFlow workflow framework",
   "keywords": [
     "lumenflow",

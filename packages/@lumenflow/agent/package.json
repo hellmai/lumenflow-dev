@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/agent",
-  "version": "3.8.1",
+  "version": "3.8.2",
   "description": "Agent session management for LumenFlow workflow framework",
   "keywords": [
     "lumenflow",
