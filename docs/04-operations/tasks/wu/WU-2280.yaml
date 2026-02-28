@@ -2,7 +2,7 @@ id: WU-2280
 title: Document missing CLI bin aliases for pre-release checks
 lane: 'Framework: CLI Memory State'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-28
 code_paths:
@@ -38,3 +38,6 @@ description: Pre-release checks fail because several CLI bin aliases are present
 acceptance:
   - pnpm pre-release:check passes with no missing bin-entry errors
   - README lists wu-escalate, templates-sync, lumenflow-pre-commit-check, and state-emit
+locked: true
+completed_at: 2026-02-28T19:43:05.325Z
+completed: 2026-02-28

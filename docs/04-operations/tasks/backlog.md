@@ -52,12 +52,12 @@ sections:
 - [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
 - [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
 - [WU-2261 — wu:done leaves bulk staged WU metadata on main](wu/WU-2261.yaml) — Framework: CLI Enforcement
+- [WU-2281 — Fix pre-existing @lumenflow/cli test failures in gate runs](wu/WU-2281.yaml) — Framework: CLI Memory State
 
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — Framework: Initiatives
-- [WU-2280 — Document missing CLI bin aliases for pre-release checks](wu/WU-2280.yaml) — Framework: CLI Memory State
 
 ## ⛔ Blocked
 
@@ -1230,6 +1230,7 @@ sections:
 - [WU-2277 — Fix require-wu path scope to repo](wu/WU-2277.yaml)
 - [WU-2278 — Sync missing public command aliases during integrate --sync](wu/WU-2278.yaml)
 - [WU-2279 — Fix state:doctor --fix invalid temp branch name](wu/WU-2279.yaml)
+- [WU-2280 — Document missing CLI bin aliases for pre-release checks](wu/WU-2280.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
