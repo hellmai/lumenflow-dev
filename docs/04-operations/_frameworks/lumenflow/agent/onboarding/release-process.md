@@ -1,6 +1,6 @@
 # LumenFlow Release Process
 
-**Last updated:** 2026-02-24
+**Last updated:** 2026-02-28
 
 This document covers the complete release process for LumenFlow, including versioning, npm publishing, and documentation updates.
 
@@ -10,10 +10,11 @@ This document covers the complete release process for LumenFlow, including versi
 
 LumenFlow has several components that need to stay in sync:
 
-| Component      | Location                | Deployment                          |
-| -------------- | ----------------------- | ----------------------------------- |
-| npm packages   | `packages/@lumenflow/*` | Auto via GitHub Actions on tag push |
-| Starlight docs | `apps/docs/`            | Manual via Vercel CLI               |
+| Component      | Location                         | Deployment                          |
+| -------------- | -------------------------------- | ----------------------------------- |
+| npm packages   | `packages/@lumenflow/*`          | Auto via GitHub Actions on tag push |
+| Starlight docs | `apps/docs/`                     | Manual via Vercel CLI               |
+| Pack registry  | `apps/web/` + pack tarballs      | Manual deploy + curl publish        |
 
 ---
 
@@ -254,6 +255,107 @@ vercel --prod
 
 ---
 
+## Pack Registry Publishing
+
+Packs are published to the registry at <https://registry.lumenflow.dev>. The registry is served by the `apps/web` Next.js app deployed to Vercel.
+
+### Prerequisites
+
+1. **Deploy `apps/web` to Vercel** before publishing. The registry API runs on the deployed app, so any code fixes (e.g. blob storage changes) must be live first.
+2. **Build the pack tarball** with `pnpm pack` from the pack directory.
+3. **Authenticate** with a GitHub token (`gh auth token`).
+
+### Step 1: Deploy the Registry
+
+The `apps/web` Vercel project has `Root Directory: apps/web` configured. To deploy from the CLI, link the repo root to the `web` project:
+
+```bash
+# From repo root — link to the 'web' project (not 'lumenflow-dev')
+vercel link --project web --scope hellm-ai --yes
+
+# Deploy to production
+vercel --prod --yes
+```
+
+**Gotcha:** Do NOT run `vercel` from inside `apps/web/` — the Vercel root directory setting doubles the path (`apps/web/apps/web`). Always deploy from the repo root.
+
+**Gotcha:** The repo root `.vercel/project.json` may be linked to `lumenflow-dev` (the monorepo project). You must re-link to `web` before deploying the registry.
+
+After deploying, restore the link if needed:
+
+```bash
+vercel link --project lumenflow-dev --scope hellm-ai --yes
+```
+
+### Step 2: Build the Tarball
+
+```bash
+cd packages/@lumenflow/packs/software-delivery  # or sidekick, etc.
+pnpm pack
+# Creates: lumenflow-packs-software-delivery-X.Y.Z.tgz
+```
+
+### Step 3: Publish to Registry
+
+```bash
+curl -s -X POST \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Origin: https://registry.lumenflow.dev" \
+  -F "tarball=@packages/@lumenflow/packs/software-delivery/lumenflow-packs-software-delivery-X.Y.Z.tgz" \
+  -F "description=Software delivery pack for LumenFlow" \
+  -F "version=X.Y.Z" \
+  "https://registry.lumenflow.dev/api/registry/packs/software-delivery/versions"
+```
+
+Replace `software-delivery` with the pack ID and `X.Y.Z` with the version.
+
+**Important:** The `Origin` header must match `https://registry.lumenflow.dev` — CSRF validation will reject requests without it.
+
+### Step 4: Verify
+
+```bash
+# List all packs
+curl -s https://registry.lumenflow.dev/api/registry/packs
+
+# Check a specific pack
+curl -s https://registry.lumenflow.dev/api/registry/packs/software-delivery
+```
+
+### Step 5: Cleanup
+
+```bash
+rm packages/@lumenflow/packs/software-delivery/lumenflow-packs-software-delivery-X.Y.Z.tgz
+```
+
+### Vercel Projects Reference
+
+| Project          | Domain                    | Purpose                 |
+| ---------------- | ------------------------- | ----------------------- |
+| `web`            | registry.lumenflow.dev    | Pack registry + web app |
+| `docs`           | lumenflow.dev             | Starlight documentation |
+| `lumenflow-dev`  | lumenflow-dev.vercel.app  | Monorepo preview        |
+| `lumenflow-cloud`| cloud.lumenflow.dev       | Control plane           |
+
+### Troubleshooting Pack Publishing
+
+#### "Pack not found" after publish returns success
+
+The deploy running at publish time was using old code. Deploy first, then publish.
+
+#### Version conflict (409)
+
+The version already exists. Pack versions are immutable — bump the version number.
+
+#### CSRF error (403)
+
+Missing or wrong `Origin` header. Must be `https://registry.lumenflow.dev`.
+
+#### Vercel build fails with d2 error
+
+The `@lumenflow/docs` package requires `d2` (diagramming tool) which is not available on Vercel. Ensure you are deploying the `web` project (which uses `turbo build --filter=@lumenflow/web`) not the `lumenflow-dev` project (which builds all packages).
+
+---
+
 ## Release Checklist
 
 ### Before Release
@@ -320,17 +422,19 @@ If you need more control:
 
 - [ ] Verify npm packages accessible: `npm view @lumenflow/cli`
 - [ ] Verify docs updated: <https://lumenflow.dev>
+- [ ] Verify packs published: `curl -s https://registry.lumenflow.dev/api/registry/packs`
 
 ---
 
 ## Keeping Components in Sync
 
-| Change Type      | npm           | Docs   |
-| ---------------- | ------------- | ------ |
-| Bug fix in CLI   | Tag + publish | Auto\* |
-| New CLI command  | Tag + publish | Auto\* |
-| Docs-only update | No            | Deploy |
-| Full release     | Tag + publish | Deploy |
+| Change Type      | npm           | Docs   | Packs   |
+| ---------------- | ------------- | ------ | ------- |
+| Bug fix in CLI   | Tag + publish | Auto\* | No      |
+| New CLI command  | Tag + publish | Auto\* | No      |
+| Pack changes     | Tag + publish | No     | Publish |
+| Docs-only update | No            | Deploy | No      |
+| Full release     | Tag + publish | Deploy | Publish |
 
 \* CLI/config reference docs regenerate automatically during `wu:done` when trigger files change. See [Automatic Docs Generation](./docs-generation.md).
 

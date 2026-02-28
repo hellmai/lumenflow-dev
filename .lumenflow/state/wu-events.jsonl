@@ -2539,3 +2539,4 @@
 {"type":"complete","wuId":"WU-2271","timestamp":"2026-02-28T11:08:58.828Z"}
 {"type":"complete","wuId":"WU-2272","timestamp":"2026-02-28T11:11:27.085Z"}
 {"type":"claim","wuId":"WU-2274","timestamp":"2026-02-28T11:32:11.105Z","lane":"Content: Framework Docs","title":"Document pack registry publishing workflow"}
+{"type":"checkpoint","wuId":"WU-2274","timestamp":"2026-02-28T11:32:32.708Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
