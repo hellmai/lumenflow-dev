@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/packs-sidekick",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "description": "Sidekick personal assistant pack for LumenFlow — 16 tools for task management, typed memory, channels, routines, and audit",
   "keywords": [
     "lumenflow",
