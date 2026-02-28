@@ -2555,3 +2555,4 @@
 {"type":"claim","wuId":"WU-2278","timestamp":"2026-02-28T17:57:38.377Z","lane":"Framework: CLI WU Commands","title":"Sync missing public command aliases during integrate --sync"}
 {"type":"checkpoint","wuId":"WU-2278","timestamp":"2026-02-28T18:08:28.409Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2278","timestamp":"2026-02-28T18:08:54.701Z"}
+{"type":"claim","wuId":"WU-2279","timestamp":"2026-02-28T19:11:10.734Z","lane":"Framework: CLI Memory State","title":"Fix state:doctor --fix invalid temp branch name"}

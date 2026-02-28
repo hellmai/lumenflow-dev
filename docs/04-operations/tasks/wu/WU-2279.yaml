@@ -2,7 +2,7 @@ id: WU-2279
 title: Fix state:doctor --fix invalid temp branch name
 lane: 'Framework: CLI Memory State'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-28
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
 tests:
   manual:
-    - 'Run: pnpm state:doctor --fix in a workspace with initiative status mismatches; verify no invalid branch name error'
+    - 'Run: pnpm state:doctor --fix in a workspace with initiative status mismatches; verify no
+      invalid branch name error'
   unit:
     - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
   e2e: []
@@ -27,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: state:doctor --fix initiative status reconciliation uses micro-worktree operation name 'state:doctor'. Problem: colon in operation name generates temp branch ref tmp/state:doctor/... which git rejects as invalid, so auto-fix fails. Solution: use a branch-safe operation identifier for this path and add regression coverage."
+description: "Context: state:doctor --fix initiative status reconciliation uses micro-worktree
+  operation name 'state:doctor'. Problem: colon in operation name generates temp branch ref
+  tmp/state:doctor/... which git rejects as invalid, so auto-fix fails. Solution: use a branch-safe
+  operation identifier for this path and add regression coverage."
 acceptance:
   - pnpm state:doctor --fix no longer fails with invalid branch-name errors for tmp/state:doctor/*
-  - initiative lifecycle status fixes run through micro-worktree path successfully when mismatches are fixable
+  - initiative lifecycle status fixes run through micro-worktree path successfully when mismatches
+    are fixable
   - state-doctor regression test asserts branch-safe micro-worktree operation usage
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-memory-state-wu-2279
+claimed_at: 2026-02-28T19:11:10.706Z
+baseline_main_sha: c355c657b0fa93bc4dca8b4c09ca560a94cd4afe
+session_id: db5772c0-0ccf-4cf2-92f5-be8943adf287
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T19:11:10.712Z
