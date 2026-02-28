@@ -61,8 +61,7 @@ const INTEGRATE_OPTIONS = {
   sync: {
     name: 'sync',
     flags: '--sync',
-    description:
-      'Re-scaffold vendor-agnostic pre-commit/CI delegators for existing repositories',
+    description: 'Re-scaffold vendor-agnostic pre-commit/CI delegators for existing repositories',
   },
   force: WU_OPTIONS.force,
 };
