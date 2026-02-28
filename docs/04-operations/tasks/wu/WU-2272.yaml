@@ -19,10 +19,17 @@ risks: []
 notes: 'tdd-exception: config-only change adding a single option flag to existing API calls. No
   logic change to test.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-28T10:36:25.839Z
+worktree_path: worktrees/framework-core-lifecycle-wu-2272
+session_id: f1911752-c5ea-47d7-bb32-cb996ff3e2f5
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-28T10:36:25.845Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
