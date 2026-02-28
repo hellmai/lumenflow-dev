@@ -2559,3 +2559,4 @@
 {"type":"checkpoint","wuId":"WU-2279","timestamp":"2026-02-28T19:14:29.264Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"checkpoint","wuId":"WU-2279","timestamp":"2026-02-28T19:15:49.776Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2279.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2279","timestamp":"2026-02-28T19:20:41.677Z"}
+{"type":"claim","wuId":"WU-2280","timestamp":"2026-02-28T19:34:12.761Z","lane":"Framework: CLI Memory State","title":"Document missing CLI bin aliases for pre-release checks"}

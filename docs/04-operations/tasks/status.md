@@ -6,6 +6,7 @@ _Last updated: 2026-02-28_
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
+- [WU-2280 — Document missing CLI bin aliases for pre-release checks](wu/WU-2280.yaml)
 
 ## Completed
 
