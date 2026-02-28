@@ -6,11 +6,12 @@ status: ready
 priority: P1
 created: 2026-02-28
 code_paths:
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
-  - .husky/hooks/pre-commit.mjs
-  - .github/workflows/ci.yml
+  - packages/@lumenflow/cli/src/commands/wu-done.ts
+  - packages/@lumenflow/cli/src/commands/lumenflow-upgrade.ts
+  - packages/@lumenflow/cli/src/commands/pre-commit-check.ts
+  - packages/@lumenflow/cli/src/commands/integrate.ts
   - packages/@lumenflow/cli/templates/core/.husky/pre-commit.template
+  - packages/@lumenflow/cli/templates/core/.github/workflows/lumenflow-ci.yml.template
 tests:
   manual:
     - Attempt wu:done on a WU claimed by another agent/session; verify block and verify --force
