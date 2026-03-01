@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2288 — Enforce wu:brief policy at wu:prep with mode-aware blocking](wu/WU-2288.yaml)
 
 ## Completed
 

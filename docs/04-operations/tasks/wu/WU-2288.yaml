@@ -2,7 +2,7 @@ id: WU-2288
 title: Enforce wu:brief policy at wu:prep with mode-aware blocking
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-event-sourcer.ts
 tests:
   manual:
-    - Set mode required and run wu:prep without brief evidence; verify block message and remediation steps
+    - Set mode required and run wu:prep without brief evidence; verify block message and remediation
+      steps
     - Set mode manual/off and run wu:prep without brief evidence; verify no block
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
@@ -30,7 +31,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done currently enforces brief evidence, which is late and causes wasted cycles when teams discover missing brief only at completion. Problem: autonomous orchestration needs earlier and policy-driven enforcement. Solution: add wu:prep enforcement that validates wu:brief evidence according to policy mode (required blocks, auto warns/regenerates guidance, manual/off skip), with actionable remediation and force-bypass audit trail parity.'
+description: 'Context: wu:done currently enforces brief evidence, which is late and causes wasted
+  cycles when teams discover missing brief only at completion. Problem: autonomous orchestration
+  needs earlier and policy-driven enforcement. Solution: add wu:prep enforcement that validates
+  wu:brief evidence according to policy mode (required blocks, auto warns/regenerates guidance,
+  manual/off skip), with actionable remediation and force-bypass audit trail parity.'
 acceptance:
   - wu:prep enforces brief evidence when policy mode is required and blocks with clear remediation
   - wu:prep does not block for manual/off modes
@@ -38,3 +43,11 @@ acceptance:
   - force bypass path preserves explicit audit reason in logs/events
   - unit tests cover required/pass/fail and mode branching
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2288
+claimed_at: 2026-03-01T18:54:37.619Z
+baseline_main_sha: eca9c0907f6d344e7deed5921208d03e9d872f5e
+session_id: b71e3759-b310-4f58-a6aa-a3a4bbc3f051
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T18:54:37.625Z
