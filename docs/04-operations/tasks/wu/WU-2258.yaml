@@ -2,7 +2,7 @@ id: WU-2258
 title: Add lane:create command for adding new lanes via tooling
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -27,10 +27,10 @@ dependencies: []
 spec_refs:
   - packages/@lumenflow/cli/src/lane-edit.ts
 risks: []
-notes: 'Implemented lane:create with micro-worktree push-only flow, duplicate guard, lane-format
+notes: Implemented lane:create with micro-worktree push-only flow, duplicate guard, lane-format
   validation, and ordered insert into workspace.yaml lanes.definitions. Added command wiring
   (manifest/bin/scripts), updated MCP parity allowlist for lane_create (intentionally MCP-missing
-  like other lane-admin commands), and regenerated internal Starlight CLI docs via docs:generate.'
+  like other lane-admin commands), and regenerated internal Starlight CLI docs via docs:generate.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -56,3 +56,6 @@ session_id: cff21991-79b9-470f-8a1e-a94f4e7c5910
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T20:40:13.098Z
+locked: true
+completed_at: 2026-03-01T20:51:54.792Z
+completed: 2026-03-01

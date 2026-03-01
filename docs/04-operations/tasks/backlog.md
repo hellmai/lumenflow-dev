@@ -51,7 +51,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1235,6 +1235,7 @@ sections:
 - [WU-2288 — Enforce wu:brief policy at wu:prep with mode-aware blocking](wu/WU-2288.yaml)
 - [WU-2289 — Add wu:brief staleness policy and freshness checks for long-lived WUs](wu/WU-2289.yaml)
 - [WU-2286 — state:emit should support transactional commit mode for corrective events](wu/WU-2286.yaml)
+- [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
