@@ -2623,3 +2623,4 @@
 {"type":"claim","wuId":"WU-2151","timestamp":"2026-03-01T23:03:02.018Z","lane":"Framework: Core Lifecycle","title":"Mock signal and memory sync adapter for testing"}
 {"type":"checkpoint","wuId":"WU-2151","timestamp":"2026-03-01T23:10:31.581Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2151","timestamp":"2026-03-01T23:11:09.298Z"}
+{"type":"claim","wuId":"WU-2158","timestamp":"2026-03-01T23:12:20.063Z","lane":"Framework: Core Lifecycle","title":"Add co-change gate to Software Delivery Pack"}

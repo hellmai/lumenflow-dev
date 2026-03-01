@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml)
 
 ## Completed
 

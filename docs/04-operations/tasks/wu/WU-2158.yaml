@@ -2,7 +2,7 @@ id: WU-2158
 title: Add co-change gate to Software Delivery Pack
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -35,7 +35,7 @@ notes: "Design review decisions: (1) Runner in gates-runners.ts not pack dir —
   double-star/brace/negation correctly. (4) Three-state severity (warn/error/off) mirrors
   lane_health pattern."
 requires_review: false
-assigned_to: test@example.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -63,3 +63,11 @@ acceptance:
     (pass), no trigger match (skip), severity off (skip)'
   - Implementation is generic mechanism only — no domain-specific logic for proto/OpenAPI/changelog
     cases
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2158
+claimed_at: 2026-03-01T23:12:20.032Z
+baseline_main_sha: b821c619cdb741cc9b96726ae2d43adee4b2a093
+session_id: 820be9ca-8766-4b31-b623-daf0d6d3bad3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T23:12:20.037Z
