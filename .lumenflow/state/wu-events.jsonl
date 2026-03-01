@@ -2602,3 +2602,4 @@
 {"type":"checkpoint","wuId":"WU-2286","timestamp":"2026-03-01T20:37:11.184Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2286","timestamp":"2026-03-01T20:39:22.381Z"}
 {"type":"claim","wuId":"WU-2258","timestamp":"2026-03-01T20:40:13.114Z","lane":"Framework: CLI Enforcement","title":"Add lane:create command for adding new lanes via tooling"}
+{"type":"checkpoint","wuId":"WU-2258","timestamp":"2026-03-01T20:40:23.144Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}

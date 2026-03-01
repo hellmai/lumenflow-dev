@@ -63,6 +63,7 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `wu-deps`        | Show WU dependencies                                          |
 | `wu-done`        | Complete WU (merge, stamp, cleanup) from main                 |
 | `wu-edit`        | Edit WU spec fields                                           |
+| `wu-escalate`    | Show or resolve WU escalation status                          |
 | `wu-infer-lane`  | Infer lane from code paths/description                        |
 | `wu-preflight`   | Pre-flight checks before wu:done                              |
 | `wu-prep`        | Run gates in worktree, prep for wu:done                       |
@@ -133,6 +134,7 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 | Command         | Description                                                    |
 | --------------- | -------------------------------------------------------------- |
+| `lane-create`   | Create a new lane definition                                   |
 | `lane-edit`     | Edit a lane definition (rename, wip-limit, paths, description) |
 | `lane-health`   | Check lane config health                                       |
 | `lane-lock`     | Lock lane lifecycle for delivery WUs                           |
@@ -143,12 +145,13 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Verification & Gates
 
-| Command              | Description                   |
-| -------------------- | ----------------------------- |
-| `gates`              | Run all quality gates         |
-| `lumenflow-gates`    | Run all quality gates (alias) |
-| `lumenflow-validate` | Run validation checks (alias) |
-| `validate`           | Run validation checks         |
+| Command                      | Description                                      |
+| ---------------------------- | ------------------------------------------------ |
+| `gates`                      | Run all quality gates                            |
+| `lumenflow-gates`            | Run all quality gates (alias)                    |
+| `lumenflow-pre-commit-check` | Run enforcement checks used by pre-commit and CI |
+| `lumenflow-validate`         | Run validation checks (alias)                    |
+| `validate`                   | Run validation checks                            |
 
 ### System & Setup
 
@@ -184,7 +187,9 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `state-bootstrap`          | Bootstrap state store                                               |
 | `state-cleanup`            | Clean up stale state data                                           |
 | `state-doctor`             | Diagnose state store issues                                         |
+| `state-emit`               | Emit corrective event to state store (WU-2241)                      |
 | `sync-templates`           | Sync templates to project (alias)                                   |
+| `templates-sync`           | Sync templates to project (alias)                                   |
 | `workspace-init`           | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
 
 ### File & Git Operations
@@ -201,15 +206,6 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `git-status`  | Show git status with audit trail |
 
 <!-- END AUTO-GENERATED SECTION -->
-
-### Additional Bin Aliases & Utilities
-
-These binaries are also shipped and supported:
-
-- `templates-sync` (alias of `sync-templates`)
-- `lumenflow-pre-commit-check` (run pre-commit safety checks)
-- `state-emit` (emit state events for reconciliation/admin flows)
-- `wu-escalate` (show/resolve escalation status for a WU)
 
 ## Usage
 

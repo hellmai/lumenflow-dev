@@ -301,6 +301,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     audience: 'advanced',
   },
   {
+    name: 'lane:create',
+    binName: 'lane-create',
+    binPath: './dist/lane-create.js',
+    description: 'Create a new lane definition',
+    category: COMMAND_CATEGORIES.GATES_QUALITY,
+  },
+  {
     name: 'lane:edit',
     binName: 'lane-edit',
     binPath: './dist/lane-edit.js',

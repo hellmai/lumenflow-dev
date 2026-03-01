@@ -122,6 +122,7 @@
     "git-log": "./dist/git-log.js",
     "git-branch": "./dist/git-branch.js",
     "state-bootstrap": "./dist/state-bootstrap.js",
+    "lane-create": "./dist/lane-create.js",
     "lane-edit": "./dist/lane-edit.js",
     "lane-health": "./dist/lane-health.js",
     "lane-suggest": "./dist/lane-suggest.js",

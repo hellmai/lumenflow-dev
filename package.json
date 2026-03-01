@@ -50,6 +50,7 @@
     "wu:proto": "node packages/@lumenflow/cli/dist/wu-proto.js",
     "config:set": "node packages/@lumenflow/cli/dist/config-set.js",
     "config:get": "node packages/@lumenflow/cli/dist/config-get.js",
+    "lane:create": "node packages/@lumenflow/cli/dist/lane-create.js",
     "lane:edit": "node packages/@lumenflow/cli/dist/lane-edit.js",
     "lane:health": "node packages/@lumenflow/cli/dist/lane-health.js",
     "lane:suggest": "node packages/@lumenflow/cli/dist/lane-suggest.js",

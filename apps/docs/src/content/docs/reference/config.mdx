@@ -98,30 +98,31 @@ Git configuration
 
 WU (Work Unit) configuration
 
-| Field                  | Type    | Default      | Description |
-| ---------------------- | ------- | ------------ | ----------- |
-| `idPattern`            | string  | `"^WU-\d+$"` |             |
-| `minDescriptionLength` | integer | `50`         |             |
-| `maxCommitSubject`     | integer | `100`        |             |
-| `defaultPriority`      | string  | `"P2"`       |             |
-| `defaultStatus`        | string  | `"ready"`    |             |
-| `defaultType`          | string  | `"feature"`  |             |
+| Field                  | Type    | Default           | Description |
+| ---------------------- | ------- | ----------------- | ----------- |
+| `idPattern`            | string  | `"^WU-\d+$"`      |             |
+| `minDescriptionLength` | integer | `50`              |             |
+| `maxCommitSubject`     | integer | `100`             |             |
+| `defaultPriority`      | string  | `"P2"`            |             |
+| `defaultStatus`        | string  | `"ready"`         |             |
+| `defaultType`          | string  | `"feature"`       |             |
+| `brief`                | object  | `[object Object]` |             |
 
 ### gates
 
 Quality gates configuration
 
-| Field                       | Type                         | Default           | Description |
-| --------------------------- | ---------------------------- | ----------------- | ----------- |
-| `maxEslintWarnings`         | integer                      | `100`             |             |
-| `enableCoverage`            | boolean                      | `true`            |             |
-| `minCoverage`               | number                       | `90`              |             |
-| `enableSafetyCriticalTests` | boolean                      | `true`            |             |
-| `enableInvariants`          | boolean                      | `true`            |             |
-| `execution`                 | object                       | `-`               |             |
-| `commands`                  | object                       | `[object Object]` |             |
-| `ignore_patterns`           | string[]                     | `-`               |             |
-| `lane_health`               | `"off" \| "warn" \| "error"` | `"warn"`          |             |
+| Field                       | Type     | Default           | Description |
+| --------------------------- | -------- | ----------------- | ----------- | -------- | --- |
+| `maxEslintWarnings`         | integer  | `100`             |             |
+| `enableCoverage`            | boolean  | `true`            |             |
+| `minCoverage`               | number   | `90`              |             |
+| `enableSafetyCriticalTests` | boolean  | `true`            |             |
+| `enableInvariants`          | boolean  | `true`            |             |
+| `execution`                 | object   | `-`               |             |
+| `commands`                  | object   | `[object Object]` |             |
+| `ignore_patterns`           | string[] | `-`               |             |
+| `lane_health`               | "warn"   | "error"           | "off"       | `"warn"` |     |
 
 ### memory
 
@@ -186,12 +187,12 @@ Agents configuration
 
 Methodology defaults (agent-facing project defaults)
 
-| Field         | Type                          | Default                          | Description |
-| ------------- | ----------------------------- | -------------------------------- | ----------- |
-| `enabled`     | boolean                       | `true`                           |             |
-| `enforcement` | `"required" \| "recommended"` | `"required"`                     |             |
-| `principles`  | string[]                      | `["TDD","Hexagonal Architect...` |             |
-| `notes`       | string                        | `-`                              |             |
+| Field         | Type       | Default                          | Description  |
+| ------------- | ---------- | -------------------------------- | ------------ | --- |
+| `enabled`     | boolean    | `true`                           |              |
+| `enforcement` | "required" | "recommended"                    | `"required"` |     |
+| `principles`  | string[]   | `["TDD","Hexagonal Architect...` |              |
+| `notes`       | string     | `-`                              |              |
 
 ### agents.clients.\*
 

@@ -7,6 +7,12 @@ priority: P2
 created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/lane-create.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/package.json
+  - package.json
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
+  - packages/@lumenflow/cli/README.md
 tests:
   manual:
     - Run lane:create with a new lane name and verify it appears in workspace.yaml
@@ -20,8 +26,9 @@ dependencies: []
 spec_refs:
   - packages/@lumenflow/cli/src/lane-edit.ts
 risks: []
-notes: 'Discovered during INIT-048 planning — could not create Framework: Kernel lane. Reference
-  lane-edit.ts for micro-worktree pattern.'
+notes: 'Implemented lane:create with micro-worktree push-only flow, duplicate guard, lane-format
+  validation, and ordered insert into workspace.yaml lanes.definitions. Added command wiring
+  (manifest/bin/scripts) and regenerated internal Starlight CLI docs via docs:generate.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

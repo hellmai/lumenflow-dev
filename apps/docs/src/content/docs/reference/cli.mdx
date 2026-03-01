@@ -20,7 +20,7 @@ LumenFlow provides a curated public CLI surface for everyday workflows.
 
 | Category            | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gates & Quality     | [`gates`](#gates), [`lane:edit`](#laneedit), [`lane:health`](#lanehealth), [`lane:lock`](#lanelock), [`lane:setup`](#lanesetup), [`lane:status`](#lanestatus), [`lane:suggest`](#lanesuggest), [`lane:validate`](#lanevalidate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Gates & Quality     | [`gates`](#gates), [`lane:create`](#lanecreate), [`lane:edit`](#laneedit), [`lane:health`](#lanehealth), [`lane:lock`](#lanelock), [`lane:setup`](#lanesetup), [`lane:status`](#lanestatus), [`lane:suggest`](#lanesuggest), [`lane:validate`](#lanevalidate), [`lumenflow:pre-commit-check`](#lumenflowpre-commit-check), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                    |
 | Initiatives         | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                    |
 | Memory & Sessions   | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage), [`signal:cleanup`](#signalcleanup)                                                                                                                                                                                                                                                  |
 | Metrics & Flow      | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport), [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -28,8 +28,8 @@ LumenFlow provides a curated public CLI surface for everyday workflows.
 | Packs               | [`pack:author`](#packauthor), [`pack:hash`](#packhash), [`pack:install`](#packinstall), [`pack:publish`](#packpublish), [`pack:scaffold`](#packscaffold), [`pack:search`](#packsearch), [`pack:validate`](#packvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Plans               | [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Setup & Development | [`backlog:prune`](#backlogprune), [`cloud:connect`](#cloudconnect), [`config:get`](#configget), [`config:set`](#configset), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade) |
-| State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| WU Lifecycle        | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:prep`](#wuprep), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:sandbox`](#wusandbox), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                              |
+| State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor), [`state:emit`](#stateemit)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| WU Lifecycle        | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:escalate`](#wuescalate), [`wu:prep`](#wuprep), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:sandbox`](#wusandbox), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                |
 | WU Maintenance      | [`wu:cleanup`](#wucleanup), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:repair`](#wurepair), [`wu:unlock-lane`](#wuunlock-lane)                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ## Gates & Quality
@@ -40,6 +40,14 @@ Run all quality gates
 
 ```bash
 pnpm gates
+```
+
+### lane:create
+
+Create a new lane definition
+
+```bash
+pnpm lane:create
 ```
 
 ### lane:edit
@@ -98,6 +106,14 @@ Validate lane artifacts before lock
 pnpm lane:validate
 ```
 
+### lumenflow:pre-commit-check
+
+Run enforcement checks used by pre-commit and CI
+
+```bash
+pnpm lumenflow:pre-commit-check
+```
+
 ### validate
 
 Run validation checks
@@ -143,14 +159,14 @@ pnpm initiative:bulk-assign
 Create new initiative
 
 ```bash
-pnpm initiative:create --id <wuId> --slug <slug> --title <title>
+pnpm initiative:create --slug <slug> --title <title>
 ```
 
 **Options:**
 
 | Flag                              | Description                                                                      | Required |
 | --------------------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`           | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-i, --id &lt;wuId&gt;`           | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
 | `-s, --slug &lt;slug&gt;`         | Initiative slug (kebab-case)                                                     | Yes      |
 | `-t, --title &lt;title&gt;`       | Work Unit title                                                                  | Yes      |
 | `-p, --priority &lt;priority&gt;` | Priority level (P0, P1, P2, P3)                                                  | No       |
@@ -257,16 +273,17 @@ pnpm mem:checkpoint
 
 **Options:**
 
-| Flag                          | Description                                    | Required |
-| ----------------------------- | ---------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)            | No       |
-| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)   | No       |
-| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)        | No       |
-| `-p, --progress &lt;text&gt;` | Progress summary                               | No       |
-| `--next-steps &lt;text&gt;`   | Next steps description                         | No       |
-| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff)    | No       |
-| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
-| `-q, --quiet`                 | Suppress output except errors                  | No       |
+| Flag                           | Description                                                        | Required |
+| ------------------------------ | ------------------------------------------------------------------ | -------- |
+| `--wu &lt;wuId&gt;`            | Work Unit ID to link (e.g., WU-123)                                | No       |
+| `-n, --note &lt;text&gt;`      | Checkpoint note (required if not positional)                       | No       |
+| `-s, --session &lt;id&gt;`     | Session ID to link checkpoint to (UUID)                            | No       |
+| `-p, --progress &lt;text&gt;`  | Progress summary                                                   | No       |
+| `--next-steps &lt;text&gt;`    | Next steps description                                             | No       |
+| `-t, --trigger &lt;type&gt;`   | Handoff trigger type (e.g., clear, handoff)                        | No       |
+| `--git-diff-stat &lt;text&gt;` | Git diff --stat output to include in checkpoint metadata (WU-2157) | No       |
+| `-d, --base-dir &lt;path&gt;`  | Base directory (defaults to current directory)                     | No       |
+| `-q, --quiet`                  | Suppress output except errors                                      | No       |
 
 ### mem:cleanup
 
@@ -1056,6 +1073,14 @@ pnpm state:doctor
 | `-q, --quiet`                 | Suppress output except errors and summary      | No       |
 | `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
 
+### state:emit
+
+Emit corrective event to state store (WU-2241)
+
+```bash
+pnpm state:emit
+```
+
 ## WU Lifecycle
 
 ### wu:block
@@ -1156,6 +1181,7 @@ pnpm wu:create --lane <lane> --title <title>
 | `--sizing-exception-reason &lt;text&gt;` | Optional sizing exception justification text                                                                          | No       |
 | `--no-strict`                            | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
 | `--cloud`                                | Use cloud/branch-pr mode (no worktree, PR-based completion for cloud agents and MCP callers)                          | No       |
+| `--offline`                              | Skip remote fetch during ID generation (air-gapped/offline mode)                                                      | No       |
 
 ### wu:delegate
 
@@ -1212,6 +1238,22 @@ pnpm wu:edit --id <wuId>
 | `--add-dep &lt;wuIds&gt;`           | Comma-separated WU IDs to add to dependencies array (appends to existing; use --replace-dependencies to overwrite)    | No       |
 | `--replace-dependencies`            | Replace existing dependencies instead of appending                                                                    | No       |
 | `--plan &lt;uri&gt;`                | Plan file URI (lumenflow://plans/... or repo-relative path)                                                           | No       |
+
+### wu:escalate
+
+Show or resolve WU escalation status
+
+```bash
+pnpm wu:escalate --id <wuId>
+```
+
+**Options:**
+
+| Flag                       | Description                                                                      | Required |
+| -------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`    | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `--resolve`                | Resolve the escalation (set resolved_by and resolved_at)                         | No       |
+| `--resolver &lt;email&gt;` | Override resolver email (defaults to git user.email)                             | No       |
 
 ### wu:prep
 
