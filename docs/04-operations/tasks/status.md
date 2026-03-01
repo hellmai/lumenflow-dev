@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml)
 
 ## Completed
 

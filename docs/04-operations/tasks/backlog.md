@@ -48,11 +48,10 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 

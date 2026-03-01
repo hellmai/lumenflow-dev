@@ -2,7 +2,7 @@ id: WU-2258
 title: Add lane:create command for adding new lanes via tooling
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Uses micro-worktree isolation
   - Validates lane name format and rejects duplicates
   - Supports --name, --wip-limit, --add-path, --description flags
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-enforcement-wu-2258
+claimed_at: 2026-03-01T20:40:13.093Z
+baseline_main_sha: aa6901e655eee53b726a7eb593d7d8d851c51404
+session_id: cff21991-79b9-470f-8a1e-a94f4e7c5910
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T20:40:13.098Z
