@@ -2,7 +2,7 @@ id: WU-2152
 title: Local JSONL to control-plane sync adapter
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - Project-only memory nodes sync; non-project excluded
   - Circuit-breaker skips remote after 3 consecutive failures
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-memory-wu-2152
+claimed_at: 2026-03-01T23:51:52.408Z
+baseline_main_sha: 46140bf1ff01f0c2e8f109196419019fd71e2789
+session_id: ad589be1-f174-4374-b708-fd10b7dad7c8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T23:51:52.413Z

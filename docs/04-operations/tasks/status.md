@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml)
 
 ## Completed
 

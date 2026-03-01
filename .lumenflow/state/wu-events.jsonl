@@ -2630,3 +2630,4 @@
 {"type":"checkpoint","wuId":"WU-2290","timestamp":"2026-03-01T23:43:57.620Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2290","timestamp":"2026-03-01T23:44:21.299Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2290.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2290","timestamp":"2026-03-01T23:45:53.698Z"}
+{"type":"claim","wuId":"WU-2152","timestamp":"2026-03-01T23:51:52.430Z","lane":"Framework: Memory","title":"Local JSONL to control-plane sync adapter"}
