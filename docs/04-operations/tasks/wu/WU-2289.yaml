@@ -2,7 +2,7 @@ id: WU-2289
 title: Add wu:brief staleness policy and freshness checks for long-lived WUs
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-01
 code_paths:
@@ -55,3 +55,6 @@ session_id: edd7b356-0c9c-43a7-b48a-74a38cc3490b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T19:04:44.905Z
+locked: true
+completed_at: 2026-03-01T19:12:30.315Z
+completed: 2026-03-01

@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2289 — Add wu:brief staleness policy and freshness checks for long-lived WUs](wu/WU-2289.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1182,3 +1182,4 @@ _Last updated: 2026-03-01_
 - [WU-2285 — state:doctor should detect stale status/backlog references for non-active WUs](wu/WU-2285.yaml) — 2026-03-01
 - [WU-2287 — Add configurable wu:brief policy mode with default auto on wu:claim](wu/WU-2287.yaml) — 2026-03-01
 - [WU-2288 — Enforce wu:brief policy at wu:prep with mode-aware blocking](wu/WU-2288.yaml) — 2026-03-01
+- [WU-2289 — Add wu:brief staleness policy and freshness checks for long-lived WUs](wu/WU-2289.yaml) — 2026-03-01
