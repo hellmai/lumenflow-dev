@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2151 — Mock signal and memory sync adapter for testing](wu/WU-2151.yaml)
 
 ## Completed
 
