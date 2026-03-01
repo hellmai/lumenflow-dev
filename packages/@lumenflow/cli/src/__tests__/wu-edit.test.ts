@@ -19,6 +19,7 @@ import {
   mergeStringField,
   normalizeReplaceCodePathsArgv,
   validateDoneWUEdits,
+  validateWorktreeExecutionContext,
 } from '../wu-edit.js';
 
 describe('wu-edit applyEdits', () => {
@@ -242,5 +243,49 @@ describe('WU-2275: wu:edit stamp notes', () => {
   it('invokes stamp-event append during wu:edit execution paths', () => {
     const source = readFileSync(new URL('../wu-edit.ts', import.meta.url), 'utf-8');
     expect(source).toContain('appendWuEditStampEvent');
+  });
+});
+
+describe('WU-2290: wu:edit worktree execution context guard', () => {
+  const TARGET_WORKTREE = '/repo/worktrees/framework-cli-wu-commands-wu-2290';
+  const WU_ID = 'WU-2290';
+  const RETRY_COMMAND = 'pnpm wu:edit --id WU-2290 --notes "test note"';
+
+  it('allows edits when cwd is the claimed worktree', () => {
+    expect(() =>
+      validateWorktreeExecutionContext(TARGET_WORKTREE, TARGET_WORKTREE, WU_ID, RETRY_COMMAND),
+    ).not.toThrow();
+  });
+
+  it('allows edits when cwd is inside the claimed worktree', () => {
+    expect(() =>
+      validateWorktreeExecutionContext(
+        `${TARGET_WORKTREE}/packages/@lumenflow/cli`,
+        TARGET_WORKTREE,
+        WU_ID,
+        RETRY_COMMAND,
+      ),
+    ).not.toThrow();
+  });
+
+  it('blocks edits when invoked from main checkout', () => {
+    expect(() =>
+      validateWorktreeExecutionContext('/repo', TARGET_WORKTREE, WU_ID, RETRY_COMMAND),
+    ).toThrowError(new RegExp(`Cannot edit in_progress WU ${WU_ID} from this checkout`));
+  });
+
+  it('includes target worktree path and copy-paste retry command in failure output', () => {
+    let errorMessage = '';
+    try {
+      validateWorktreeExecutionContext('/repo', TARGET_WORKTREE, WU_ID, RETRY_COMMAND);
+    } catch (error) {
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+    }
+
+    expect(errorMessage).toContain(`Claimed worktree: ${TARGET_WORKTREE}`);
+    expect(errorMessage).toContain(`cd ${TARGET_WORKTREE}`);
+    expect(errorMessage).toContain(RETRY_COMMAND);
   });
 });

@@ -12,7 +12,7 @@ import { die } from '@lumenflow/core/error-handler';
 import { existsSync, readFileSync } from 'node:fs';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
 import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/wu-paths';
-import { resolve, join } from 'node:path';
+import { resolve, join, relative, isAbsolute } from 'node:path';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { getConfig } from '@lumenflow/core/config';
 import { FILE_SYSTEM, WU_STATUS, WU_EXPOSURE_VALUES } from '@lumenflow/core/wu-constants';
@@ -297,6 +297,51 @@ export async function validateWorktreeBranch(
         `Worktree path: ${worktreePath}`,
     );
   }
+}
+
+function isPathWithin(rootPath: string, candidatePath: string): boolean {
+  const relativePath = relative(rootPath, candidatePath);
+  return (
+    relativePath === '' ||
+    (!relativePath.startsWith('..') && !isAbsolute(relativePath))
+  );
+}
+
+/**
+ * Validate command execution context for in-progress worktree WUs.
+ * WU-2290: Block wu:edit invocations from main checkout for worktree-mode WUs.
+ *
+ * @param currentCwd - Current process working directory
+ * @param worktreePath - Claimed worktree absolute path
+ * @param id - WU ID
+ * @param retryCommand - Optional copy-paste retry command
+ */
+export function validateWorktreeExecutionContext(
+  currentCwd: string,
+  worktreePath: string,
+  id: string,
+  retryCommand?: string,
+): void {
+  const resolvedCwd = resolve(currentCwd);
+  const resolvedWorktreePath = resolve(worktreePath);
+
+  if (isPathWithin(resolvedWorktreePath, resolvedCwd)) {
+    return;
+  }
+
+  const safeRetryCommand =
+    typeof retryCommand === 'string' && retryCommand.trim().length > 0
+      ? retryCommand.trim()
+      : `pnpm wu:edit --id ${id} <edit-flags>`;
+
+  die(
+    `Cannot edit in_progress WU ${id} from this checkout.\n\n` +
+      `Current directory: ${resolvedCwd}\n` +
+      `Claimed worktree: ${resolvedWorktreePath}\n\n` +
+      `Run from the claimed worktree and retry:\n` +
+      `  cd ${resolvedWorktreePath}\n` +
+      `  ${safeRetryCommand}`,
+  );
 }
 
 function toPosixPath(filePath: string): string {

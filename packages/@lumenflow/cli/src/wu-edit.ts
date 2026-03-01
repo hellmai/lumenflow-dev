@@ -64,6 +64,7 @@ import {
   validateDoneWUEdits,
   validateWUEditable,
   validateWorktreeExists,
+  validateWorktreeExecutionContext,
   validateWorktreeClean,
   validateWorktreeBranch,
   normalizeReplaceCodePathsArgv,
@@ -86,6 +87,7 @@ import {
 export {
   validateDoneWUEdits,
   validateExposureValue,
+  validateWorktreeExecutionContext,
   normalizeReplaceCodePathsArgv,
   hasScopeRelevantBranchChanges,
 } from './wu-edit-validators.js';
@@ -308,6 +310,11 @@ function parseArgs(): WuEditArgs {
   } finally {
     process.argv = originalArgv;
   }
+}
+
+function buildRetryCommandFromArgv(id: string): string {
+  const retryArgs = process.argv.slice(2).join(' ').trim();
+  return retryArgs.length > 0 ? `pnpm wu:edit ${retryArgs}` : `pnpm wu:edit --id ${id}`;
 }
 
 /**
@@ -562,6 +569,12 @@ export async function main() {
 
     // Validate worktree state (WU-1365 acceptance criteria)
     validateWorktreeExists(absoluteWorktreePath, id);
+    validateWorktreeExecutionContext(
+      process.cwd(),
+      absoluteWorktreePath,
+      id,
+      buildRetryCommandFromArgv(id),
+    );
     await validateWorktreeClean(absoluteWorktreePath, id);
 
     // Calculate expected branch and validate
