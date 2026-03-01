@@ -38,6 +38,7 @@ import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { initColorSupport, StreamErrorHandler, ProcessExitError } from '@lumenflow/core';
 import { getErrorMessage } from '@lumenflow/core/error-handler';
 import { printHeader } from './formatters.js';
+import { runSignalMiddleware, resolveCommandNameFromArgv } from './signal-middleware.js';
 
 const HELP_HINT_MESSAGE = 'Hint: Run with --help to see valid options.';
 const COMMANDER_USAGE_ERROR_CODES = new Set([
@@ -68,6 +69,8 @@ export function getCliVersion(): string {
 export interface RunCLIOptions {
   /** WU-1929: Print branded header before executing the command */
   showHeader?: boolean;
+  /** WU-2147: Explicit command name override for signal middleware */
+  commandName?: string;
 }
 
 /**
@@ -94,6 +97,13 @@ export async function runCLI(main: () => Promise<void>, options?: RunCLIOptions)
   if (options?.showHeader) {
     printHeader({ version: getCliVersion() });
   }
+
+  // WU-2147: Surface unread coordination signals for high-value commands.
+  // This middleware is fail-open and writes only to stderr.
+  await runSignalMiddleware({
+    commandName: options?.commandName ?? resolveCommandNameFromArgv(process.argv),
+    baseDir: process.cwd(),
+  });
 
   try {
     await main();

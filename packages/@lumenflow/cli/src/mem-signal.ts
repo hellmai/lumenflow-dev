@@ -255,5 +255,5 @@ export async function main() {
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  void runCLI(main);
+  void runCLI(main, { commandName: 'mem:signal' });
 }
