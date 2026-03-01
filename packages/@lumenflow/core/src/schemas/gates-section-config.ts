@@ -73,6 +73,28 @@ export const GatesCommandsConfigSchema = z.object({
 export type GatesCommandsConfig = z.infer<typeof GatesCommandsConfigSchema>;
 
 /**
+ * WU-2158: Co-change gate severity.
+ * - warn: log drift and continue
+ * - error: fail gates on drift
+ * - off: skip rule
+ */
+export const CoChangeSeveritySchema = z.enum(['warn', 'error', 'off']);
+export type CoChangeSeverity = z.infer<typeof CoChangeSeveritySchema>;
+
+/**
+ * WU-2158: Co-change rule configuration.
+ * Detects required companion file changes when trigger files are modified.
+ */
+export const CoChangeRuleConfigSchema = z.object({
+  name: z.string().min(1),
+  trigger_patterns: z.array(z.string().min(1)).min(1),
+  require_patterns: z.array(z.string().min(1)).min(1),
+  severity: CoChangeSeveritySchema.default('error'),
+});
+
+export type CoChangeRuleConfig = z.infer<typeof CoChangeRuleConfigSchema>;
+
+/**
  * Gates configuration
  * Note: GatesExecutionConfigSchema is imported from gates-config.ts
  */
@@ -121,6 +143,13 @@ export const GatesConfigSchema = z.object({
    * - 'off': Skip lane health check
    */
   lane_health: z.enum(['warn', 'error', 'off']).default('warn'),
+
+  /**
+   * WU-2158: Generic co-change rule set.
+   * Each rule enforces that when trigger_patterns match changed files,
+   * at least one require_patterns file must also be changed.
+   */
+  co_change: z.array(CoChangeRuleConfigSchema).default([]),
 });
 
 export type GatesConfig = z.infer<typeof GatesConfigSchema>;

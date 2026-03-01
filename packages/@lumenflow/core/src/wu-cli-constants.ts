@@ -120,6 +120,8 @@ export const GATE_NAMES = {
   CLAIM_VALIDATION: 'claim-validation',
   SUPABASE_DOCS_LINTER: 'supabase-docs:linter',
   LINT: 'lint',
+  /** WU-2158: Generic co-change rule enforcement gate */
+  CO_CHANGE: 'co-change',
   TYPECHECK: 'typecheck',
   TEST: 'test',
   COVERAGE: 'coverage',

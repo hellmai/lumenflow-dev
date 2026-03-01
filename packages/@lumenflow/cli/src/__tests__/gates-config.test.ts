@@ -405,4 +405,8 @@ describe('WU-2009: claim-validation gate contract', () => {
   it('GATE_NAMES includes claim-validation as an authoritative gate', () => {
     expect(GATE_NAMES.CLAIM_VALIDATION).toBe('claim-validation');
   });
+
+  it('GATE_NAMES includes co-change as an authoritative gate', () => {
+    expect(GATE_NAMES.CO_CHANGE).toBe('co-change');
+  });
 });

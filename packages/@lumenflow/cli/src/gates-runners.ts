@@ -13,11 +13,18 @@
 import { spawnSync } from 'node:child_process';
 import { writeSync } from 'node:fs';
 import { access } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { getChangedLintableFiles } from '@lumenflow/core/incremental-lint';
 import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/incremental-test';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
-import { resolveGatesCommands, resolveTestRunner } from '@lumenflow/core/gates-config';
+import {
+  resolveGatesCommands,
+  resolveTestRunner,
+  getGatesSection,
+} from '@lumenflow/core/gates-config';
+import { CoChangeRuleConfigSchema } from '@lumenflow/core/config-schema';
+import type { CoChangeRuleConfig } from '@lumenflow/core/config-schema';
 import type { LaneHealthMode } from '@lumenflow/core/gates-config';
 import { validateBacklogSync } from '@lumenflow/core/validators/backlog-sync';
 import { validateClaimValidation } from '@lumenflow/core';
@@ -56,6 +63,16 @@ import {
   resolveSpecLinterPlan,
   isTestConfigFile,
 } from './gates-plan-resolvers.js';
+
+const require = createRequire(import.meta.url);
+const micromatch = require('micromatch') as {
+  isMatch(path: string, patterns: string | readonly string[]): boolean;
+};
+const CO_CHANGE_SEVERITY = {
+  WARN: 'warn',
+  ERROR: 'error',
+  OFF: 'off',
+} as const;
 
 // ── Format check gate ──────────────────────────────────────────────────
 
@@ -537,6 +554,104 @@ export async function runIntegrationTests({
     console.error('\u26A0\uFE0F  Integration tests failed:', error.message);
     return { ok: false, duration: Date.now() - start };
   }
+}
+
+// ── Co-change gate ────────────────────────────────────────────────────
+
+const CoChangeRulesConfigSchema = CoChangeRuleConfigSchema.array();
+
+export interface CoChangeEvaluationResult {
+  errors: string[];
+  warnings: string[];
+}
+
+function hasPatternMatch(changedFiles: string[], patterns: string[]): boolean {
+  return changedFiles.some((filePath) => micromatch.isMatch(filePath, patterns));
+}
+
+export function evaluateCoChangeRules({
+  changedFiles,
+  rules,
+}: {
+  changedFiles: string[];
+  rules: CoChangeRuleConfig[];
+}): CoChangeEvaluationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  for (const rule of rules) {
+    if (rule.severity === CO_CHANGE_SEVERITY.OFF) {
+      continue;
+    }
+
+    const triggerMatched = hasPatternMatch(changedFiles, rule.trigger_patterns);
+    if (!triggerMatched) {
+      continue;
+    }
+
+    const requireMatched = hasPatternMatch(changedFiles, rule.require_patterns);
+    if (requireMatched) {
+      continue;
+    }
+
+    const message =
+      `co-change "${rule.name}" violated: ` +
+      `trigger matched (${rule.trigger_patterns.join(', ')}) but required patterns missing ` +
+      `(${rule.require_patterns.join(', ')})`;
+
+    if (rule.severity === CO_CHANGE_SEVERITY.WARN) {
+      warnings.push(message);
+      continue;
+    }
+
+    errors.push(message);
+  }
+
+  return { errors, warnings };
+}
+
+export async function runCoChangeGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
+  const start = Date.now();
+  const effectiveCwd = cwd ?? process.cwd();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+  logLine('\n> Co-change check\n');
+
+  const gatesSection = getGatesSection(effectiveCwd) as { co_change?: unknown } | null;
+  const parsedRules = CoChangeRulesConfigSchema.safeParse(gatesSection?.co_change ?? []);
+  if (!parsedRules.success) {
+    logLine('⚠️  Invalid gates.co_change config; skipping check.');
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  const rules = parsedRules.data;
+  if (rules.length === 0) {
+    logLine('ℹ️  No co-change rules configured; skipping.');
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  const git = createGitForPath(effectiveCwd);
+  const changedFiles = await getChangedFilesForIncremental({ git });
+  if (changedFiles.length === 0) {
+    logLine('ℹ️  No changed files detected; skipping co-change checks.');
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  const evaluation = evaluateCoChangeRules({ changedFiles, rules });
+
+  for (const warning of evaluation.warnings) {
+    logLine(`⚠️  ${warning}`);
+  }
+  for (const error of evaluation.errors) {
+    logLine(`❌ ${error}`);
+  }
+
+  if (evaluation.errors.length > 0) {
+    logLine('co-change check failed.');
+    return { ok: false, duration: Date.now() - start };
+  }
+
+  logLine('co-change check passed.');
+  return { ok: true, duration: Date.now() - start };
 }
 
 // ── Spec linter gate ───────────────────────────────────────────────────

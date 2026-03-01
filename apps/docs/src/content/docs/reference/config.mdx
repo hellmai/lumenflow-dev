@@ -112,17 +112,18 @@ WU (Work Unit) configuration
 
 Quality gates configuration
 
-| Field                       | Type     | Default           | Description |
-| --------------------------- | -------- | ----------------- | ----------- | -------- | --- |
-| `maxEslintWarnings`         | integer  | `100`             |             |
-| `enableCoverage`            | boolean  | `true`            |             |
-| `minCoverage`               | number   | `90`              |             |
-| `enableSafetyCriticalTests` | boolean  | `true`            |             |
-| `enableInvariants`          | boolean  | `true`            |             |
-| `execution`                 | object   | `-`               |             |
-| `commands`                  | object   | `[object Object]` |             |
-| `ignore_patterns`           | string[] | `-`               |             |
-| `lane_health`               | "warn"   | "error"           | "off"       | `"warn"` |     |
+| Field                       | Type                             | Default           | Description                                                                   |
+| --------------------------- | -------------------------------- | ----------------- | ----------------------------------------------------------------------------- |
+| `maxEslintWarnings`         | integer                          | `100`             |                                                                               |
+| `enableCoverage`            | boolean                          | `true`            |                                                                               |
+| `minCoverage`               | number                           | `90`              |                                                                               |
+| `enableSafetyCriticalTests` | boolean                          | `true`            |                                                                               |
+| `enableInvariants`          | boolean                          | `true`            |                                                                               |
+| `execution`                 | object                           | `-`               |                                                                               |
+| `commands`                  | object                           | `[object Object]` |                                                                               |
+| `ignore_patterns`           | string[]                         | `-`               |                                                                               |
+| `lane_health`               | `"warn"` \| `"error"` \| `"off"` | `"warn"`          | Lane overlap enforcement mode (`warn` logs, `error` blocks, `off` disables).  |
+| `co_change`                 | object[]                         | `[]`              | Co-change rules: trigger/require glob pairs with severity (`warn/error/off`). |
 
 ### memory
 

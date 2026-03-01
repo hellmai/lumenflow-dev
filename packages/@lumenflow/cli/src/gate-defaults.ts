@@ -15,6 +15,7 @@
 import type { GateRegistry, GateDefinition } from './gate-registry.js';
 import type { DocsOnlyTestPlan } from './gates-types.js';
 import { GATE_NAMES, GATE_COMMANDS, SCRIPTS } from '@lumenflow/core/wu-constants';
+import { runCoChangeGate } from './gates-runners.js';
 
 /**
  * Options for docs-only gate registration.
@@ -136,6 +137,11 @@ export function registerCodeGates(registry: GateRegistry, options: CodeGateOptio
     cmd: isFullLint ? `pnpm ${SCRIPTS.LINT}` : GATE_COMMANDS.INCREMENTAL,
     scriptName: SCRIPTS.LINT,
   });
+
+  registry.register({
+    name: GATE_NAMES.CO_CHANGE,
+    run: runCoChangeGate,
+  } as GateDefinition);
 
   registry.register({
     name: GATE_NAMES.TYPECHECK,
