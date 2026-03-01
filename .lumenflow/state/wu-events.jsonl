@@ -2609,3 +2609,4 @@
 {"type":"complete","wuId":"WU-2145","timestamp":"2026-03-01T21:01:03.066Z"}
 {"type":"claim","wuId":"WU-2146","timestamp":"2026-03-01T22:28:45.111Z","lane":"Framework: Memory","title":"Backward-compatible signal schema extension"}
 {"type":"checkpoint","wuId":"WU-2146","timestamp":"2026-03-01T22:28:55.862Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"complete","wuId":"WU-2146","timestamp":"2026-03-01T22:33:42.847Z"}

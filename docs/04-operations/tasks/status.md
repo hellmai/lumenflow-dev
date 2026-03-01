@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1186,3 +1186,4 @@ _Last updated: 2026-03-01_
 - [WU-2286 — state:emit should support transactional commit mode for corrective events](wu/WU-2286.yaml) — 2026-03-01
 - [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — 2026-03-01
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — 2026-03-01
+- [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml) — 2026-03-01
