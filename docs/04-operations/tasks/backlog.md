@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2286 — state:emit should support transactional commit mode for corrective events](wu/WU-2286.yaml) — Framework: Core State Recovery
 - [WU-2285 — state:doctor should detect stale status/backlog references for non-active WUs](wu/WU-2285.yaml) — Framework: Core State Recovery
 - [WU-2284 — wu:claim lane occupancy should ignore non-active WUs in status sections](wu/WU-2284.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
