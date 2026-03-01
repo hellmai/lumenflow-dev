@@ -71,14 +71,8 @@ function toSurfacedSignal(signal: MemorySignal): SurfacedSignal {
 }
 
 interface MemorySignalModule {
-  loadSignals: (
-    projectRoot: string,
-    options: { unreadOnly: boolean },
-  ) => Promise<MemorySignal[]>;
-  markSignalsAsRead: (
-    projectRoot: string,
-    signalIds: string[],
-  ) => Promise<{ markedCount: number }>;
+  loadSignals: (projectRoot: string, options: { unreadOnly: boolean }) => Promise<MemorySignal[]>;
+  markSignalsAsRead: (projectRoot: string, signalIds: string[]) => Promise<{ markedCount: number }>;
 }
 
 async function loadMemorySignalModule(): Promise<MemorySignalModule> {
