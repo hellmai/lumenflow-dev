@@ -226,10 +226,16 @@ export type MemInboxInput = z.infer<typeof memInboxSchema>;
  * Schema for mem:signal command
  *
  * Required: message, wu
+ * Optional: type, sender, target_agent, origin, remote_id
  */
 export const memSignalSchema = z.object({
   message: z.string().describe('Signal message'),
   wu: z.string().describe('WU ID to associate with'),
+  type: z.string().optional().describe('Signal type (e.g., handoff, unblock, alert)'),
+  sender: z.string().optional().describe('Sender identifier (agent/session)'),
+  target_agent: z.string().optional().describe('Target agent identifier'),
+  origin: z.string().optional().describe('Signal origin context (e.g., cli, mcp, remote)'),
+  remote_id: z.string().optional().describe('Remote signal ID for cross-system correlation'),
 });
 
 export type MemSignalInput = z.infer<typeof memSignalSchema>;

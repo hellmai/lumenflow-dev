@@ -87,6 +87,16 @@ export interface Signal {
   wu_id?: string;
   /** Optional target lane */
   lane?: string;
+  /** Optional signal type (e.g., handoff, unblock, alert) */
+  type?: string;
+  /** Optional sender identifier (agent/session) */
+  sender?: string;
+  /** Optional target agent identifier */
+  target_agent?: string;
+  /** Optional origin context (e.g., cli, mcp, remote) */
+  origin?: string;
+  /** Optional remote signal ID for cross-system correlation */
+  remote_id?: string;
 }
 
 /**
@@ -109,6 +119,16 @@ export interface CreateSignalOptions {
   wuId?: string;
   /** Lane to target signal to */
   lane?: string;
+  /** Signal type (e.g., handoff, unblock, alert) */
+  type?: string;
+  /** Sender identifier (agent/session) */
+  sender?: string;
+  /** Target agent identifier */
+  target_agent?: string;
+  /** Origin context (e.g., cli, mcp, remote) */
+  origin?: string;
+  /** Remote signal ID for cross-system correlation */
+  remote_id?: string;
 }
 
 /**
@@ -243,7 +263,7 @@ export async function createSignal(
   baseDir: string,
   options: CreateSignalOptions,
 ): Promise<CreateSignalResult> {
-  const { message, wuId, lane } = options;
+  const { message, wuId, lane, type, sender, target_agent, origin, remote_id } = options;
 
   // Validate message is provided and non-empty
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
@@ -269,6 +289,21 @@ export async function createSignal(
   }
   if (lane) {
     signal.lane = lane;
+  }
+  if (type) {
+    signal.type = type;
+  }
+  if (sender) {
+    signal.sender = sender;
+  }
+  if (target_agent) {
+    signal.target_agent = target_agent;
+  }
+  if (origin) {
+    signal.origin = origin;
+  }
+  if (remote_id) {
+    signal.remote_id = remote_id;
   }
 
   // Ensure memory directory exists

@@ -923,6 +923,26 @@ describe('Memory Command Schemas (WU-1456)', () => {
       const result = memSignalSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
+
+    it('should preserve optional signal metadata fields', () => {
+      const input: MemSignalInput = {
+        message: 'handoff complete',
+        wu: 'WU-1234',
+        type: 'handoff',
+        sender: 'agent-a',
+        target_agent: 'agent-b',
+        origin: 'mcp',
+        remote_id: 'remote-123',
+      };
+
+      const result = memSignalSchema.safeParse(input);
+      expect(result.success).toBe(true);
+      expect(result.data?.type).toBe('handoff');
+      expect(result.data?.sender).toBe('agent-a');
+      expect(result.data?.target_agent).toBe('agent-b');
+      expect(result.data?.origin).toBe('mcp');
+      expect(result.data?.remote_id).toBe('remote-123');
+    });
   });
 
   describe('memSummarizeSchema', () => {
