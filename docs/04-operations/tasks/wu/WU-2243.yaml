@@ -2,7 +2,7 @@ id: WU-2243
 title: initiative:create ignores --phase and --success-metric flags
 lane: 'Framework: Initiatives'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-27
 code_paths:
@@ -19,10 +19,18 @@ artifacts:
 dependencies: []
 initiative: INIT-047
 risks: []
-notes: |-
+notes: >-
   (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 
+
   [ADMIN-REPAIR 2026-02-27]: status changed from 'in_progress' to 'done'
+
+
+  Reconciled during 2026-03-01 backlog audit: initiative-create phase/success-metric behavior is
+  implemented and test coverage exists (initiative-create-flags.test.ts).
+
+
+  [ADMIN-REPAIR 2026-03-01]: status changed from 'in_progress' to 'done'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
