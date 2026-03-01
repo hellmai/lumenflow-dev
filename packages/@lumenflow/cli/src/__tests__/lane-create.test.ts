@@ -94,9 +94,9 @@ describe('lane:create (WU-2258)', () => {
     });
 
     it('rejects invalid wip-limit values', () => {
-      expect(() => parseLaneCreateArgs(['--name', 'Framework: Kernel', '--wip-limit', '0'])).toThrow(
-        /must be a positive integer/,
-      );
+      expect(() =>
+        parseLaneCreateArgs(['--name', 'Framework: Kernel', '--wip-limit', '0']),
+      ).toThrow(/must be a positive integer/);
       expect(() =>
         parseLaneCreateArgs(['--name', 'Framework: Kernel', '--wip-limit', '-1']),
       ).toThrow(/must be a positive integer/);
