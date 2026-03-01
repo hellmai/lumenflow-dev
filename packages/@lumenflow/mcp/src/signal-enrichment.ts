@@ -1,14 +1,14 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { loadSignals, markSignalsAsRead } from '@lumenflow/memory';
-
 /**
  * WU-2148: throttle signal checks to once every 5 seconds per process.
  */
 export const SIGNAL_ENRICHMENT_THROTTLE_MS = 5_000;
+const MEMORY_MODULE_ID = '@lumenflow/memory';
 
 let lastSignalCheckAtMs = 0;
+let memoryModulePromise: Promise<MemorySignalModule> | null = null;
 
 interface MemorySignal {
   id: string;
@@ -70,15 +70,50 @@ function toSurfacedSignal(signal: MemorySignal): SurfacedSignal {
   };
 }
 
+interface MemorySignalModule {
+  loadSignals: (
+    projectRoot: string,
+    options: { unreadOnly: boolean },
+  ) => Promise<MemorySignal[]>;
+  markSignalsAsRead: (
+    projectRoot: string,
+    signalIds: string[],
+  ) => Promise<{ markedCount: number }>;
+}
+
+async function loadMemorySignalModule(): Promise<MemorySignalModule> {
+  const module = (await import(MEMORY_MODULE_ID)) as Record<string, unknown>;
+  const loadSignalsExport = module.loadSignals;
+  const markSignalsAsReadExport = module.markSignalsAsRead;
+
+  if (typeof loadSignalsExport !== 'function' || typeof markSignalsAsReadExport !== 'function') {
+    throw new Error('Memory signal APIs unavailable');
+  }
+
+  return {
+    loadSignals: loadSignalsExport as MemorySignalModule['loadSignals'],
+    markSignalsAsRead: markSignalsAsReadExport as MemorySignalModule['markSignalsAsRead'],
+  };
+}
+
+async function getMemorySignalModule(): Promise<MemorySignalModule> {
+  if (!memoryModulePromise) {
+    memoryModulePromise = loadMemorySignalModule();
+  }
+  return memoryModulePromise;
+}
+
 async function defaultLoadUnreadSignals(projectRoot: string): Promise<MemorySignal[]> {
-  return loadSignals(projectRoot, { unreadOnly: true });
+  const module = await getMemorySignalModule();
+  return module.loadSignals(projectRoot, { unreadOnly: true });
 }
 
 async function defaultMarkRead(
   projectRoot: string,
   signalIds: string[],
 ): Promise<{ markedCount: number }> {
-  return markSignalsAsRead(projectRoot, signalIds);
+  const module = await getMemorySignalModule();
+  return module.markSignalsAsRead(projectRoot, signalIds);
 }
 
 /**
@@ -145,4 +180,5 @@ export async function enrichToolResultWithSignals(
 
 export function resetSignalEnrichmentStateForTests(): void {
   lastSignalCheckAtMs = 0;
+  memoryModulePromise = null;
 }
