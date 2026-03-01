@@ -15,6 +15,7 @@ import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
 import { CONFIG_FILES, STRING_LITERALS } from './wu-constants.js';
+import { WU_STATUS, resolveWUStatus } from './wu-statuses.js';
 import { findProjectRoot, getConfig, WORKSPACE_CONFIG_FILE_NAME } from './lumenflow-config.js';
 import { WORKSPACE_V2_KEYS } from './config-contract.js';
 import type { LockPolicy } from './lumenflow-config-schema.js';
@@ -88,6 +89,14 @@ interface LaneConfigWithWip extends LaneConfig {
 
 // WU-2044: Use canonical WUDocBase instead of local definition
 type WUDoc = Pick<import('./wu-doc-types.js').WUDocBase, 'lane'>;
+
+/**
+ * WU-2284: Canonical statuses that should count toward lane occupancy.
+ * - policy=all: both in_progress and blocked
+ * - policy=active: only in_progress
+ */
+const ACTIVE_COUNTED_STATUSES_ALL = new Set<string>([WU_STATUS.IN_PROGRESS, WU_STATUS.BLOCKED]);
+const ACTIVE_COUNTED_STATUSES_PROGRESS_ONLY = new Set<string>([WU_STATUS.IN_PROGRESS]);
 
 // Re-export for test access
 export { getSubLanesForParent };
@@ -700,6 +709,7 @@ function checkWuLaneMatch(
   wuid: string,
   wuDir: string,
   targetLane: string,
+  allowedStatuses: ReadonlySet<string>,
 ): string | null {
   // Skip if it's the same WU we're trying to claim
   if (activeWuid === wuid) {
@@ -717,7 +727,7 @@ function checkWuLaneMatch(
 
   try {
     const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
-    const wuDoc = parseYAML(wuContent) as WUDoc;
+    const wuDoc = parseYAML(wuContent) as WUDoc & { status?: unknown };
 
     if (!wuDoc || !wuDoc.lane) {
       console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);
@@ -727,7 +737,9 @@ function checkWuLaneMatch(
     // Normalize lane names for comparison (case-insensitive, trim whitespace)
     const activeLane = wuDoc.lane.toString().trim().toLowerCase();
 
-    if (activeLane === targetLane) {
+    const resolvedStatus = resolveWUStatus(wuDoc.status);
+
+    if (activeLane === targetLane && allowedStatuses.has(resolvedStatus)) {
       return activeWuid;
     }
   } catch (e) {
@@ -747,6 +759,7 @@ function collectInProgressWUsForLane(
   wuid: string,
   wuDir: string,
   targetLane: string,
+  allowedStatuses: ReadonlySet<string>,
 ): string[] {
   const inProgressWUs: string[] = [];
 
@@ -755,7 +768,7 @@ function collectInProgressWUsForLane(
     if (!activeWuid) {
       continue;
     }
-    const matchedWu = checkWuLaneMatch(activeWuid, wuid, wuDir, targetLane);
+    const matchedWu = checkWuLaneMatch(activeWuid, wuid, wuDir, targetLane, allowedStatuses);
     if (matchedWu) {
       inProgressWUs.push(matchedWu);
     }
@@ -777,6 +790,7 @@ function extractWUsFromSection(
   wuid: string,
   wuDir: string,
   targetLane: string,
+  allowedStatuses: ReadonlySet<string>,
 ): string[] {
   if (!section || section.includes(NO_ITEMS_MARKER)) {
     return [];
@@ -790,7 +804,7 @@ function extractWUsFromSection(
     return [];
   }
 
-  return collectInProgressWUsForLane(matches, wuid, wuDir, targetLane);
+  return collectInProgressWUsForLane(matches, wuid, wuDir, targetLane, allowedStatuses);
 }
 
 /**
@@ -849,14 +863,30 @@ export function checkLaneFree(
     const wuDir = path.join(projectRoot, getConfig({ projectRoot }).directories.wuDir);
     const targetLane = lane.toString().trim().toLowerCase();
 
+    // WU-2284: Count only active statuses based on lock policy.
+    const inProgressAllowedStatuses =
+      lockPolicy === 'all' ? ACTIVE_COUNTED_STATUSES_ALL : ACTIVE_COUNTED_STATUSES_PROGRESS_ONLY;
+
     // Collect in_progress WUs
-    const inProgressWUs = extractWUsFromSection(inProgressSection, wuid, wuDir, targetLane);
+    const inProgressWUs = extractWUsFromSection(
+      inProgressSection,
+      wuid,
+      wuDir,
+      targetLane,
+      inProgressAllowedStatuses,
+    );
 
     // WU-1324: If policy is 'all', also count blocked WUs
     let blockedWUs: string[] = [];
     if (lockPolicy === 'all') {
       const { section: blockedSection } = extractBlockedSection(lines);
-      blockedWUs = extractWUsFromSection(blockedSection, wuid, wuDir, targetLane);
+      blockedWUs = extractWUsFromSection(
+        blockedSection,
+        wuid,
+        wuDir,
+        targetLane,
+        ACTIVE_COUNTED_STATUSES_ALL,
+      );
     }
 
     // WU-1324: Calculate total count based on policy

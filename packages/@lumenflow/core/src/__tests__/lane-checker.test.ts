@@ -544,6 +544,9 @@ describe('lane-checker checkLaneFree with lock_policy (WU-1324)', () => {
   const WU_IN_PROGRESS = 'WU-1001';
   const WU_BLOCKED = 'WU-1002';
   const WU_NEW = 'WU-1003';
+  const WU_SUPERSEDED = 'WU-1004';
+  const WU_DONE = 'WU-1005';
+  const WU_CANCELLED = 'WU-1006';
 
   beforeEach(() => {
     // Create a unique test directory for each test
@@ -662,6 +665,49 @@ No completed items
       // Default policy is 'all', so blocked WUs count
       expect(result.free).toBe(false);
       expect(result.currentCount).toBe(2);
+    });
+
+    it('should ignore superseded, done, and cancelled WUs in In Progress section', () => {
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'all' }],
+        },
+      };
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
+
+      createWuFile(WU_SUPERSEDED, TEST_LANE_FRAMEWORK_CORE, 'superseded');
+      createWuFile(WU_DONE, TEST_LANE_FRAMEWORK_CORE, 'done');
+      createWuFile(WU_CANCELLED, TEST_LANE_FRAMEWORK_CORE, 'cancelled');
+      createStatusFile([WU_SUPERSEDED, WU_DONE, WU_CANCELLED], []);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      expect(result.free).toBe(true);
+      expect(result.currentCount).toBe(0);
+      expect(result.inProgressWUs).toEqual([]);
+      expect(result.occupiedBy).toBeNull();
+    });
+
+    it('should ignore non-active WUs in Blocked section under policy=all', () => {
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'all' }],
+        },
+      };
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
+
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createWuFile(WU_SUPERSEDED, TEST_LANE_FRAMEWORK_CORE, 'superseded');
+      createWuFile(WU_DONE, TEST_LANE_FRAMEWORK_CORE, 'done');
+      createWuFile(WU_CANCELLED, TEST_LANE_FRAMEWORK_CORE, 'cancelled');
+      createStatusFile([WU_SUPERSEDED, WU_IN_PROGRESS], [WU_DONE, WU_CANCELLED]);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      expect(result.free).toBe(false);
+      expect(result.currentCount).toBe(1);
+      expect(result.inProgressWUs).toEqual([WU_IN_PROGRESS]);
+      expect(result.occupiedBy).toBe(WU_IN_PROGRESS);
     });
   });
 
