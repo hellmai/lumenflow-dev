@@ -2,7 +2,7 @@ id: WU-2284
 title: wu:claim lane occupancy should ignore non-active WUs in status sections
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -20,11 +20,10 @@ artifacts:
   - .lumenflow/stamps/WU-2284.done
 dependencies: []
 risks: []
-notes: >-
-  Implementation: lane occupancy now filters status.md references by canonical YAML status.
-  Counted statuses are policy-aware: lock_policy=all counts in_progress+blocked,
-  lock_policy=active counts only in_progress. Added regression tests for superseded/done/cancelled
-  ghost references in In Progress/Blocked sections.
+notes: 'Implementation: lane occupancy now filters status.md references by canonical YAML status.
+  Counted statuses are policy-aware: lock_policy=all counts in_progress+blocked, lock_policy=active
+  counts only in_progress. Added regression tests for superseded/done/cancelled ghost references in
+  In Progress/Blocked sections.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -53,3 +52,6 @@ session_id: ff8eb138-a4fa-45ee-aa4a-ad5c4156f53a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T18:09:57.129Z
+locked: true
+completed_at: 2026-03-01T18:15:27.157Z
+completed: 2026-03-01

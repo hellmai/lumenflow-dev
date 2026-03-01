@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2284 — wu:claim lane occupancy should ignore non-active WUs in status sections](wu/WU-2284.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1178,3 +1178,4 @@ _Last updated: 2026-03-01_
 - [WU-2282 — Scope wu:done checkpoint writes to worktree instead of main](wu/WU-2282.yaml) — 2026-02-28
 - [WU-2283 — Fix lumenflow:upgrade false failure after successful push](wu/WU-2283.yaml) — 2026-02-28
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml) — 2026-03-01
+- [WU-2284 — wu:claim lane occupancy should ignore non-active WUs in status sections](wu/WU-2284.yaml) — 2026-03-01
