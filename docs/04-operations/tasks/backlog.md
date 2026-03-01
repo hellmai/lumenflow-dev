@@ -55,7 +55,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2287 — Add configurable wu:brief policy mode with default auto on wu:claim](wu/WU-2287.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1235,6 +1235,7 @@ sections:
 - [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
 - [WU-2284 — wu:claim lane occupancy should ignore non-active WUs in status sections](wu/WU-2284.yaml)
 - [WU-2285 — state:doctor should detect stale status/backlog references for non-active WUs](wu/WU-2285.yaml)
+- [WU-2287 — Add configurable wu:brief policy mode with default auto on wu:claim](wu/WU-2287.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

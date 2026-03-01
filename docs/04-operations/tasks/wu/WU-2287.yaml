@@ -2,7 +2,7 @@ id: WU-2287
 title: Add configurable wu:brief policy mode with default auto on wu:claim
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -20,10 +20,10 @@ artifacts:
   - .lumenflow/stamps/WU-2287.done
 dependencies: []
 risks: []
-notes: 'Implemented wu.brief.policyMode config (off/manual/auto/required) with default auto, plus
+notes: Implemented wu.brief.policyMode config (off/manual/auto/required) with default auto, plus
   claim-time policy evaluation and auto-brief evidence recording. Auto mode is non-blocking on
   failure (warn), required mode fails the claim. Added unit coverage in wu-claim and config schema
-  tests.'
+  tests.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -53,3 +53,6 @@ session_id: 2fe7b8eb-a63e-4b00-99a6-e563c4f2038e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T18:25:33.887Z
+locked: true
+completed_at: 2026-03-01T18:37:38.249Z
+completed: 2026-03-01

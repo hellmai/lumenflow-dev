@@ -2587,3 +2587,4 @@
 {"type":"complete","wuId":"WU-2285","timestamp":"2026-03-01T18:24:06.068Z"}
 {"type":"claim","wuId":"WU-2287","timestamp":"2026-03-01T18:25:33.903Z","lane":"Framework: CLI WU Commands","title":"Add configurable wu:brief policy mode with default auto on wu:claim"}
 {"type":"checkpoint","wuId":"WU-2287","timestamp":"2026-03-01T18:25:50.655Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"complete","wuId":"WU-2287","timestamp":"2026-03-01T18:37:42.613Z"}
