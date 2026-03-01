@@ -2,7 +2,7 @@ id: WU-2290
 title: Block wu:edit from main for in-progress worktree WUs
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-02
 code_paths:
@@ -55,3 +55,6 @@ acceptance:
   - unit tests cover context guard pass/fail cases
   - pnpm --filter @lumenflow/cli lint && pnpm --filter @lumenflow/cli typecheck && targeted wu-edit
     tests pass
+locked: true
+completed_at: 2026-03-01T23:45:49.401Z
+completed: 2026-03-02
