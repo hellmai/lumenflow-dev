@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml)
 
 ## Completed
 

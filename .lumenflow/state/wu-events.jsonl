@@ -2613,3 +2613,4 @@
 {"type":"claim","wuId":"WU-2147","timestamp":"2026-03-01T22:34:22.534Z","lane":"Framework: CLI WU Commands","title":"CLI signal middleware for automatic signal surfacing"}
 {"type":"checkpoint","wuId":"WU-2147","timestamp":"2026-03-01T22:34:33.422Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"complete","wuId":"WU-2147","timestamp":"2026-03-01T22:42:25.854Z"}
+{"type":"claim","wuId":"WU-2148","timestamp":"2026-03-01T22:43:09.681Z","lane":"Framework: MCP","title":"MCP signal enrichment in CallToolRequest handler"}

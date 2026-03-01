@@ -2,7 +2,7 @@ id: WU-2148
 title: MCP signal enrichment in CallToolRequest handler
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - Read receipts appended after surfacing
   - Enrichment errors never break tool responses
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-mcp-wu-2148
+claimed_at: 2026-03-01T22:43:09.657Z
+baseline_main_sha: ab042b8760ba03505f5be5f4f23b43c117e7d11d
+session_id: e3d9b2ef-b9d6-4bad-86f7-f55d0c1c21c4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T22:43:09.663Z
