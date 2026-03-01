@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2151 — Mock signal and memory sync adapter for testing](wu/WU-2151.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1191,3 +1191,4 @@ _Last updated: 2026-03-01_
 - [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml) — 2026-03-01
 - [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml) — 2026-03-01
 - [WU-2150 — SDK packaging boundary hardening - decouple kernel dependency](wu/WU-2150.yaml) — 2026-03-01
+- [WU-2151 — Mock signal and memory sync adapter for testing](wu/WU-2151.yaml) — 2026-03-01
