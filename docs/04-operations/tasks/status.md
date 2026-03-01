@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2150 — SDK packaging boundary hardening - decouple kernel dependency](wu/WU-2150.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1190,3 +1190,4 @@ _Last updated: 2026-03-01_
 - [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml) — 2026-03-01
 - [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml) — 2026-03-01
 - [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml) — 2026-03-01
+- [WU-2150 — SDK packaging boundary hardening - decouple kernel dependency](wu/WU-2150.yaml) — 2026-03-01
