@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml)
 
 ## Completed
 
