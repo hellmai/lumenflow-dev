@@ -2,7 +2,7 @@ id: WU-2285
 title: state:doctor should detect stale status/backlog references for non-active WUs
 lane: 'Framework: Core State Recovery'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -52,3 +52,6 @@ session_id: fc70ea06-a310-4cdb-b4d9-df85252e7192
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T18:16:06.330Z
+locked: true
+completed_at: 2026-03-01T18:24:01.725Z
+completed: 2026-03-01
