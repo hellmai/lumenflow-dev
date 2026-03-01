@@ -28,6 +28,7 @@ import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { registeredTools, runtimeTaskTools } from './tools.js';
 import { staticResources, resourceTemplates, type ResourceDefinition } from './resources.js';
 import { RuntimeTaskToolNames } from './tools/runtime-task-constants.js';
+import { enrichToolResultWithSignals } from './signal-enrichment.js';
 
 /**
  * Log levels supported by the MCP server
@@ -156,8 +157,11 @@ export function createMcpServer(config: McpServerConfig = {}): McpServer {
 
     try {
       const result = await tool.execute(args || {}, { projectRoot: resolvedConfig.projectRoot });
+      const enrichedResult = await enrichToolResultWithSignals(result, {
+        projectRoot: resolvedConfig.projectRoot,
+      });
       return {
-        content: [{ type: 'text', text: JSON.stringify(result) }],
+        content: [{ type: 'text', text: JSON.stringify(enrichedResult) }],
         isError: !result.success,
       };
     } catch (err) {

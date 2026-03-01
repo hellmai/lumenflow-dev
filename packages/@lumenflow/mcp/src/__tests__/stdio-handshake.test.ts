@@ -136,6 +136,10 @@ interface ServerHarnessOptions {
     mimeType: string;
     fetch: (uri: string, options?: { projectRoot?: string }) => Promise<unknown>;
   }>;
+  enrichToolResultWithSignals?: (
+    result: unknown,
+    options: { projectRoot: string },
+  ) => Promise<unknown>;
 }
 
 async function createServerHarness(options: ServerHarnessOptions = {}) {
@@ -195,6 +199,12 @@ async function createServerHarness(options: ServerHarnessOptions = {}) {
     resourceTemplates: options.resourceTemplates ?? [],
   }));
 
+  const enrichToolResultWithSignals =
+    options.enrichToolResultWithSignals ?? vi.fn(async (result: unknown) => result);
+  vi.doMock('../signal-enrichment.js', () => ({
+    enrichToolResultWithSignals,
+  }));
+
   const module = await import('../server.js');
 
   return {
@@ -203,6 +213,7 @@ async function createServerHarness(options: ServerHarnessOptions = {}) {
     schemaRefs,
     connectMock,
     closeMock,
+    enrichToolResultWithSignals,
   };
 }
 
@@ -427,6 +438,40 @@ describe('MCP stdio handshake', () => {
       };
       expect(failedResponse.isError).toBe(true);
       expect(failedResponse.content[0]?.text).toContain('"error":"failed"');
+    });
+
+    it('applies signal enrichment payload to tool call responses', async () => {
+      const successTool = {
+        name: 'success_tool',
+        description: 'Returns success',
+        inputSchema: z.object({}),
+        execute: vi.fn(async () => ({ success: true, payload: { ok: true } })),
+      };
+      const enrichToolResultWithSignals = vi.fn().mockImplementation(async (result: unknown) => ({
+        ...(result as Record<string, unknown>),
+        _signals: { count: 1, items: [{ id: 'sig-1', message: 'coordination' }] },
+      }));
+      const harness = await createServerHarness({
+        registeredTools: [successTool],
+        enrichToolResultWithSignals,
+      });
+      harness.createMcpServer({ projectRoot: '/workspace' });
+      const callToolHandler = harness.handlers.get(harness.schemaRefs.CallToolRequestSchema);
+
+      const response = (await callToolHandler?.({
+        params: { name: 'success_tool', arguments: {} },
+      })) as {
+        isError: boolean;
+        content: Array<{ text: string }>;
+      };
+      const payload = JSON.parse(response.content[0]?.text ?? '{}') as Record<string, unknown>;
+
+      expect(response.isError).toBe(false);
+      expect(enrichToolResultWithSignals).toHaveBeenCalledWith(
+        { success: true, payload: { ok: true } },
+        { projectRoot: '/workspace' },
+      );
+      expect(payload._signals).toMatchObject({ count: 1 });
     });
 
     it('returns not-found payload for unknown resources', async () => {
