@@ -7,9 +7,7 @@ priority: P1
 created: 2026-03-01
 code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
-  - packages/@lumenflow/cli/src/wu-brief.ts
-  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/schemas/wu-config.ts
 tests:
   manual:
     - Set policy mode auto and run wu:claim; verify brief generation/evidence occurs automatically
