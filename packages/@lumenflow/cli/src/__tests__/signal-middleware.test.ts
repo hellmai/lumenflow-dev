@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  runSignalMiddleware,
-  resetSignalMiddlewareStateForTests,
-} from '../signal-middleware.js';
+import { runSignalMiddleware, resetSignalMiddlewareStateForTests } from '../signal-middleware.js';
 
 describe('signal middleware (WU-2147)', () => {
   beforeEach(() => {

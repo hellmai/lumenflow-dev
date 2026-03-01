@@ -151,7 +151,9 @@ async function runWithTimeout<T>(promise: Promise<T>, timeoutMs: number): Promis
 }
 
 async function maybePullRemoteSignals(
-  options: Required<Pick<SignalMiddlewareOptions, 'remotePull' | 'baseDir' | 'remotePullTimeoutMs'>> & {
+  options: Required<
+    Pick<SignalMiddlewareOptions, 'remotePull' | 'baseDir' | 'remotePullTimeoutMs'>
+  > & {
     nowMs: number;
   },
 ): Promise<void> {
