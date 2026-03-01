@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2150 — SDK packaging boundary hardening - decouple kernel dependency](wu/WU-2150.yaml)
 
 ## Completed
 

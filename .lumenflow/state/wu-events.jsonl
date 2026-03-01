@@ -2618,3 +2618,4 @@
 {"type":"complete","wuId":"WU-2148","timestamp":"2026-03-01T22:49:42.129Z"}
 {"type":"claim","wuId":"WU-2149","timestamp":"2026-03-01T22:50:26.122Z","lane":"Framework: Core Lifecycle","title":"SDK signal and memory sync port interfaces"}
 {"type":"complete","wuId":"WU-2149","timestamp":"2026-03-01T22:57:26.425Z"}
+{"type":"claim","wuId":"WU-2150","timestamp":"2026-03-01T22:58:02.846Z","lane":"Framework: Core Lifecycle","title":"SDK packaging boundary hardening - decouple kernel dependency"}

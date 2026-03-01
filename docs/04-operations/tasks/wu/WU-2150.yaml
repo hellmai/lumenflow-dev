@@ -2,7 +2,7 @@ id: WU-2150
 title: SDK packaging boundary hardening - decouple kernel dependency
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - Compile-time parity check exists in monorepo CI
   - pnpm pack produces clean artifact with no AGPL deps
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2150
+claimed_at: 2026-03-01T22:58:02.821Z
+baseline_main_sha: d5ac009293a5ead5ef18688289de89d49dcbe3dc
+session_id: d5b8fcc6-3d0e-4b65-a85e-8e8f5ebdec73
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T22:58:02.827Z
