@@ -2580,3 +2580,4 @@
 {"type":"release","wuId":"WU-2218","timestamp":"2026-03-01T11:00:42.500Z","reason":"stale in_progress claim from v3.6.0 pre-release; worktree no longer exists"}
 {"wuId":"WU-2243","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-03-01T17:08:45.756Z","source":"state:emit","corrective":true}
 {"type":"claim","wuId":"WU-2284","timestamp":"2026-03-01T18:09:57.146Z","lane":"Framework: Core Lifecycle","title":"wu:claim lane occupancy should ignore non-active WUs in status sections"}
+{"type":"checkpoint","wuId":"WU-2284","timestamp":"2026-03-01T18:14:56.878Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
