@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: Apache-2.0
 
-import type { KernelEvent } from '@lumenflow/kernel';
-
 export type PolicyDecision = 'allow' | 'deny';
 
 export const CONTROL_PLANE_POLICY_MODES = {
@@ -22,7 +20,38 @@ export type ControlPlanePolicyMode = (typeof CONTROL_PLANE_POLICY_MODE_VALUES)[n
 export const DEFAULT_CONTROL_PLANE_AUTH_TOKEN_ENV = 'LUMENFLOW_CONTROL_PLANE_TOKEN';
 export const CONTROL_PLANE_AUTH_TOKEN_ENV_PATTERN = /^[A-Z][A-Z0-9_]*$/;
 
-export type { KernelEvent };
+/**
+ * SDK-local wire contract for kernel events.
+ *
+ * This intentionally avoids importing @lumenflow/kernel from the published SDK.
+ * Monorepo CI enforces assignability parity against kernel's upstream type.
+ */
+export interface SdkKernelEvent {
+  schema_version: number;
+  kind: string;
+  timestamp: string;
+  task_id?: string;
+  workspace_id?: string;
+  run_id?: string;
+  message?: string;
+  reason?: string;
+  wait_for?: string;
+  by?: string;
+  session_id?: string;
+  config_hash?: string;
+  changes_summary?: string;
+  spec?: 'task' | 'workspace';
+  id?: string;
+  expected_hash?: string;
+  actual_hash?: string;
+  evidence_refs?: string[];
+  parent_task_id?: string;
+  delegation_id?: string;
+  note?: string;
+  progress?: string;
+}
+
+export type KernelEvent = SdkKernelEvent;
 
 export interface ControlPlanePolicyRule {
   id: string;
