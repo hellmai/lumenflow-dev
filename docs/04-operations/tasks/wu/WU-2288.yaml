@@ -23,7 +23,7 @@ artifacts:
   - .lumenflow/stamps/WU-2288.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Added wu:prep policy enforcement path with mode-aware behavior (off/manual skip, auto warn, required block unless force+reason). Added explicit prep bypass audit checkpoint and shared brief evidence helper in core event sourcer; covered with unit tests in wu-prep, wu-done, and wu-event-sourcer test suites.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
