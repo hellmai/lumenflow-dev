@@ -23,12 +23,20 @@ plan: lumenflow://plans/WU-2290-plan.md
 spec_refs:
   - lumenflow://plans/WU-2290-plan.md
 risks: []
-notes: ''
+notes: Implemented worktree execution-context guard in wu-edit; added retry command guidance and
+  unit coverage for pass/fail context checks.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-01T23:37:07.660Z
+worktree_path: worktrees/framework-cli-wu-commands-wu-2290
+session_id: 091b5808-c770-4828-8765-5b15d28f7e0b
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T23:37:07.665Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +55,3 @@ acceptance:
   - unit tests cover context guard pass/fail cases
   - pnpm --filter @lumenflow/cli lint && pnpm --filter @lumenflow/cli typecheck && targeted wu-edit
     tests pass
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-wu-commands-wu-2290
-claimed_at: 2026-03-01T23:37:07.660Z
-baseline_main_sha: a381d8cb6de05cf4074dae2541c62a33846e7e60
-session_id: 091b5808-c770-4828-8765-5b15d28f7e0b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-01T23:37:07.665Z

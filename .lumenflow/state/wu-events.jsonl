@@ -2628,3 +2628,4 @@
 {"type":"complete","wuId":"WU-2158","timestamp":"2026-03-01T23:31:28.376Z"}
 {"type":"claim","wuId":"WU-2290","timestamp":"2026-03-01T23:37:07.689Z","lane":"Framework: CLI WU Commands","title":"Block wu:edit from main for in-progress worktree WUs"}
 {"type":"checkpoint","wuId":"WU-2290","timestamp":"2026-03-01T23:43:57.620Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2290","timestamp":"2026-03-01T23:44:21.299Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2290.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
