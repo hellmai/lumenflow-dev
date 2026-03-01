@@ -7,3 +7,4 @@ export * from './workspace-config.js';
 export * from './policy-mode.js';
 export * from './http/http-control-plane-sync-port.js';
 export * from './mock/mock-control-plane-sync-port.js';
+export * from './mock/mock-signal-sync-port.js';
