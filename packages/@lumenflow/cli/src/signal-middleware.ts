@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { loadSignals, type Signal } from '@lumenflow/memory/signal';
+import { loadSignals } from '@lumenflow/memory/signal';
 
 /**
  * WU-2147: High-value commands always surface unread coordination signals.
@@ -53,12 +53,18 @@ const remoteCircuitState: RemoteCircuitState = {
   openUntilMs: 0,
 };
 
+interface MiddlewareSignal {
+  message: string;
+  wu_id?: string;
+  lane?: string;
+}
+
 export interface SignalMiddlewareOptions {
   commandName?: string | null;
   baseDir?: string;
   now?: () => number;
   stderrWrite?: (text: string) => void;
-  loadUnreadSignals?: (baseDir: string) => Promise<Signal[]>;
+  loadUnreadSignals?: (baseDir: string) => Promise<MiddlewareSignal[]>;
   remotePull?: (baseDir: string) => Promise<void>;
   remotePullTimeoutMs?: number;
 }
@@ -67,7 +73,7 @@ function defaultStderrWrite(text: string): void {
   process.stderr.write(text);
 }
 
-function defaultLoadUnreadSignals(baseDir: string): Promise<Signal[]> {
+function defaultLoadUnreadSignals(baseDir: string): Promise<MiddlewareSignal[]> {
   return loadSignals(baseDir, { unreadOnly: true });
 }
 
@@ -175,7 +181,7 @@ async function maybePullRemoteSignals(
   }
 }
 
-function formatSignalSummary(signals: Signal[]): string {
+function formatSignalSummary(signals: MiddlewareSignal[]): string {
   const preview = signals.slice(0, 3);
   const lines = preview.map((signal, index) => {
     const scope = signal.wu_id ?? signal.lane ?? 'global';
