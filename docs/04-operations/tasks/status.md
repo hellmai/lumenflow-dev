@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml)
 
 ## Completed
 
