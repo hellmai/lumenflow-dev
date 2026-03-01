@@ -2624,3 +2624,4 @@
 {"type":"checkpoint","wuId":"WU-2151","timestamp":"2026-03-01T23:10:31.581Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2151","timestamp":"2026-03-01T23:11:09.298Z"}
 {"type":"claim","wuId":"WU-2158","timestamp":"2026-03-01T23:12:20.063Z","lane":"Framework: Core Lifecycle","title":"Add co-change gate to Software Delivery Pack"}
+{"type":"checkpoint","wuId":"WU-2158","timestamp":"2026-03-01T23:30:25.307Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
