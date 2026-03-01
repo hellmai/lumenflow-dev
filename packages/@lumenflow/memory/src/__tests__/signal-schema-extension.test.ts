@@ -57,7 +57,7 @@ describe('signal schema extension (WU-2146)', () => {
       target_agent: 'agent-beta',
       origin: 'mcp',
       remote_id: 'remote-123',
-    } as Record<string, unknown> as Parameters<typeof createSignal>[1]);
+    });
 
     expect(created.signal.type).toBe('handoff');
     expect(created.signal.sender).toBe('agent-alpha');
