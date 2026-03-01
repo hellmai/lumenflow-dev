@@ -123,6 +123,4 @@ export interface MemorySyncPort {
 }
 
 export interface ControlPlaneSyncPortV2
-  extends ControlPlaneSyncPort,
-    SignalSyncPort,
-    MemorySyncPort {}
+  extends ControlPlaneSyncPort, SignalSyncPort, MemorySyncPort {}
