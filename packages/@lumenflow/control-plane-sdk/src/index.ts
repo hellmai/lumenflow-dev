@@ -13,6 +13,7 @@ type KernelEventTypeParity = [KernelEventFromSdk] extends [KernelEventFromKernel
 const kernelEventTypeParityCheck: KernelEventTypeParity = true;
 
 export * from './sync-port.js';
+export * from './signal-sync-port.js';
 export * from './workspace-config.js';
 export * from './policy-mode.js';
 export * from './http/http-control-plane-sync-port.js';
