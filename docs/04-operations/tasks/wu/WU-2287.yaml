@@ -2,7 +2,7 @@ id: WU-2287
 title: Add configurable wu:brief policy mode with default auto on wu:claim
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-01
 code_paths:
@@ -31,11 +31,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: agents frequently forget to run wu:brief, which degrades handoff quality and causes avoidable lifecycle friction. Problem: current behavior requires explicit human/agent action and does not proactively generate brief artifacts after claim. Solution: introduce a configurable wu.brief policy (off/manual/auto/required), default to auto, and invoke wu:brief automatically during successful wu:claim in a non-blocking path for auto mode.'
+description: 'Context: agents frequently forget to run wu:brief, which degrades handoff quality and
+  causes avoidable lifecycle friction. Problem: current behavior requires explicit human/agent
+  action and does not proactively generate brief artifacts after claim. Solution: introduce a
+  configurable wu.brief policy (off/manual/auto/required), default to auto, and invoke wu:brief
+  automatically during successful wu:claim in a non-blocking path for auto mode.'
 acceptance:
   - New config policy supports off/manual/auto/required modes for wu:brief behavior
   - Default policy mode is auto for newly initialized workspaces
-  - wu:claim auto-invokes wu:brief when mode is auto, recording evidence without breaking claim on brief failures
+  - wu:claim auto-invokes wu:brief when mode is auto, recording evidence without breaking claim on
+    brief failures
   - When mode is off/manual, wu:claim does not auto-run brief
   - Logs clearly indicate whether auto-brief ran, skipped by policy, or failed non-blocking
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2287
+claimed_at: 2026-03-01T18:25:33.882Z
+baseline_main_sha: 4877479095305e410f3e235aaf120ec34d9c7288
+session_id: 2fe7b8eb-a63e-4b00-99a6-e563c4f2038e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T18:25:33.887Z

@@ -2585,3 +2585,4 @@
 {"type":"claim","wuId":"WU-2285","timestamp":"2026-03-01T18:16:06.349Z","lane":"Framework: Core State Recovery","title":"state:doctor should detect stale status/backlog references for non-active WUs"}
 {"type":"checkpoint","wuId":"WU-2285","timestamp":"2026-03-01T18:16:59.482Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2285","timestamp":"2026-03-01T18:24:06.068Z"}
+{"type":"claim","wuId":"WU-2287","timestamp":"2026-03-01T18:25:33.903Z","lane":"Framework: CLI WU Commands","title":"Add configurable wu:brief policy mode with default auto on wu:claim"}

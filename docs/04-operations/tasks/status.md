@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2287 — Add configurable wu:brief policy mode with default auto on wu:claim](wu/WU-2287.yaml)
 
 ## Completed
 
