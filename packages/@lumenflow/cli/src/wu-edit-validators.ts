@@ -301,10 +301,7 @@ export async function validateWorktreeBranch(
 
 function isPathWithin(rootPath: string, candidatePath: string): boolean {
   const relativePath = relative(rootPath, candidatePath);
-  return (
-    relativePath === '' ||
-    (!relativePath.startsWith('..') && !isAbsolute(relativePath))
-  );
+  return relativePath === '' || (!relativePath.startsWith('..') && !isAbsolute(relativePath));
 }
 
 /**
