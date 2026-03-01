@@ -315,9 +315,7 @@ export async function enforceWuBriefEvidenceForPrep(
   }
 
   if (mode === 'auto') {
-    warn(
-      `${PREP_LOG_PREFIX} ${EMOJI.WARNING} wu:brief evidence missing for ${id} (policy=auto).`,
-    );
+    warn(`${PREP_LOG_PREFIX} ${EMOJI.WARNING} wu:brief evidence missing for ${id} (policy=auto).`);
     warn(buildMissingWuBriefEvidenceMessageForPrep(id, mode));
     return;
   }

@@ -82,9 +82,9 @@ describe('WUEventSourcer', () => {
 
   describe('findLatestWuBriefEvidence', () => {
     it('identifies wu:brief checkpoint notes', () => {
-      expect(isWuBriefEvidenceNote(`${WU_BRIEF_EVIDENCE_NOTE_PREFIX} generated via codex-cli`)).toBe(
-        true,
-      );
+      expect(
+        isWuBriefEvidenceNote(`${WU_BRIEF_EVIDENCE_NOTE_PREFIX} generated via codex-cli`),
+      ).toBe(true);
       expect(isWuBriefEvidenceNote('regular checkpoint')).toBe(false);
       expect(isWuBriefEvidenceNote(undefined)).toBe(false);
     });
