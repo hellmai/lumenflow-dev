@@ -99,8 +99,7 @@ import { claimWorktreeMode } from './wu-claim-worktree.js';
 import { claimBranchOnlyMode } from './wu-claim-branch.js';
 import { handleResumeMode } from './wu-claim-resume-handler.js';
 import { extractSandboxCommandFromArgv, runWuSandbox } from './wu-sandbox.js';
-import { flushWuLifecycleSync } from './wu-lifecycle-sync/service.js';
-import { WU_LIFECYCLE_COMMANDS } from './wu-lifecycle-sync/constants.js';
+import { recordWuBriefEvidence } from './wu-spawn-strategy-resolver.js';
 
 // ============================================================================
 // RE-EXPORTS: Preserve public API for existing test consumers
@@ -136,6 +135,9 @@ export { applyFallbackSymlinks } from './wu-claim-worktree.js';
 // ============================================================================
 
 const PREFIX = LOG_PREFIX.CLAIM;
+const DEFAULT_WU_BRIEF_POLICY_MODE = 'auto';
+const WU_BRIEF_POLICY_MODES = ['off', 'manual', 'auto', 'required'] as const;
+const AUTO_BRIEF_CLIENT_NAME = 'wu:claim:auto';
 const WU_CLAIM_SANDBOX_OPTION = {
   name: 'sandbox',
   flags: '--sandbox',
@@ -143,6 +145,106 @@ const WU_CLAIM_SANDBOX_OPTION = {
     'Launch a post-claim session via wu:sandbox (use -- <command> to override the default shell)',
   type: 'boolean' as const,
 };
+
+export type WuClaimBriefPolicyMode = (typeof WU_BRIEF_POLICY_MODES)[number];
+
+interface AutoBriefLogger {
+  log: (message: string) => void;
+  warn: (message: string) => void;
+}
+
+interface AutoBriefDependencies {
+  recordEvidence?: typeof recordWuBriefEvidence;
+  logger?: AutoBriefLogger;
+}
+
+export interface MaybeRunAutoBriefForClaimOptions {
+  wuId: string;
+  workspaceRoot: string;
+  policyMode?: WuClaimBriefPolicyMode;
+  claimedMode?: string;
+  claimedBranch?: string;
+  clientName?: string;
+}
+
+function isWuClaimBriefPolicyMode(value: unknown): value is WuClaimBriefPolicyMode {
+  return (
+    typeof value === 'string' &&
+    WU_BRIEF_POLICY_MODES.includes(value as (typeof WU_BRIEF_POLICY_MODES)[number])
+  );
+}
+
+export function resolveWuClaimBriefPolicyMode(
+  config: ReturnType<typeof getConfig> = getConfig(),
+): WuClaimBriefPolicyMode {
+  const configuredMode = config.wu?.brief?.policyMode;
+  if (isWuClaimBriefPolicyMode(configuredMode)) {
+    return configuredMode;
+  }
+  return DEFAULT_WU_BRIEF_POLICY_MODE;
+}
+
+export async function maybeRunAutoBriefForClaim(
+  options: MaybeRunAutoBriefForClaimOptions,
+  deps: AutoBriefDependencies = {},
+): Promise<{ attempted: boolean; mode: WuClaimBriefPolicyMode }> {
+  const mode = options.policyMode ?? DEFAULT_WU_BRIEF_POLICY_MODE;
+  const logger = deps.logger || console;
+
+  if (mode === 'off' || mode === 'manual') {
+    logger.log(`${PREFIX} wu:brief auto-run skipped (policy=${mode}).`);
+    return { attempted: false, mode };
+  }
+
+  const recordEvidence = deps.recordEvidence || recordWuBriefEvidence;
+  try {
+    await recordEvidence({
+      wuId: options.wuId,
+      workspaceRoot: options.workspaceRoot,
+      clientName: options.clientName || AUTO_BRIEF_CLIENT_NAME,
+      claimedMode: options.claimedMode,
+      claimedBranch: options.claimedBranch,
+    });
+    logger.log(`${PREFIX} ${EMOJI.SUCCESS} wu:brief auto-run completed (policy=${mode}).`);
+    return { attempted: true, mode };
+  } catch (error) {
+    const message = getErrorMessage(error);
+    if (mode === 'required') {
+      throw new Error(`wu:brief auto-run failed (policy=required): ${message}`, {
+        cause: error,
+      });
+    }
+
+    logger.warn(`${PREFIX} Warning: wu:brief auto-run failed (policy=auto): ${message}`);
+    return { attempted: true, mode };
+  }
+}
+
+async function flushClaimLifecycleSyncEvent(input: {
+  wuId: string;
+  by?: string;
+  sessionId?: string;
+}): Promise<void> {
+  const [{ flushWuLifecycleSync }, { WU_LIFECYCLE_COMMANDS }] = await Promise.all([
+    import('./wu-lifecycle-sync/service.js'),
+    import('./wu-lifecycle-sync/constants.js'),
+  ]);
+
+  await flushWuLifecycleSync(
+    {
+      command: WU_LIFECYCLE_COMMANDS.CLAIM,
+      wuId: input.wuId,
+      by: input.by,
+      sessionId: input.sessionId,
+    },
+    {
+      workspaceRoot: process.cwd(),
+      logger: {
+        warn: (message) => console.warn(`${PREFIX} ${message}`),
+      },
+    },
+  );
+}
 
 interface ResolveClaimCloudActivationInput {
   cloudFlag: boolean;
@@ -605,6 +707,19 @@ export async function main() {
       await claimWorktreeMode(ctx);
     }
 
+    const wuBriefPolicyMode = resolveWuClaimBriefPolicyMode(getConfig());
+    const briefWorkspaceRoot =
+      claimedMode === CLAIMED_MODES.BRANCH_ONLY || claimedMode === CLAIMED_MODES.BRANCH_PR
+        ? process.cwd()
+        : path.resolve(worktree);
+    await maybeRunAutoBriefForClaim({
+      wuId: id,
+      workspaceRoot: briefWorkspaceRoot,
+      policyMode: wuBriefPolicyMode,
+      claimedMode,
+      claimedBranch: effectiveBranch,
+    });
+
     // WU-1605: Record claim-time pickup evidence for delegation provenance.
     // Non-blocking: this metadata should not block claim completion.
     try {
@@ -635,20 +750,11 @@ export async function main() {
       );
     }
 
-    await flushWuLifecycleSync(
-      {
-        command: WU_LIFECYCLE_COMMANDS.CLAIM,
-        wuId: id,
-        by: claimActor,
-        sessionId: sessionId ?? undefined,
-      },
-      {
-        workspaceRoot: process.cwd(),
-        logger: {
-          warn: (message) => console.warn(`${PREFIX} ${message}`),
-        },
-      },
-    );
+    await flushClaimLifecycleSyncEvent({
+      wuId: id,
+      by: claimActor,
+      sessionId: sessionId ?? undefined,
+    });
 
     // Mark claim as successful - lock should remain for wu:done to release
     claimSucceeded = true;

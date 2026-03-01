@@ -22,6 +22,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import type { LumenFlowConfig } from '@lumenflow/core/lumenflow-config-schema';
 import { resolveClaimMode } from '../wu-claim-mode.js';
 import {
   validateManualTestsForClaim,
@@ -36,6 +37,8 @@ import {
   resolveClaimSandboxCommand,
   maybeLaunchClaimSandboxSession,
   toRelativeWorktreePathForStorage,
+  resolveWuClaimBriefPolicyMode,
+  maybeRunAutoBriefForClaim,
 } from '../wu-claim.js';
 import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
 import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
@@ -596,6 +599,136 @@ describe('WU-1605: claim-time pickup evidence handshake', () => {
     } finally {
       rmSync(baseDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe('WU-2287: wu:brief policy automation on wu:claim', () => {
+  it('defaults policy mode to auto when config omits wu.brief.policyMode', () => {
+    const mode = resolveWuClaimBriefPolicyMode({
+      wu: {},
+    } as LumenFlowConfig);
+
+    expect(mode).toBe('auto');
+  });
+
+  it('returns configured policy mode when valid', () => {
+    const mode = resolveWuClaimBriefPolicyMode({
+      wu: {
+        brief: {
+          policyMode: 'manual',
+        },
+      },
+    } as LumenFlowConfig);
+
+    expect(mode).toBe('manual');
+  });
+
+  it('skips auto-brief for off/manual policies', async () => {
+    const recordEvidence = vi.fn(async () => undefined);
+    const logger = {
+      log: vi.fn(),
+      warn: vi.fn(),
+    };
+
+    const offResult = await maybeRunAutoBriefForClaim(
+      {
+        wuId: 'WU-2287',
+        workspaceRoot: '/tmp/wu-2287',
+        policyMode: 'off',
+      },
+      { recordEvidence, logger },
+    );
+    const manualResult = await maybeRunAutoBriefForClaim(
+      {
+        wuId: 'WU-2287',
+        workspaceRoot: '/tmp/wu-2287',
+        policyMode: 'manual',
+      },
+      { recordEvidence, logger },
+    );
+
+    expect(offResult.attempted).toBe(false);
+    expect(manualResult.attempted).toBe(false);
+    expect(recordEvidence).not.toHaveBeenCalled();
+    expect(logger.log).toHaveBeenCalledWith('[wu-claim] wu:brief auto-run skipped (policy=off).');
+    expect(logger.log).toHaveBeenCalledWith(
+      '[wu-claim] wu:brief auto-run skipped (policy=manual).',
+    );
+  });
+
+  it('runs evidence recorder for auto policy and logs success', async () => {
+    const recordEvidence = vi.fn(async () => undefined);
+    const logger = {
+      log: vi.fn(),
+      warn: vi.fn(),
+    };
+
+    const result = await maybeRunAutoBriefForClaim(
+      {
+        wuId: 'WU-2287',
+        workspaceRoot: '/tmp/wu-2287',
+        policyMode: 'auto',
+        claimedMode: 'worktree',
+      },
+      { recordEvidence, logger },
+    );
+
+    expect(result.attempted).toBe(true);
+    expect(recordEvidence).toHaveBeenCalledWith({
+      wuId: 'WU-2287',
+      workspaceRoot: '/tmp/wu-2287',
+      clientName: 'wu:claim:auto',
+      claimedMode: 'worktree',
+      claimedBranch: undefined,
+    });
+    expect(logger.log).toHaveBeenCalledWith(
+      '[wu-claim] ✅ wu:brief auto-run completed (policy=auto).',
+    );
+  });
+
+  it('treats auto policy failures as non-blocking and logs warning', async () => {
+    const recordEvidence = vi.fn(async () => {
+      throw new Error('disk is read-only');
+    });
+    const logger = {
+      log: vi.fn(),
+      warn: vi.fn(),
+    };
+
+    await expect(
+      maybeRunAutoBriefForClaim(
+        {
+          wuId: 'WU-2287',
+          workspaceRoot: '/tmp/wu-2287',
+          policyMode: 'auto',
+        },
+        { recordEvidence, logger },
+      ),
+    ).resolves.toEqual({ attempted: true, mode: 'auto' });
+    expect(logger.warn).toHaveBeenCalledWith(
+      '[wu-claim] Warning: wu:brief auto-run failed (policy=auto): disk is read-only',
+    );
+  });
+
+  it('fails claim when required policy cannot record wu:brief evidence', async () => {
+    const recordEvidence = vi.fn(async () => {
+      throw new Error('state store unavailable');
+    });
+    const logger = {
+      log: vi.fn(),
+      warn: vi.fn(),
+    };
+
+    await expect(
+      maybeRunAutoBriefForClaim(
+        {
+          wuId: 'WU-2287',
+          workspaceRoot: '/tmp/wu-2287',
+          policyMode: 'required',
+        },
+        { recordEvidence, logger },
+      ),
+    ).rejects.toThrow('wu:brief auto-run failed (policy=required): state store unavailable');
   });
 });
 

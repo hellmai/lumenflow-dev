@@ -12,6 +12,19 @@
 import { z } from 'zod';
 
 /**
+ * wu:brief policy modes used by wu:claim automation.
+ */
+export const WuBriefPolicyModeSchema = z.enum(['off', 'manual', 'auto', 'required']);
+
+/**
+ * WU brief automation configuration.
+ */
+export const WuBriefConfigSchema = z.object({
+  /** Claim-time wu:brief policy mode (default: 'auto') */
+  policyMode: WuBriefPolicyModeSchema.default('auto'),
+});
+
+/**
  * WU (Work Unit) configuration
  */
 export const WuConfigSchema = z.object({
@@ -32,6 +45,11 @@ export const WuConfigSchema = z.object({
 
   /** Default type (default: 'feature') */
   defaultType: z.string().default('feature'),
+
+  /** wu:brief policy configuration */
+  brief: WuBriefConfigSchema.default(() => WuBriefConfigSchema.parse({})),
 });
 
+export type WuBriefPolicyMode = z.infer<typeof WuBriefPolicyModeSchema>;
+export type WuBriefConfig = z.infer<typeof WuBriefConfigSchema>;
 export type WuConfig = z.infer<typeof WuConfigSchema>;

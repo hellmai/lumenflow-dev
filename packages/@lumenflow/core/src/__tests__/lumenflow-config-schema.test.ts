@@ -29,9 +29,11 @@ import {
   MemoryEnforcementConfigSchema,
   CloudEnvSignalSchema,
   CloudConfigSchema,
+  WuConfigSchema,
   type ProgressSignalsConfig,
   type EventArchivalConfig,
   type MemoryConfig,
+  type WuBriefPolicyMode,
   type LockPolicy,
   type LaneDefinition,
   type AutoCheckpointConfig,
@@ -65,6 +67,61 @@ const TEST_WIP_JUSTIFICATION = 'Docs WUs are low-conflict parallel work';
 const LOCK_POLICY_ALL = 'all';
 const LOCK_POLICY_ACTIVE = 'active';
 const LOCK_POLICY_NONE = 'none';
+
+describe('WU-2287: wu:brief policy config schema', () => {
+  it('defaults wu.brief.policyMode to auto', () => {
+    const result = WuConfigSchema.safeParse({});
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.brief.policyMode).toBe('auto');
+    }
+  });
+
+  it('accepts custom policy modes', () => {
+    const result = WuConfigSchema.safeParse({
+      brief: {
+        policyMode: 'manual',
+      },
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.brief.policyMode).toBe('manual');
+    }
+  });
+
+  it('rejects unknown policy modes', () => {
+    const result = WuConfigSchema.safeParse({
+      brief: {
+        policyMode: 'sometimes',
+      },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('propagates wu.brief.policyMode through full config parsing', () => {
+    const result = LumenFlowConfigSchema.safeParse({
+      wu: {
+        brief: {
+          policyMode: 'off',
+        },
+      },
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.wu.brief.policyMode).toBe('off');
+    }
+  });
+
+  it('exports WuBriefPolicyMode type', () => {
+    const _policyMode: WuBriefPolicyMode = 'required';
+
+    expect(_policyMode).toBe('required');
+  });
+});
 
 describe('WU-1203: Progress Signals Config Schema', () => {
   describe('AC1: ProgressSignalsConfigSchema', () => {

@@ -22,7 +22,10 @@ artifacts:
   - .lumenflow/stamps/WU-2287.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Implemented wu.brief.policyMode config (off/manual/auto/required) with default auto, plus
+  claim-time policy evaluation and auto-brief evidence recording. Auto mode is non-blocking on
+  failure (warn), required mode fails the claim. Added unit coverage in wu-claim and config schema
+  tests.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
