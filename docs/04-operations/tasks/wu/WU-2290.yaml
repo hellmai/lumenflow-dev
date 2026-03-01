@@ -2,7 +2,7 @@ id: WU-2290
 title: Block wu:edit from main for in-progress worktree WUs
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-02
 code_paths:
@@ -32,11 +32,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Agents can run wu:edit for an in-progress worktree WU from the main checkout, which undermines worktree discipline and confuses Source Control state. Problem: current wu:edit resolves the target worktree path and applies edits, but it does not require execution from that worktree. This permits main-checkout invocations during active lane work and creates policy drift. Solution: add an explicit execution-context guard for in-progress worktree-mode WUs so wu:edit hard-fails unless the command is run from the claimed worktree (or a child path within it), with clear remediation guidance.'
+description: 'Context: Agents can run wu:edit for an in-progress worktree WU from the main checkout,
+  which undermines worktree discipline and confuses Source Control state. Problem: current wu:edit
+  resolves the target worktree path and applies edits, but it does not require execution from that
+  worktree. This permits main-checkout invocations during active lane work and creates policy drift.
+  Solution: add an explicit execution-context guard for in-progress worktree-mode WUs so wu:edit
+  hard-fails unless the command is run from the claimed worktree (or a child path within it), with
+  clear remediation guidance.'
 acceptance:
   - wu:edit in WORKTREE mode fails when run from main checkout
   - failure message includes target worktree path and a copy-paste cd + pnpm wu:edit retry command
   - wu:edit in WORKTREE mode still succeeds when run inside the claimed worktree
   - BRANCH_PR mode behavior remains unchanged
   - unit tests cover context guard pass/fail cases
-  - pnpm --filter @lumenflow/cli lint && pnpm --filter @lumenflow/cli typecheck && targeted wu-edit tests pass
+  - pnpm --filter @lumenflow/cli lint && pnpm --filter @lumenflow/cli typecheck && targeted wu-edit
+    tests pass
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2290
+claimed_at: 2026-03-01T23:37:07.660Z
+baseline_main_sha: a381d8cb6de05cf4074dae2541c62a33846e7e60
+session_id: 091b5808-c770-4828-8765-5b15d28f7e0b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T23:37:07.665Z

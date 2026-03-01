@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2290 — Block wu:edit from main for in-progress worktree WUs](wu/WU-2290.yaml)
 
 ## Completed
 

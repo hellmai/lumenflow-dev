@@ -2626,3 +2626,4 @@
 {"type":"claim","wuId":"WU-2158","timestamp":"2026-03-01T23:12:20.063Z","lane":"Framework: Core Lifecycle","title":"Add co-change gate to Software Delivery Pack"}
 {"type":"checkpoint","wuId":"WU-2158","timestamp":"2026-03-01T23:30:25.307Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2158","timestamp":"2026-03-01T23:31:28.376Z"}
+{"type":"claim","wuId":"WU-2290","timestamp":"2026-03-01T23:37:07.689Z","lane":"Framework: CLI WU Commands","title":"Block wu:edit from main for in-progress worktree WUs"}
