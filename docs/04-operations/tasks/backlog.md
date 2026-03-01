@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2288 — Enforce wu:brief policy at wu:prep with mode-aware blocking](wu/WU-2288.yaml) — Framework: CLI WU Commands
 - [WU-2287 — Add configurable wu:brief policy mode with default auto on wu:claim](wu/WU-2287.yaml) — Framework: CLI WU Commands
 - [WU-2286 — state:emit should support transactional commit mode for corrective events](wu/WU-2286.yaml) — Framework: Core State Recovery
 - [WU-2285 — state:doctor should detect stale status/backlog references for non-active WUs](wu/WU-2285.yaml) — Framework: Core State Recovery
