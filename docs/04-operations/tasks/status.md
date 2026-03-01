@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml)
 
 ## Completed
 

@@ -2616,3 +2616,4 @@
 {"type":"claim","wuId":"WU-2148","timestamp":"2026-03-01T22:43:09.681Z","lane":"Framework: MCP","title":"MCP signal enrichment in CallToolRequest handler"}
 {"type":"checkpoint","wuId":"WU-2148","timestamp":"2026-03-01T22:43:20.389Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"complete","wuId":"WU-2148","timestamp":"2026-03-01T22:49:42.129Z"}
+{"type":"claim","wuId":"WU-2149","timestamp":"2026-03-01T22:50:26.122Z","lane":"Framework: Core Lifecycle","title":"SDK signal and memory sync port interfaces"}

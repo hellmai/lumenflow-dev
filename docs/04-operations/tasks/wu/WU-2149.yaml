@@ -2,7 +2,7 @@ id: WU-2149
 title: SDK signal and memory sync port interfaces
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - ControlPlaneSyncPortV2 extends both plus existing ControlPlaneSyncPort
   - All input/output types exported
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2149
+claimed_at: 2026-03-01T22:50:26.083Z
+baseline_main_sha: 03ce88e0a75e1dbbd336d85bb681fb7b04ed635b
+session_id: 85806c27-b411-4939-a4c5-a0f96add0842
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-01T22:50:26.095Z
