@@ -7,7 +7,6 @@ priority: P2
 created: 2026-03-01
 code_paths:
   - packages/@lumenflow/cli/src/state-emit.ts
-  - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
   manual:
     - Run state:emit in transactional mode for a corrective complete event and verify no uncommitted
