@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/cli/src/lane-create.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/mcp/src/tools.ts
   - package.json
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/reference/config.mdx
@@ -28,7 +29,8 @@ spec_refs:
 risks: []
 notes: 'Implemented lane:create with micro-worktree push-only flow, duplicate guard, lane-format
   validation, and ordered insert into workspace.yaml lanes.definitions. Added command wiring
-  (manifest/bin/scripts) and regenerated internal Starlight CLI docs via docs:generate.'
+  (manifest/bin/scripts), updated MCP parity allowlist for lane_create (intentionally MCP-missing
+  like other lane-admin commands), and regenerated internal Starlight CLI docs via docs:generate.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

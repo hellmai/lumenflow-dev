@@ -361,6 +361,7 @@ export const MCP_PUBLIC_PARITY_ALLOWED_EXTRA_TOOLS = [
  * calculation so MCP parity reflects the supported public MCP surface.
  */
 export const MCP_PUBLIC_PARITY_ALLOWED_MISSING_TOOLS = [
+  'lane_create',
   'lane_edit',
   'lane_lock',
   'lane_setup',
