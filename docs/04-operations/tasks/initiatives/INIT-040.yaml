@@ -13,7 +13,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 2: Bridge and SDK Boundary'
-    status: pending
+    status: in_progress
   - id: 3
     title: 'Phase 3: Integration Hooks'
     status: pending

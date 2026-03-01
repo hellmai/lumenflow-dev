@@ -2,7 +2,7 @@ id: WU-2149
 title: SDK signal and memory sync port interfaces
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -50,3 +50,6 @@ session_id: 85806c27-b411-4939-a4c5-a0f96add0842
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T22:50:26.095Z
+locked: true
+completed_at: 2026-03-01T22:57:22.202Z
+completed: 2026-03-01

@@ -46,7 +46,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1235,6 +1235,7 @@ sections:
 - [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml)
 - [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml)
 - [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml)
+- [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
