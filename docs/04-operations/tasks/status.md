@@ -4,8 +4,6 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2243 — initiative:create ignores --phase and --success-metric flags](wu/WU-2243.yaml)
-
 ## Completed
 
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
