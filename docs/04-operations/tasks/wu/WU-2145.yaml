@@ -2,7 +2,7 @@ id: WU-2145
 title: wu:done project-memory promotion to main checkout
 lane: 'Framework: Memory'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -27,8 +27,8 @@ spec_refs:
   - /home/USER/.claude/plans/clever-whistling-lobster.md
 risks: []
 notes: Added project-memory promotion for wu:done cleanup. Introduced memory/src/memory-promotion.ts
-  with promoteProjectMemory(worktreeDir, mainDir), exported via memory index, and wired into
-  core wu-done-cleanup to run before worktree removal (worktree mode only). Added unit tests for
+  with promoteProjectMemory(worktreeDir, mainDir), exported via memory index, and wired into core
+  wu-done-cleanup to run before worktree removal (worktree mode only). Added unit tests for
   project-only promotion/no-op/idempotency plus cleanup integration test asserting promotion hook.
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -53,3 +53,6 @@ session_id: 63045f4d-6d0f-4d85-b105-db8759f0eb51
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-01T20:52:49.618Z
+locked: true
+completed_at: 2026-03-01T21:00:58.607Z
+completed: 2026-03-01

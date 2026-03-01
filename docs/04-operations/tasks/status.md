@@ -4,7 +4,7 @@ _Last updated: 2026-03-01_
 
 ## In Progress
 
-- [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1185,3 +1185,4 @@ _Last updated: 2026-03-01_
 - [WU-2289 — Add wu:brief staleness policy and freshness checks for long-lived WUs](wu/WU-2289.yaml) — 2026-03-01
 - [WU-2286 — state:emit should support transactional commit mode for corrective events](wu/WU-2286.yaml) — 2026-03-01
 - [WU-2258 — Add lane:create command for adding new lanes via tooling](wu/WU-2258.yaml) — 2026-03-01
+- [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — 2026-03-01
