@@ -42,10 +42,7 @@ function scanFileForRawEnvDotAccess(file: string): EnvDotAccessViolation[] {
   const source = readFileSync(file, 'utf-8');
   const lines = source.split(/\r?\n/);
   const violations: EnvDotAccessViolation[] = [];
-  const pattern = new RegExp(
-    String.raw`process\.env\.(${MIGRATED_ENV_VARS.join('|')})\b`,
-    'g',
-  );
+  const pattern = new RegExp(String.raw`process\.env\.(${MIGRATED_ENV_VARS.join('|')})\b`, 'g');
 
   lines.forEach((line, index) => {
     let match: RegExpExecArray | null;
