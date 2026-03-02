@@ -3,7 +3,7 @@ slug: core-api-surface-rationalization
 title: Core API Surface Rationalization
 description: Group and rationalize @lumenflow/core exports to improve API discoverability, reduce
   root barrel sprawl, and create domain-scoped import surfaces.
-status: in_progress
+status: done
 priority: P2
 owner: tom@hellm.ai
 created: 2026-02-25
@@ -16,7 +16,7 @@ phases:
     status: done
   - id: 3
     title: 'Phase 3: Consumer migration and root-barrel deprecation path'
-    status: in_progress
+    status: done
 success_metrics:
   - Core exports map and root barrel complexity are reduced
   - Consumers can import through stable domain-scoped barrels
