@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-- [WU-2164 — Extract wu:done preflight CLI module](wu/WU-2164.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1198,3 +1198,4 @@ _Last updated: 2026-03-02_
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — 2026-03-02
 - [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — 2026-03-02
 - [WU-2291 — Supersede WU-2146: enforce strict signal schema (no backward-compat/fallback path)](wu/WU-2291.yaml) — 2026-03-02
+- [WU-2164 — Extract wu:done preflight CLI module](wu/WU-2164.yaml) — 2026-03-02

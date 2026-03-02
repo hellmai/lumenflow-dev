@@ -2643,3 +2643,4 @@
 {"type":"complete","wuId":"WU-2291","timestamp":"2026-03-02T09:52:28.225Z"}
 {"type":"checkpoint","wuId":"WU-2164","timestamp":"2026-03-02T09:55:18.160Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2164.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2164","timestamp":"2026-03-02T09:55:43.797Z","lane":"Framework: CLI WU Commands","title":"Extract wu:done preflight CLI module"}
+{"type":"complete","wuId":"WU-2164","timestamp":"2026-03-02T10:13:56.033Z"}
