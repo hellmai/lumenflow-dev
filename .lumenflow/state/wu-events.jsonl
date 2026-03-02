@@ -2697,3 +2697,4 @@
 {"type":"checkpoint","wuId":"WU-2172","timestamp":"2026-03-02T14:02:03.146Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2172","timestamp":"2026-03-02T14:10:31.180Z"}
 {"type":"claim","wuId":"WU-2173","timestamp":"2026-03-02T14:11:13.525Z","lane":"Framework: Core Validation","title":"Add startup environment schema validation"}
+{"type":"complete","wuId":"WU-2173","timestamp":"2026-03-02T14:22:52.797Z"}

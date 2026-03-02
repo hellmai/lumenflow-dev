@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-- [WU-2173 — Add startup environment schema validation](wu/WU-2173.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1211,3 +1211,4 @@ _Last updated: 2026-03-02_
 - [WU-2170 — Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml) — 2026-03-02
 - [WU-2171 — Evaluate delegation package extraction](wu/WU-2171.yaml) — 2026-03-02
 - [WU-2172 — Migrate remaining raw env reads to ENV_VARS](wu/WU-2172.yaml) — 2026-03-02
+- [WU-2173 — Add startup environment schema validation](wu/WU-2173.yaml) — 2026-03-02

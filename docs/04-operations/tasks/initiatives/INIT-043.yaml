@@ -13,7 +13,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 2: Add startup env schema validation'
-    status: pending
+    status: done
   - id: 3
     title: 'Phase 3: Replace direct reads with getEnv/requireEnv accessors'
     status: pending
