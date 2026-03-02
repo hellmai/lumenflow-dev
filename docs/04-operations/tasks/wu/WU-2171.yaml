@@ -2,7 +2,7 @@ id: WU-2171
 title: Evaluate delegation package extraction
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -40,3 +40,11 @@ description: Assess extracting delegation subsystem into a dedicated package and
   cost/benefit and migration path.
 acceptance:
   - Delegation extraction decision record is captured with executable follow-up recommendations.
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2171
+claimed_at: 2026-03-02T13:54:08.814Z
+baseline_main_sha: 779f8091bcec96f2fd9e4a43ddbd339967dbfd3a
+session_id: 449b9d90-bc42-4609-b6f7-2169a428b5bb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T13:54:08.820Z

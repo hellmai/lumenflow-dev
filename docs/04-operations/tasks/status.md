@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2171 — Evaluate delegation package extraction](wu/WU-2171.yaml)
 
 ## Completed
 
