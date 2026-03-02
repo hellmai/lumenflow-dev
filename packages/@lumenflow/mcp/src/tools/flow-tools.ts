@@ -16,7 +16,7 @@ import {
   flowReportSchema,
   metricsSnapshotSchema,
   metricsSchema,
-} from '@lumenflow/core';
+} from '@lumenflow/core/validation';
 import {
   type ToolDefinition,
   ErrorCodes,

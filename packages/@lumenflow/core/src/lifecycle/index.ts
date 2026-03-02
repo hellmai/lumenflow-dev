@@ -39,3 +39,4 @@ export * from '../wu-helpers.js';
 export * from '../wu-rules-engine.js';
 export * from '../wu-validator.js';
 export * from '../sync-validator.js';
+export * from '../wu-list.js';

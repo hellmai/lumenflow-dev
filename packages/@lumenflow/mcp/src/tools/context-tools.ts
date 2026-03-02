@@ -10,7 +10,7 @@
  */
 
 import { z } from 'zod';
-import { wuStatusEnum } from '@lumenflow/core';
+import { wuStatusEnum } from '@lumenflow/core/validation';
 import { type ToolDefinition, ErrorCodes, CliArgs, executeViaPack } from '../tools-shared.js';
 import { CliCommands } from '../mcp-constants.js';
 

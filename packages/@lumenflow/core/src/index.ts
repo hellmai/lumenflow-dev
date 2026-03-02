@@ -32,6 +32,15 @@
  *    Owner: Framework: Core Lifecycle
  *    Scope: context readers/computers and recovery analyzers/schemas.
  *    Migration intent: provide domain barrels while preserving root compatibility during rollout.
+ *
+ * Root Barrel Guidance (WU-2170):
+ * - Root exports remain as a compatibility layer for existing consumers.
+ * - New/updated imports should prefer scoped entrypoints:
+ *   - `@lumenflow/core/lifecycle`
+ *   - `@lumenflow/core/validation`
+ *   - `@lumenflow/core/context`
+ *   - `@lumenflow/core/domain`
+ *   - `@lumenflow/core/delegation`
  */
 
 // Package version

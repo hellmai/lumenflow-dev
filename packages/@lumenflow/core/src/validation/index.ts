@@ -17,3 +17,4 @@
 export * from './types.js';
 export * from './command-registry.js';
 export * from './validate-command.js';
+export * from '../schemas/index.js';

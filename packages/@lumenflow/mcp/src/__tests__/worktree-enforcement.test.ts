@@ -18,9 +18,9 @@ import {
   WORKTREE_ENFORCEMENT_ERROR_CODE,
 } from '../worktree-enforcement.js';
 
-// Mock @lumenflow/core for config loading
-vi.mock('@lumenflow/core', async () => {
-  const actual = await vi.importActual('@lumenflow/core');
+// Mock @lumenflow/core/config for config loading
+vi.mock('@lumenflow/core/config', async () => {
+  const actual = await vi.importActual('@lumenflow/core/config');
   return {
     ...actual,
     getConfig: vi.fn(),
@@ -47,7 +47,7 @@ vi.mock('node:child_process', async () => {
   };
 });
 
-import { getConfig, findProjectRoot } from '@lumenflow/core';
+import { getConfig, findProjectRoot } from '@lumenflow/core/config';
 import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 

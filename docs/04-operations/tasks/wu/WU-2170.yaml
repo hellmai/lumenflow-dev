@@ -10,13 +10,12 @@ code_paths:
   - packages/@lumenflow
 tests:
   manual:
-    - Build workspace and verify consumers import from @lumenflow/core/{lifecycle
-    - delegation
-    - validation
-    - context
-    - domain} where applicable
+    - Build workspace and verify MCP runtime files use scoped @lumenflow/core entrypoints (for example @lumenflow/core/validation, @lumenflow/core/config, @lumenflow/core/lifecycle) rather than root @lumenflow/core imports.
+    - Verify root @lumenflow/core barrel remains compatible while index guidance points new usage to grouped entrypoints.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/core-import-paths.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/worktree-enforcement.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2170.done

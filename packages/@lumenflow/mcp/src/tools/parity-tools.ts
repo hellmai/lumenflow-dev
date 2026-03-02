@@ -12,7 +12,7 @@
 
 import path from 'node:path';
 import { z } from 'zod';
-import { gatesSchema, lumenflowInitSchema, initiativePlanSchema } from '@lumenflow/core';
+import { gatesSchema, lumenflowInitSchema, initiativePlanSchema } from '@lumenflow/core/validation';
 import {
   type ToolDefinition,
   ErrorCodes,

@@ -15,7 +15,7 @@ import {
   orchestrateInitStatusSchema,
   orchestrateMonitorSchema,
   delegationListSchema,
-} from '@lumenflow/core';
+} from '@lumenflow/core/validation';
 import {
   type ToolDefinition,
   ErrorCodes,

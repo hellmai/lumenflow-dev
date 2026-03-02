@@ -20,7 +20,7 @@
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { getConfig, findProjectRoot } from '@lumenflow/core';
+import { getConfig, findProjectRoot } from '@lumenflow/core/config';
 
 /**
  * Error code returned when a write is blocked by worktree enforcement.

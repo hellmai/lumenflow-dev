@@ -11,7 +11,7 @@ import {
   type RuntimeToolCapabilityResolver,
   type ToolOutput,
 } from '@lumenflow/kernel';
-import type { ListWUsOptions } from '@lumenflow/core';
+import type { ListWUsOptions } from '@lumenflow/core/lifecycle';
 import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { z } from 'zod';
 import {
