@@ -50,6 +50,7 @@ import { execSync } from 'node:child_process';
 import prettyMs from 'pretty-ms';
 import type { ZodIssue } from 'zod';
 import { runGates } from './gates.js';
+import { executeGates } from './wu-done-gates.js';
 // WU-2102: Import scoped test resolver for wu:done gate fallback
 import { resolveScopedUnitTestsForPrep } from './wu-prep.js';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
@@ -112,7 +113,6 @@ import {
   STRING_LITERALS,
   MICRO_WORKTREE_OPERATIONS,
   TELEMETRY_STEPS,
-  SKIP_GATES_REASONS,
   CHECKPOINT_MESSAGES,
   ENV_VARS,
   getWUStatusDisplay,
@@ -163,8 +163,6 @@ import { hasSessionCheckpoints } from '@lumenflow/core/wu-done-worktree';
 import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 // WU-1747: Checkpoint and lock for concurrent load resilience
 import {
-  createPreGatesCheckpoint as createWU1747Checkpoint,
-  markGatesPassed,
   canSkipGates,
   clearCheckpoint,
 } from '@lumenflow/core/wu-checkpoint';
@@ -871,137 +869,6 @@ async function auditSkipCosGates(
 // WU-2308: validateAllPreCommitHooks moved to wu-done-validators.ts
 // Now accepts worktreePath parameter to run audit from worktree context
 
-/**
- * Check if node_modules in worktree may be stale
- * Detects when package.json differs between main and worktree, which indicates
- * dependencies were added/removed but pnpm install may not have run in worktree.
- * This prevents confusing typecheck failures due to missing dependencies.
- * @param {string} worktreePath - Path to worktree
- */
-function checkNodeModulesStaleness(worktreePath: string): void {
-  try {
-    const mainPackageJson = path.resolve('package.json');
-    const worktreePackageJson = path.resolve(worktreePath, 'package.json');
-
-    if (!existsSync(mainPackageJson) || !existsSync(worktreePackageJson)) {
-      // No package.json to compare
-      return;
-    }
-
-    const mainContent = readFileSync(mainPackageJson, {
-      encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-    });
-    const worktreeContent = readFileSync(worktreePackageJson, {
-      encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-    });
-
-    // Compare package.json files
-    if (mainContent !== worktreeContent) {
-      const worktreeNodeModules = path.resolve(worktreePath, 'node_modules');
-
-      // Check if node_modules exists and when it was last modified
-      if (existsSync(worktreeNodeModules)) {
-        const nodeModulesStat = statSync(worktreeNodeModules);
-        const packageJsonStat = statSync(worktreePackageJson);
-
-        // If package.json is newer than node_modules, dependencies may be stale
-        if (packageJsonStat.mtimeMs > nodeModulesStat.mtimeMs) {
-          console.log(
-            `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WARNING: Potentially stale node_modules detected\n\n` +
-              `  package.json in worktree differs from main checkout\n` +
-              `  node_modules was last modified: ${nodeModulesStat.mtime.toISOString()}\n` +
-              `  package.json was last modified: ${packageJsonStat.mtime.toISOString()}\n\n` +
-              `  If gates fail with missing dependencies/types, run:\n` +
-              `    cd ${worktreePath}\n` +
-              `    pnpm install\n` +
-              `    cd -\n` +
-              `    pnpm wu:done --id <WU-ID>\n`,
-          );
-        }
-      } else {
-        // node_modules doesn't exist at all
-        console.log(
-          `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WARNING: node_modules missing in worktree\n\n` +
-            `  package.json in worktree differs from main checkout\n` +
-            `  but node_modules directory does not exist\n\n` +
-            `  If gates fail with missing dependencies/types, run:\n` +
-            `    cd ${worktreePath}\n` +
-            `    pnpm install\n` +
-            `    cd -\n` +
-            `    pnpm wu:done --id <WU-ID>\n`,
-        );
-      }
-    }
-  } catch (e) {
-    // Non-critical check - just warn if it fails
-    console.warn(
-      `${LOG_PREFIX.DONE} Could not check node_modules staleness: ${getErrorMessage(e)}`,
-    );
-  }
-}
-
-/**
- * Run gates in worktree
- * @param {string} worktreePath - Path to worktree
- * @param {string} id - WU ID
- * @param {object} options - Gates options
- * @param {boolean} options.isDocsOnly - Auto-detected docs-only from code_paths
- * @param {boolean} options.docsOnly - Explicit --docs-only flag from CLI
- */
-async function runGatesInWorktree(
-  worktreePath: string,
-  id: string,
-  options: { isDocsOnly?: boolean; docsOnly?: boolean; scopedTestPaths?: string[] } = {},
-) {
-  const { isDocsOnly = false, docsOnly = false, scopedTestPaths } = options;
-  console.log(`\n${LOG_PREFIX.DONE} Running gates in worktree: ${worktreePath}`);
-
-  // Check for stale node_modules before running gates (prevents confusing failures)
-  checkNodeModulesStaleness(worktreePath);
-
-  // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
-  const useDocsOnlyGates = docsOnly || isDocsOnly;
-  if (useDocsOnlyGates) {
-    console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
-    if (docsOnly) {
-      console.log(`${LOG_PREFIX.DONE} (explicit --docs-only flag)`);
-    }
-  }
-  const startTime = Date.now();
-  try {
-    const ok = Boolean(
-      await runGates({
-        cwd: worktreePath,
-        docsOnly: useDocsOnlyGates,
-        coverageMode: undefined,
-        scopedTestPaths,
-      }),
-    );
-    if (!ok) {
-      throw createError(ErrorCodes.GATES_FAILED, 'Gates failed');
-    }
-    const duration = Date.now() - startTime;
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);
-    emitTelemetry({ script: 'wu-done', wu_id: id, step: 'gates', ok: true, duration_ms: duration });
-    return true;
-  } catch {
-    const duration = Date.now() - startTime;
-    emitTelemetry({
-      script: 'wu-done',
-      wu_id: id,
-      step: 'gates',
-      ok: false,
-      duration_ms: duration,
-    });
-
-    // WU-1280: Prominent error summary box (visible after ~130k chars of gate output)
-    // WU-1281: Extracted to helper using pretty-ms for duration formatting
-    printGateFailureBox({ id, location: worktreePath, durationMs: duration, isWorktreeMode: true });
-
-    die(`Gates failed in ${worktreePath}. Fix issues in the worktree and try again.`);
-  }
-}
-
 // Note: updateStatusRemoveInProgress, addToStatusCompleted, and moveWUToDoneBacklog
 // have been extracted to tools/lib/wu-status-updater.ts and imported above (WU-1163)
 //
@@ -1675,277 +1542,6 @@ async function executePreFlightChecks({
 }
 
 /**
- * Execute gates (engineering + COS governance)
- * Extracted from main() to reduce complexity (WU-1215 Phase 2 Extraction #2)
- * @param {object} params - Parameters
- * @param {string} params.id - WU ID
- * @param {object} params.args - Parsed CLI arguments
- * @param {boolean} params.isBranchOnly - Whether in branch-only mode
- * @param {boolean} params.isDocsOnly - Whether this is a docs-only WU
- * @param {string|null} params.worktreePath - Worktree path (null for branch-only)
- * @param {string} [params.branchName] - Lane branch name for checkpoint
- */
-
-interface ExecuteGatesParams {
-  id: string;
-  args: Record<string, unknown>;
-  isBranchOnly: boolean;
-  isDocsOnly: boolean;
-  worktreePath: string | null;
-  branchName?: string;
-  /** WU-2102: Scoped test paths from WU tests.unit for fallback when no checkpoint */
-  scopedTestPaths?: string[];
-}
-
-interface ExecuteGatesResult {
-  fullGatesRanInCurrentRun: boolean;
-  skippedByCheckpoint: boolean;
-  checkpointId: string | null;
-}
-
-async function executeGates({
-  id,
-  args,
-  isBranchOnly,
-  isDocsOnly,
-  worktreePath,
-  branchName,
-  scopedTestPaths,
-}: ExecuteGatesParams): Promise<ExecuteGatesResult> {
-  const gateResult: ExecuteGatesResult = {
-    fullGatesRanInCurrentRun: false,
-    skippedByCheckpoint: false,
-    checkpointId: null,
-  };
-
-  // WU-1747: Check if gates can be skipped based on valid checkpoint
-  // This allows resuming wu:done without re-running gates if nothing changed
-  // WU-2102: Look for checkpoint in worktree (where wu:prep writes it)
-  const skipResult = canSkipGates(id, {
-    currentHeadSha: undefined,
-    baseDir: worktreePath || undefined,
-  });
-  if (skipResult.canSkip) {
-    gateResult.skippedByCheckpoint = true;
-    gateResult.checkpointId = skipResult.checkpoint.checkpointId;
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${CHECKPOINT_MESSAGES.SKIPPING_GATES_VALID}`);
-    console.log(
-      `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.CHECKPOINT_LABEL}: ${skipResult.checkpoint.checkpointId}`,
-    );
-    console.log(
-      `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.GATES_PASSED_AT}: ${skipResult.checkpoint.gatesPassedAt}`,
-    );
-    emitTelemetry({
-      script: TELEMETRY_STEPS.GATES,
-      wu_id: id,
-      step: TELEMETRY_STEPS.GATES,
-      skipped: true,
-      reason: SKIP_GATES_REASONS.CHECKPOINT_VALID,
-      checkpoint_id: skipResult.checkpoint.checkpointId,
-    });
-    return gateResult; // Skip gates entirely
-  }
-
-  // WU-1747: Create checkpoint before gates for resumption on failure
-  if (worktreePath && branchName) {
-    try {
-      await createWU1747Checkpoint({ wuId: id, worktreePath, branchName }, { gatesPassed: false });
-    } catch (err) {
-      // Non-blocking: checkpoint failure should not block wu:done
-      console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} ${CHECKPOINT_MESSAGES.COULD_NOT_CREATE}: ${getErrorMessage(err)}`,
-      );
-    }
-  }
-
-  // WU-1588: Create pre-gates checkpoint for recovery if gates fail
-  // Non-blocking: failures handled internally by createPreGatesCheckpoint
-  // WU-1749 Bug 5: Pass worktreePath as baseDir to write to worktree's wu-events.jsonl, not main's
-  await createPreGatesCheckpoint(id, worktreePath, worktreePath || process.cwd());
-
-  // P0 EMERGENCY FIX: Restore wu-events.jsonl after checkpoint creation
-  // WU-1748 added checkpoint persistence to wu-events.jsonl but doesn't commit it,
-  // leaving unstaged changes that cause "git rebase" to fail with "You have unstaged changes"
-  // This restores the file to HEAD state - checkpoint data is preserved in memory store
-  if (worktreePath) {
-    try {
-      execSync(`git -C "${worktreePath}" restore "${resolveWuEventsRelativePath(worktreePath)}"`);
-    } catch {
-      // Non-fatal: file might not exist or already clean
-    }
-  }
-
-  // Step 0a: Run invariants check (WU-2252: NON-BYPASSABLE, runs even with --skip-gates)
-  // This ensures repo invariants are never violated, regardless of skip-gates flag
-  // WU-2253: Run against worktreePath (when present) to catch violations that only exist in the worktree
-  // WU-2425: Pass wuId to scope WU-specific invariants to just the completing WU
-  const invariantsBaseDir = worktreePath || process.cwd();
-  console.log(`\n${LOG_PREFIX.DONE} Running invariants check (non-bypassable)...`);
-  console.log(`${LOG_PREFIX.DONE} Checking invariants in: ${invariantsBaseDir}`);
-  const { runInvariants } = await import('@lumenflow/core/invariants-runner');
-  const invariantsResult = runInvariants({ baseDir: invariantsBaseDir, silent: false, wuId: id });
-  if (!invariantsResult.success) {
-    emitTelemetry({
-      script: 'wu-done',
-      wu_id: id,
-      step: 'invariants',
-      ok: false,
-    });
-    die(
-      `Invariants check failed. Fix violations before completing WU.\n\n${invariantsResult.formatted}`,
-    );
-  }
-  console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Invariants check passed`);
-  emitTelemetry({
-    script: 'wu-done',
-    wu_id: id,
-    step: 'invariants',
-    ok: true,
-  });
-
-  // Step 0b: Run gates BEFORE merge (or skip with audit trail)
-  if (args.skipGates) {
-    console.log(
-      `\n${EMOJI.WARNING}  ${EMOJI.WARNING}  ${EMOJI.WARNING}  SKIP-GATES MODE ACTIVE ${EMOJI.WARNING}  ${EMOJI.WARNING}  ${EMOJI.WARNING}\n`,
-    );
-    console.log(`${LOG_PREFIX.DONE} Skipping gates check as requested`);
-    console.log(`${LOG_PREFIX.DONE} Reason: ${args.reason}`);
-    console.log(`${LOG_PREFIX.DONE} Fix WU: ${args.fixWu}`);
-    console.log(`${LOG_PREFIX.DONE} Worktree: ${worktreePath || 'Branch-Only mode (no worktree)'}`);
-    await auditSkipGates(id, args.reason, args.fixWu, worktreePath);
-    console.log('\n⚠️  Ensure test failures are truly pre-existing!\n');
-    emitTelemetry({
-      script: 'wu-done',
-      wu_id: id,
-      step: 'gates',
-      skipped: true,
-      reason: args.reason,
-      fix_wu: args.fixWu,
-    });
-  } else if (isBranchOnly) {
-    // Branch-Only mode: run gates in-place (current directory on lane branch)
-    console.log(`\n${LOG_PREFIX.DONE} Running gates in Branch-Only mode (in-place on lane branch)`);
-    // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
-    const useDocsOnlyGates = Boolean(args.docsOnly) || Boolean(isDocsOnly);
-    if (useDocsOnlyGates) {
-      console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
-      if (args.docsOnly) {
-        console.log(`${LOG_PREFIX.DONE} (explicit --docs-only flag)`);
-      }
-    }
-    const startTime = Date.now();
-    try {
-      const ok = Boolean(await runGates({ docsOnly: useDocsOnlyGates }));
-      if (!ok) {
-        throw createError(ErrorCodes.GATES_FAILED, 'Gates failed');
-      }
-      const duration = Date.now() - startTime;
-      console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);
-      emitTelemetry({
-        script: 'wu-done',
-        wu_id: id,
-        step: 'gates',
-        ok: true,
-        duration_ms: duration,
-      });
-    } catch {
-      const duration = Date.now() - startTime;
-      emitTelemetry({
-        script: 'wu-done',
-        wu_id: id,
-        step: 'gates',
-        ok: false,
-        duration_ms: duration,
-      });
-
-      // WU-1280: Prominent error summary box (Branch-Only mode)
-      // WU-1281: Extracted to helper using pretty-ms for duration formatting
-      printGateFailureBox({
-        id,
-        location: 'Branch-Only',
-        durationMs: duration,
-        isWorktreeMode: false,
-      });
-
-      die(`Gates failed in Branch-Only mode. Fix issues and try again.`);
-    }
-    gateResult.fullGatesRanInCurrentRun = true;
-  } else if (worktreePath && existsSync(worktreePath)) {
-    // Worktree mode: run gates in the dedicated worktree
-    // WU-1012: Pass both auto-detected and explicit docs-only flags
-    // WU-2102: Forward scopedTestPaths so wu:done uses scoped tests when no checkpoint skip
-    await runGatesInWorktree(worktreePath, id, {
-      isDocsOnly,
-      docsOnly: Boolean(args.docsOnly),
-      scopedTestPaths,
-    });
-    gateResult.fullGatesRanInCurrentRun = true;
-  } else {
-    die(
-      `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
-        `If the worktree was removed, recreate it and retry, or rerun with --branch-only when the lane branch exists.\n` +
-        `Use --skip-gates only with justification.`,
-    );
-  }
-
-  // Step 0.75: Run COS governance gates (WU-614, COS v1.3 §7)
-  if (!args.skipCosGates) {
-    console.log(`\n${LOG_PREFIX.DONE} Running COS governance gates...`);
-    const startTime = Date.now();
-    try {
-      execSync(`${PKG_MANAGER} ${SCRIPTS.COS_GATES} ${CLI_FLAGS.WU} ${id}`, {
-        stdio: 'inherit',
-      });
-      const duration = Date.now() - startTime;
-      console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} COS gates passed in ${prettyMs(duration)}`);
-      emitTelemetry({
-        script: 'wu-done',
-        wu_id: id,
-        step: 'cos-gates',
-        ok: true,
-        duration_ms: duration,
-      });
-    } catch {
-      const duration = Date.now() - startTime;
-      emitTelemetry({
-        script: 'wu-done',
-        wu_id: id,
-        step: 'cos-gates',
-        ok: false,
-        duration_ms: duration,
-      });
-      console.error(`\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} COS governance gates failed`);
-      console.error('\nTo fix:');
-      console.error('  1. Add required evidence to governance.evidence field in WU YAML');
-      console.error('  2. See: https://lumenflow.dev/reference/evidence-format/');
-      console.error('\nEmergency bypass (creates audit trail):');
-      // WU-1852: Reference --skip-gates (the actual CLI flag), not the non-existent --skip-cos-gates
-      console.error(
-        `  pnpm wu:done --id ${id} --skip-gates --reason "COS evidence pending" --fix-wu WU-XXXX`,
-      );
-      die('Abort: WU not completed. Fix governance evidence and retry pnpm wu:done.');
-    }
-  } else {
-    console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Skipping COS governance gates as requested`);
-    console.log(`${LOG_PREFIX.DONE} Reason: ${args.reason || DEFAULT_NO_REASON}`);
-    await auditSkipCosGates(id, args.reason, worktreePath);
-    emitTelemetry({
-      script: 'wu-done',
-      wu_id: id,
-      step: 'cos-gates',
-      skipped: true,
-      reason: args.reason,
-    });
-  }
-
-  // WU-1747: Mark checkpoint as gates passed for resumption on failure
-  // This allows subsequent wu:done attempts to skip gates if nothing changed
-  markGatesPassed(id, { baseDir: worktreePath || undefined });
-
-  return gateResult;
-}
-
-/**
  * Print State HUD for visibility
  * Extracted from main() to reduce complexity (WU-1215 Phase 2 Extraction #4)
  * @param {object} params - Parameters
@@ -2252,14 +1848,22 @@ export async function main() {
   // WU-1663: Wrap gates in try/catch to send pipeline failure event
   let gateExecutionResult: Awaited<ReturnType<typeof executeGates>>;
   try {
-    gateExecutionResult = await executeGates({
-      id,
-      args,
-      isBranchOnly: effectiveBranchOnly,
-      isDocsOnly,
-      worktreePath,
-      scopedTestPaths: scopedTestPathsForDone,
-    });
+    gateExecutionResult = await executeGates(
+      {
+        id,
+        args,
+        isBranchOnly: effectiveBranchOnly,
+        isDocsOnly,
+        worktreePath,
+        scopedTestPaths: scopedTestPathsForDone,
+      },
+      {
+        auditSkipGates,
+        auditSkipCosGates,
+        createPreGatesCheckpoint,
+        emitTelemetry,
+      },
+    );
   } catch (gateErr) {
     pipelineActor.send({
       type: WU_DONE_EVENTS.GATES_FAILED,

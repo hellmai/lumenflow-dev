@@ -278,7 +278,7 @@ status: done
 
   describe('WU-2282: checkpoint baseDir scoping in wu:done', () => {
     it('passes worktree baseDir when marking checkpoint gates passed', async () => {
-      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      const source = await readFile(new URL('../wu-done-gates.ts', import.meta.url), 'utf-8');
       expect(source).toMatch(
         /markGatesPassed\(id,\s*\{\s*baseDir:\s*worktreePath \|\| undefined\s*\}\);/,
       );
@@ -1274,7 +1274,7 @@ describe('WU-2102: wu:done scoped test fallback', () => {
   });
 
   it('runGatesInWorktree accepts and forwards scopedTestPaths to runGates', async () => {
-    const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+    const source = await readFile(new URL('../wu-done-gates.ts', import.meta.url), 'utf-8');
     // Extract the runGatesInWorktree function body
     const fnStart = source.indexOf('async function runGatesInWorktree(');
     expect(fnStart).toBeGreaterThan(-1);
@@ -1287,7 +1287,7 @@ describe('WU-2102: wu:done scoped test fallback', () => {
   });
 
   it('executeGates threads scopedTestPaths to runGatesInWorktree', async () => {
-    const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+    const source = await readFile(new URL('../wu-done-gates.ts', import.meta.url), 'utf-8');
     // ExecuteGatesParams should include scopedTestPaths
     const paramsStart = source.indexOf('interface ExecuteGatesParams');
     expect(paramsStart).toBeGreaterThan(-1);
@@ -1306,14 +1306,14 @@ describe('WU-2102: wu:done scoped test fallback', () => {
     // The call site should resolve scoped tests from docMain
     expect(source).toContain('resolveScopedUnitTestsForPrep');
     // And pass the result as scopedTestPaths to executeGates
-    const callSite = source.indexOf('await executeGates({');
+    const callSite = source.indexOf('await executeGates(');
     expect(callSite).toBeGreaterThan(-1);
-    const callSlice = source.slice(callSite, callSite + 500);
-    expect(callSlice).toContain('scopedTestPaths');
+    const callSlice = source.slice(callSite, callSite + 700);
+    expect(callSlice).toContain('scopedTestPaths: scopedTestPathsForDone');
   });
 
   it('preserves WU-1747 checkpoint gate-skip path in executeGates', async () => {
-    const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+    const source = await readFile(new URL('../wu-done-gates.ts', import.meta.url), 'utf-8');
     // executeGates should still check canSkipGates before running gates
     const executeGatesStart = source.indexOf('async function executeGates(');
     expect(executeGatesStart).toBeGreaterThan(-1);
