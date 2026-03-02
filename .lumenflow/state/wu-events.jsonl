@@ -2700,3 +2700,4 @@
 {"type":"complete","wuId":"WU-2173","timestamp":"2026-03-02T14:22:52.797Z"}
 {"type":"claim","wuId":"WU-2174","timestamp":"2026-03-02T14:23:46.279Z","lane":"Framework: Core Validation","title":"Introduce getEnv and requireEnv accessors"}
 {"type":"complete","wuId":"WU-2174","timestamp":"2026-03-02T14:30:01.150Z"}
+{"type":"claim","wuId":"WU-2176","timestamp":"2026-03-02T14:31:27.561Z","lane":"Content: Framework Docs","title":"Document validator boundaries and ownership"}

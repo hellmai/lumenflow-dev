@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml)
 
 ## Completed
 
