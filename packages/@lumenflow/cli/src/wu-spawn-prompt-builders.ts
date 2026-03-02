@@ -1201,8 +1201,7 @@ export function generateTaskInvocation(
   // WU-1288: Generate mandatory standards based on resolved policy
   const mandatoryStandards = generateMandatoryStandards(policy);
   const codeCraftGuidance = templates.get('code-craft') || generateCodeCraftGuidance();
-  const readBeforeWrite =
-    templates.get('read-before-write') || generateReadBeforeWriteDiscipline();
+  const readBeforeWrite = templates.get('read-before-write') || generateReadBeforeWriteDiscipline();
   const selfReviewDirective = templates.get('self-review') || generateSelfReviewDirective(id);
   // WU-1142: Pass lane to get byLane skills
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext, doc.lane);
@@ -1464,8 +1463,7 @@ export function generateCodexPrompt(
   const templates = tryLoadTemplates(clientName, templateContext, templateBaseDir);
 
   const codeCraftGuidance = templates.get('code-craft') || generateCodeCraftGuidance();
-  const readBeforeWrite =
-    templates.get('read-before-write') || generateReadBeforeWriteDiscipline();
+  const readBeforeWrite = templates.get('read-before-write') || generateReadBeforeWriteDiscipline();
   const selfReviewDirective = templates.get('self-review') || generateSelfReviewDirective(id);
   const bugDiscoverySection = templates.get('bug-discovery') || generateBugDiscoverySection(id);
   const completionWorkflow =

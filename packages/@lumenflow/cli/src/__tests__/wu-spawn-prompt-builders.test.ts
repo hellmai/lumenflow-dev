@@ -505,9 +505,8 @@ describe('WU-2292: spawn prompt template overrides for new sections', () => {
     templates.set('self-review', makeTemplate('self-review', undefined, 'OVERRIDE: SELF REVIEW'));
     mockLoad.mockReturnValue(templates);
 
-    const { generateTaskInvocation, generateCodexPrompt } = await import(
-      '../wu-spawn-prompt-builders.js'
-    );
+    const { generateTaskInvocation, generateCodexPrompt } =
+      await import('../wu-spawn-prompt-builders.js');
 
     const taskPrompt = generateTaskInvocation(baseDoc, id, strategy, { config });
     const codexPrompt = generateCodexPrompt(baseDoc, id, strategy, { config });
