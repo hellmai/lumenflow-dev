@@ -45,6 +45,5 @@ Use this order before adding any new validator:
 
 ## Related References
 
-- Public maintainer reference: `apps/docs/src/content/docs/reference/validator-boundaries.mdx`
 - WU schema reference: `apps/docs/src/content/docs/reference/wu-schema.mdx`
 - Workflow overview: `LUMENFLOW.md`
