@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2294 — Fix doc parity: stale commands, broken links, missing steps across all consumer-facing docs](wu/WU-2294.yaml) — Operations: Tooling
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
@@ -42,6 +41,7 @@ sections:
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
 - [WU-2292 — Clean redesign of wu:brief guidance system (core+cli+templates)](wu/WU-2292.yaml) — Framework: Core Lifecycle
 - [WU-2293 — Update spawn prompt docs for clean wu:brief redesign](wu/WU-2293.yaml) — Content: Site Comms
+- [WU-2294 — Fix doc parity: stale commands, broken links, missing steps across all consumer-facing docs](wu/WU-2294.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

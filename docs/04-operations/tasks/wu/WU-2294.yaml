@@ -2,7 +2,7 @@ id: WU-2294
 title: 'Fix doc parity: stale commands, broken links, missing steps across all consumer-facing docs'
 lane: 'Operations: Tooling'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-02
 code_paths: []
@@ -23,7 +23,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Audit found 12 issues across consumer-facing docs: broken lumenflow-complete.md links (20+ files), stale wu:spawn references, incorrect wu:brief description hiding evidence recording, 60+ should be 100+ commands, non-existent baseline:add command, hardcoded paths, missing wu:prep in vendor workflows, missing pnpm bootstrap in quick start.'
+description: 'Audit found 12 issues across consumer-facing docs: broken lumenflow-complete.md links
+  (20+ files), stale wu:spawn references, incorrect wu:brief description hiding evidence recording,
+  60+ should be 100+ commands, non-existent baseline:add command, hardcoded paths, missing wu:prep
+  in vendor workflows, missing pnpm bootstrap in quick start.'
 acceptance:
   - All lumenflow-complete.md links point to valid file
   - No wu:spawn references in consumer-facing docs or templates
@@ -32,3 +35,11 @@ acceptance:
   - baseline:add replaced with valid command or removed
   - wu:prep two-step flow in vendor workflow summaries
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/operations-tooling-wu-2294
+claimed_at: 2026-03-02T12:03:38.028Z
+baseline_main_sha: 6fbec14370c5587d7f62024bd8b8f08d14e866ee
+session_id: 6dd281c5-3b88-425b-953c-c02a0c81caea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T12:03:38.036Z
