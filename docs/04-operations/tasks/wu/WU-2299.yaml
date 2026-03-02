@@ -2,7 +2,7 @@ id: WU-2299
 title: Add wildcard export for @lumenflow/packs-sidekick
 lane: 'Framework: Core Lifecycle'
 type: chore
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-02
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/packs/sidekick/__tests__/manifest.test.ts
 tests:
   manual:
-    - Install @lumenflow/packs-sidekick in consumer and import from @lumenflow/packs-sidekick/tool-impl/<module> without patch
+    - Install @lumenflow/packs-sidekick in consumer and import from
+      @lumenflow/packs-sidekick/tool-impl/<module> without patch
   unit:
     - packages/@lumenflow/packs/sidekick/__tests__/manifest.test.ts
   e2e: []
@@ -31,3 +32,11 @@ description: Add ./tool-impl/* export so downstream imports work without patch p
 acceptance:
   - '@lumenflow/packs-sidekick exports includes ./tool-impl/* mapping'
   - tests and gates pass
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2299
+claimed_at: 2026-03-02T18:32:46.067Z
+baseline_main_sha: e8302dad4a728e4b575d4596bb1bfa65219c7600
+session_id: c576810e-4a15-4d3a-bc60-35f1c23f08ec
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T18:32:46.075Z

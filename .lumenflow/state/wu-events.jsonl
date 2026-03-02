@@ -2724,3 +2724,4 @@
 {"type":"complete","wuId":"WU-2297","timestamp":"2026-03-02T15:26:37.329Z"}
 {"type":"claim","wuId":"WU-2298","timestamp":"2026-03-02T15:50:22.526Z","lane":"Operations: Tooling","title":"Fix stale lockfile importer blocking frozen install for release"}
 {"type":"complete","wuId":"WU-2298","timestamp":"2026-03-02T15:56:48.952Z"}
+{"type":"claim","wuId":"WU-2299","timestamp":"2026-03-02T18:32:46.094Z","lane":"Framework: Core Lifecycle","title":"Add wildcard export for @lumenflow/packs-sidekick"}

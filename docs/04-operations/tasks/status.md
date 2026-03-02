@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2299 — Add wildcard export for @lumenflow/packs-sidekick](wu/WU-2299.yaml)
 
 ## Completed
 
