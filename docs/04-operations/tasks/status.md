@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2164 — Extract wu:done preflight CLI module](wu/WU-2164.yaml)
 
 ## Completed
 

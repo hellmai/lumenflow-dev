@@ -2,7 +2,7 @@ id: WU-2164
 title: Extract wu:done preflight CLI module
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -41,3 +41,11 @@ description: Extract preflight orchestration including ownership checks, mode de
   validation into a dedicated CLI module.
 acceptance:
   - Preflight orchestration is isolated behind a focused module with explicit inputs and outputs.
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2164
+claimed_at: 2026-03-02T09:55:43.770Z
+baseline_main_sha: 9cb52bd61c4ee4a6aa9fe52d5d0790f31e8c9bd8
+session_id: 5fd194ca-beda-4905-8357-8f51d5cd1a1a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T09:55:43.776Z
