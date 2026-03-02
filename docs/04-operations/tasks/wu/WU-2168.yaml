@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/core/package.json
   - packages/@lumenflow/core/src/index.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm --filter @lumenflow/core test -- src/__tests__/wu-schema.test.ts and verify no
+      export-surface regressions
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
   e2e: []
