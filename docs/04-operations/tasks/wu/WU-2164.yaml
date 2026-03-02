@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:done --id WU-2164 in its claimed worktree and verify preflight checks execute via
+      the extracted module with no behavior change
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
   e2e: []
