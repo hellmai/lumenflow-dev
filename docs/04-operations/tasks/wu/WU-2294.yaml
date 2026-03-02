@@ -1,0 +1,34 @@
+id: WU-2294
+title: 'Fix doc parity: stale commands, broken links, missing steps across all consumer-facing docs'
+lane: 'Operations: Tooling'
+type: documentation
+status: ready
+priority: P2
+created: 2026-03-02
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2294.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Audit found 12 issues across consumer-facing docs: broken lumenflow-complete.md links (20+ files), stale wu:spawn references, incorrect wu:brief description hiding evidence recording, 60+ should be 100+ commands, non-existent baseline:add command, hardcoded paths, missing wu:prep in vendor workflows, missing pnpm bootstrap in quick start.'
+acceptance:
+  - All lumenflow-complete.md links point to valid file
+  - No wu:spawn references in consumer-facing docs or templates
+  - wu:brief description includes evidence recording in all vendor rules
+  - Command count says 100+ everywhere
+  - baseline:add replaced with valid command or removed
+  - wu:prep two-step flow in vendor workflow summaries
+  - pnpm gates passes
