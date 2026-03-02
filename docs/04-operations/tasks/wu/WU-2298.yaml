@@ -16,7 +16,7 @@ artifacts:
   - .lumenflow/stamps/WU-2298.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Prerequisite release unblock: lockfile-only change validated with CI=true pnpm install --frozen-lockfile in worktree.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
