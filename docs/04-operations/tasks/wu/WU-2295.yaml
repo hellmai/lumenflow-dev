@@ -1,0 +1,35 @@
+id: WU-2295
+title: Align wu:brief docs with evidence and claim-time policy behavior
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P2
+created: 2026-03-02
+code_paths:
+  - apps/docs/src/content/docs/guides/initiatives.mdx
+  - apps/docs/src/content/docs/packs/software-delivery/advanced/initiatives.mdx
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+tests:
+  manual:
+    - Run pnpm gates --docs-only
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2295.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Update stale docs that describe wu:brief as side-effect-free/worktree-only. Align guidance with current behavior: wu:brief records evidence, wu:claim may auto-record brief evidence by policy, and wu:delegate is required for lineage intent.'
+acceptance:
+  - Docs no longer say wu:brief has no side effects
+  - Docs no longer claim wu:brief is worktree-only
+  - CLI/reference guidance clearly distinguishes wu:brief evidence vs wu:delegate lineage
