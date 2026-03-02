@@ -7,13 +7,14 @@ priority: P1
 created: 2026-02-25
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/wu-done-gates.ts
 tests:
   manual:
     - Run pnpm wu:done --id WU-2165 from main after wu:prep in worktree and verify gates
       orchestration executes via extracted module with unchanged pass/fail behavior
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done-gates-extraction.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2165.done
