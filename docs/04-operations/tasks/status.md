@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2298 — Fix stale lockfile importer blocking frozen install for release](wu/WU-2298.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-2298
 title: Fix stale lockfile importer blocking frozen install for release
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-02
 code_paths:
@@ -25,7 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: release micro-worktree runs pnpm install --frozen-lockfile and fails because pnpm-lock.yaml importer for @lumenflow/control-plane-sdk still lists @lumenflow/kernel despite package.json removal. Problem: this blocks lumenflow:release before version bump/publish. Solution: regenerate lockfile to remove stale importer dependency and verify frozen install passes.'
+description: 'Context: release micro-worktree runs pnpm install --frozen-lockfile and fails because
+  pnpm-lock.yaml importer for @lumenflow/control-plane-sdk still lists @lumenflow/kernel despite
+  package.json removal. Problem: this blocks lumenflow:release before version bump/publish.
+  Solution: regenerate lockfile to remove stale importer dependency and verify frozen install
+  passes.'
 acceptance:
   - pnpm install --frozen-lockfile succeeds on main
-  - pnpm-lock.yaml no longer lists @lumenflow/kernel under packages/@lumenflow/control-plane-sdk importer
+  - pnpm-lock.yaml no longer lists @lumenflow/kernel under packages/@lumenflow/control-plane-sdk
+    importer
+claimed_mode: worktree
+worktree_path: worktrees/operations-tooling-wu-2298
+claimed_at: 2026-03-02T15:50:22.503Z
+baseline_main_sha: 7ab87a960ff17e137591e4c0c50b81ad54a834e9
+session_id: 2acbd94a-a112-4ecd-8015-92efad2768da
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T15:50:22.509Z

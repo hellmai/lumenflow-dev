@@ -2722,3 +2722,4 @@
 {"type":"checkpoint","wuId":"WU-2297","timestamp":"2026-03-02T15:24:56.229Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2297","timestamp":"2026-03-02T15:25:27.480Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2297.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2297","timestamp":"2026-03-02T15:26:37.329Z"}
+{"type":"claim","wuId":"WU-2298","timestamp":"2026-03-02T15:50:22.526Z","lane":"Operations: Tooling","title":"Fix stale lockfile importer blocking frozen install for release"}
