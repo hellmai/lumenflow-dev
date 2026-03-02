@@ -168,7 +168,6 @@ import { evaluateMainDirtyMutationGuard } from './hooks/dirty-guard.js';
 import { runDecayOnDone } from './wu-done-decay.js';
 import { validateClaimSessionOwnership } from './wu-done-ownership.js';
 import {
-  CHECKPOINT_GATE_MODES,
   broadcastCompletionSignal,
   checkInboxForRecentSignals,
   createPreGatesCheckpoint,
