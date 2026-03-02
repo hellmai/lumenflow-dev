@@ -2684,3 +2684,4 @@
 {"type":"checkpoint","wuId":"WU-2170","timestamp":"2026-03-02T13:39:09.181Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2170.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2170","timestamp":"2026-03-02T13:39:28.208Z","lane":"Framework: Core Lifecycle","title":"Migrate consumers and deprecate root core barrel"}
 {"type":"complete","wuId":"WU-2170","timestamp":"2026-03-02T13:52:36.352Z"}
+{"type":"checkpoint","wuId":"WU-2171","timestamp":"2026-03-02T13:53:44.621Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2171.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}

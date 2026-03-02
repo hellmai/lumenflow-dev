@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/core/src/delegation-monitor.ts
   - packages/@lumenflow/core/src/delegation-tree.ts
 tests:
-  manual: []
+  manual:
+    - Review delegation extraction decision record and verify recommendation and migration path are
+      documented
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
   e2e: []
