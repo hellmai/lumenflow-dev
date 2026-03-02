@@ -13,11 +13,9 @@ import {
   validateAllPreCommitHooks,
 } from '@lumenflow/core/wu-done-validators';
 import {
-  BRANCHES,
   EMOJI,
   FILE_SYSTEM,
   LOG_PREFIX,
-  STRING_LITERALS,
 } from '@lumenflow/core/wu-constants';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
