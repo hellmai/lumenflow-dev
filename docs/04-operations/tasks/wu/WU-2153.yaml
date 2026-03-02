@@ -11,7 +11,7 @@ tests:
   manual:
     - pnpm gates
   unit:
-    - packages/@lumenflow/agent/src/__tests__/session-lifecycle-hooks.test.ts
+    - packages/@lumenflow/agent/__tests__/auto-session-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2153.done
