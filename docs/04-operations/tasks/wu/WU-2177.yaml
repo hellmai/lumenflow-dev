@@ -13,6 +13,7 @@ tests:
     - Run core and cli test suites that consume shared helpers and verify no fixture regressions
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates-utils.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2177.done

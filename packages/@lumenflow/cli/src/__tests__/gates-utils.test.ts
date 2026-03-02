@@ -1,27 +1,19 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import {
+  createDualWorkspacePaths,
+  removePathRecursive,
+} from '../../../core/src/__tests__/shared-test-helpers.js';
 import { filterExistingFiles } from '../gates-utils.js';
 
 const TEMP_DIR_PREFIX = 'gates-utils-wu-2052-';
-const MAIN_DIRNAME = 'main';
-const WORKTREE_DIRNAME = 'worktree';
 const RELATIVE_FILE_PATH = 'docs/deleted-config.yaml';
 const FILE_CONTENT = 'fixture';
 const DIRECTORY_PERMISSIONS = { recursive: true } as const;
-
-function createSandboxPaths() {
-  const sandboxRoot = mkdtempSync(join(tmpdir(), TEMP_DIR_PREFIX));
-  const mainCwd = join(sandboxRoot, MAIN_DIRNAME);
-  const worktreeCwd = join(sandboxRoot, WORKTREE_DIRNAME);
-  const mainFilePath = join(mainCwd, RELATIVE_FILE_PATH);
-  const worktreeFilePath = join(worktreeCwd, RELATIVE_FILE_PATH);
-  return { sandboxRoot, mainCwd, worktreeCwd, mainFilePath, worktreeFilePath };
-}
 
 function ensureParentDirs(paths: { mainFilePath: string; worktreeFilePath: string }) {
   mkdirSync(join(paths.mainFilePath, '..'), DIRECTORY_PERMISSIONS);
@@ -30,7 +22,10 @@ function ensureParentDirs(paths: { mainFilePath: string; worktreeFilePath: strin
 
 describe('filterExistingFiles (WU-2052)', () => {
   it('filters deleted files using provided cwd instead of process cwd', async () => {
-    const paths = createSandboxPaths();
+    const paths = createDualWorkspacePaths({
+      relativeFilePath: RELATIVE_FILE_PATH,
+      tempDirPrefix: TEMP_DIR_PREFIX,
+    });
     ensureParentDirs(paths);
     writeFileSync(paths.mainFilePath, FILE_CONTENT);
 
@@ -42,12 +37,15 @@ describe('filterExistingFiles (WU-2052)', () => {
       );
     } finally {
       process.chdir(previousCwd);
-      rmSync(paths.sandboxRoot, DIRECTORY_PERMISSIONS);
+      removePathRecursive(paths.sandboxRoot);
     }
   });
 
   it('keeps files that exist under provided cwd even when process cwd differs', async () => {
-    const paths = createSandboxPaths();
+    const paths = createDualWorkspacePaths({
+      relativeFilePath: RELATIVE_FILE_PATH,
+      tempDirPrefix: TEMP_DIR_PREFIX,
+    });
     ensureParentDirs(paths);
     writeFileSync(paths.worktreeFilePath, FILE_CONTENT);
 
@@ -59,7 +57,7 @@ describe('filterExistingFiles (WU-2052)', () => {
       ]);
     } finally {
       process.chdir(previousCwd);
-      rmSync(paths.sandboxRoot, DIRECTORY_PERMISSIONS);
+      removePathRecursive(paths.sandboxRoot);
     }
   });
 });

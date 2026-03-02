@@ -42,6 +42,7 @@ import {
   TEST_LANES,
   TEST_STATUSES,
 } from './wu-fixtures.js';
+import { createDualWorkspacePaths, removePathRecursive } from './shared-test-helpers.js';
 
 /**
  * Extended test with fixture injection
@@ -115,6 +116,8 @@ export {
   TEST_WU_IDS,
   TEST_LANES,
   TEST_STATUSES,
+  createDualWorkspacePaths,
+  removePathRecursive,
 };
 
 export default {
@@ -130,4 +133,6 @@ export default {
   TEST_WU_IDS,
   TEST_LANES,
   TEST_STATUSES,
+  createDualWorkspacePaths,
+  removePathRecursive,
 };
