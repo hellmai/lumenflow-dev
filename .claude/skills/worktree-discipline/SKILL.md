@@ -2,8 +2,8 @@
 name: worktree-discipline
 description: Prevents the "absolute path trap" in Write/Edit/Read tools. Use when working in worktrees, before file operations, or when changes don't appear in git status.
 version: 2.0.0
-source: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
-source_sections: §2.4 (Worktree Discipline), §4.1 (Tool Usage)
+source: docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md
+source_sections: Worktree Discipline, Tool Usage
 last_updated: 2026-01-22
 allowed-tools: Read, Bash, Grep
 ---
@@ -12,7 +12,7 @@ allowed-tools: Read, Bash, Grep
 
 **Purpose**: Prevent AI agents from bypassing worktree isolation via absolute file paths.
 
-**For full worktree workflow**: See `wu-lifecycle` skill or `lumenflow-complete.md` §2.4.
+**For full worktree workflow**: See `wu-lifecycle` skill or `lumenflow-agent-capsule.md`.
 
 ## The Absolute Path Trap
 
@@ -134,9 +134,9 @@ About to use Write/Edit/Read?
 ## Cross-References
 
 - **Full worktree workflow**: `wu-lifecycle` skill
-- **Git command restrictions**: `lumenflow-complete.md` §2.4
+- **Git command restrictions**: `lumenflow-agent-capsule.md`
 
 ## Version History
 
 - **v2.0.0** (2025-12-05): Refactored to focus on absolute path trap (per Anthropic one-capability-per-skill guideline)
-- **v1.0.0** (2025-10-26): Initial skill from lumenflow-complete.md
+- **v1.0.0** (2025-10-26): Initial skill from lumenflow-agent-capsule.md

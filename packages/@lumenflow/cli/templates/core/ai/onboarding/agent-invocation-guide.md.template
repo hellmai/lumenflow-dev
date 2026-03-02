@@ -20,7 +20,7 @@ Load context in this order to reduce "lost in the middle" failures:
 
 1. `LUMENFLOW.md` — workflow fundamentals
 2. `README.md` — repo structure / commands
-3. `lumenflow-complete.md` §§1-7 — constraints + governance
+3. `lumenflow-agent-capsule.md` — constraints + governance
 4. WU YAML — current task spec
 5. Task instructions — what to do
 6. **Critical Constraints block** — append at the end (see below)
@@ -28,7 +28,7 @@ Load context in this order to reduce "lost in the middle" failures:
 **Tier guidance:**
 
 - **Tier 1 (minimal):** `LUMENFLOW.md`, `README.md`, WU YAML
-- **Tier 2 (standard):** Tier 1 + `lumenflow-complete.md` §§1-7
+- **Tier 2 (standard):** Tier 1 + `lumenflow-agent-capsule.md`
 - **Tier 3 (full):** Tier 2 + relevant framework/agent docs
 
 Use Tier 1 after `/clear` to stay lean, then load more only if needed.

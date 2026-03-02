@@ -23,6 +23,7 @@ apps/web/next-env.d.ts
 .gitignore
 .clinerules
 .cursorrules
+.windsurfrules
 .claude/settings.local.json
 
 # Tooling caches

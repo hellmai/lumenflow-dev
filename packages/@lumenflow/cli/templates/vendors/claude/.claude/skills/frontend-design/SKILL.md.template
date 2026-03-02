@@ -2,7 +2,7 @@
 name: frontend-design
 description: Create distinctive, production-grade frontend interfaces. Use when building React components, pages, UI features, or when user requests visual/design work.
 version: 1.0.0
-source: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+source: docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md
 last_updated: {{DATE}}
 allowed-tools: Read, Write, Edit, Bash
 ---

@@ -30,7 +30,7 @@ Before starting work, load and audit against `.lumenflow/constraints.md`:
 
 ## Key Documents to Reference
 
-- `docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md` §6 (WU Lifecycle)
+- `docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md` (WU Lifecycle)
 - WU YAML at `docs/04-operations/tasks/wu/WU-XXX.yaml`
 - `.lumenflow.config.yaml` — Lane definitions and parameters
 

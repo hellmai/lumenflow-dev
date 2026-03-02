@@ -33,7 +33,7 @@ Verify compliance before reporting completion.
 
 **Bug Classification:**
 
-- `docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md` §8 (Bug-Handling)
+- `docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md` (Bug-Handling)
 - `.claude/skills/bug-classification/SKILL.md` — Detailed classification criteria
 
 ## Severity Classification

@@ -47,8 +47,7 @@ vi.mock('@lumenflow/core/micro-worktree', () => ({
 const mockCollectMetadataToTransaction = vi.fn();
 
 vi.mock('@lumenflow/core/wu-done-metadata', () => ({
-  collectMetadataToTransaction: (...args: unknown[]) =>
-    mockCollectMetadataToTransaction(...args),
+  collectMetadataToTransaction: (...args: unknown[]) => mockCollectMetadataToTransaction(...args),
 }));
 
 vi.mock('@lumenflow/core/wu-transaction', () => {
@@ -101,13 +100,7 @@ describe('WU-2211: --already-merged arg parsing', () => {
   it('parseWUArgs recognizes --already-merged as a boolean flag', async () => {
     const { parseWUArgs } = await import('@lumenflow/core/arg-parser');
 
-    const args = parseWUArgs([
-      'node',
-      'wu-done.ts',
-      '--id',
-      'WU-2211',
-      '--already-merged',
-    ]);
+    const args = parseWUArgs(['node', 'wu-done.ts', '--id', 'WU-2211', '--already-merged']);
 
     expect(args.alreadyMerged).toBe(true);
   });
@@ -121,9 +114,7 @@ describe('WU-2211: --already-merged arg parsing', () => {
   });
 
   it('--already-merged is documented in help text', async () => {
-    const { validateInputs: realValidateInputs } = await import(
-      '@lumenflow/core/wu-done-inputs'
-    );
+    const { validateInputs: realValidateInputs } = await import('@lumenflow/core/wu-done-inputs');
 
     let helpText = '';
     const origLog = console.log;
@@ -159,9 +150,7 @@ describe('WU-2211: verifyCodePathsOnMainHead', () => {
   it('returns valid when all code_paths exist on HEAD', async () => {
     mockGitAdapter.raw.mockResolvedValue('100644 blob abc123\tpackages/foo.ts\n');
 
-    const result: CodePathVerificationResult = await verifyCodePathsOnMainHead([
-      'packages/foo.ts',
-    ]);
+    const result: CodePathVerificationResult = await verifyCodePathsOnMainHead(['packages/foo.ts']);
 
     expect(result.valid).toBe(true);
     expect(result.missing).toEqual([]);
@@ -172,10 +161,7 @@ describe('WU-2211: verifyCodePathsOnMainHead', () => {
       .mockResolvedValueOnce('100644 blob abc123\tpackages/foo.ts\n')
       .mockResolvedValueOnce('');
 
-    const result = await verifyCodePathsOnMainHead([
-      'packages/foo.ts',
-      'packages/bar.ts',
-    ]);
+    const result = await verifyCodePathsOnMainHead(['packages/foo.ts', 'packages/bar.ts']);
 
     expect(result.valid).toBe(false);
     expect(result.missing).toContain('packages/bar.ts');
@@ -203,18 +189,8 @@ describe('WU-2211: verifyCodePathsOnMainHead', () => {
 
     await verifyCodePathsOnMainHead(['packages/a.ts', 'packages/b.ts']);
 
-    expect(mockGitAdapter.raw).toHaveBeenCalledWith([
-      'ls-tree',
-      'HEAD',
-      '--',
-      'packages/a.ts',
-    ]);
-    expect(mockGitAdapter.raw).toHaveBeenCalledWith([
-      'ls-tree',
-      'HEAD',
-      '--',
-      'packages/b.ts',
-    ]);
+    expect(mockGitAdapter.raw).toHaveBeenCalledWith(['ls-tree', 'HEAD', '--', 'packages/a.ts']);
+    expect(mockGitAdapter.raw).toHaveBeenCalledWith(['ls-tree', 'HEAD', '--', 'packages/b.ts']);
   });
 });
 
@@ -226,9 +202,11 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: micro-worktree succeeds by calling the execute callback
-    mockWithMicroWorktree.mockImplementation(async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
-      await opts.execute({ worktreePath: '/tmp/micro-worktree' });
-    });
+    mockWithMicroWorktree.mockImplementation(
+      async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
+        await opts.execute({ worktreePath: '/tmp/micro-worktree' });
+      },
+    );
     mockCollectMetadataToTransaction.mockResolvedValue(undefined);
   });
 
@@ -286,9 +264,7 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
   });
 
   it('returns failure result when micro-worktree fails', async () => {
-    mockWithMicroWorktree.mockRejectedValue(
-      new Error('Push failed: non-fast-forward'),
-    );
+    mockWithMicroWorktree.mockRejectedValue(new Error('Push failed: non-fast-forward'));
 
     const result = await executeAlreadyMergedFinalize({
       id: 'WU-100',
@@ -307,9 +283,11 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
     );
 
     // The error propagates through withMicroWorktree's execute callback
-    mockWithMicroWorktree.mockImplementation(async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
-      await opts.execute({ worktreePath: '/tmp/micro-worktree' });
-    });
+    mockWithMicroWorktree.mockImplementation(
+      async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
+        await opts.execute({ worktreePath: '/tmp/micro-worktree' });
+      },
+    );
 
     const result = await executeAlreadyMergedFinalize({
       id: 'WU-100',
@@ -343,9 +321,11 @@ describe('WU-2211: idempotency', () => {
   });
 
   it('executeAlreadyMergedFinalize succeeds on repeated calls', async () => {
-    mockWithMicroWorktree.mockImplementation(async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
-      await opts.execute({ worktreePath: '/tmp/micro-worktree' });
-    });
+    mockWithMicroWorktree.mockImplementation(
+      async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
+        await opts.execute({ worktreePath: '/tmp/micro-worktree' });
+      },
+    );
     mockCollectMetadataToTransaction.mockResolvedValue(undefined);
 
     const result1 = await executeAlreadyMergedFinalize({
@@ -378,10 +358,7 @@ describe('WU-2211: clear error messages', () => {
   it('error includes list of missing files', async () => {
     mockGitAdapter.raw.mockResolvedValue('');
 
-    const result = await verifyCodePathsOnMainHead([
-      'packages/a.ts',
-      'packages/b.ts',
-    ]);
+    const result = await verifyCodePathsOnMainHead(['packages/a.ts', 'packages/b.ts']);
 
     expect(result.valid).toBe(false);
     expect(result.error).toContain('packages/a.ts');

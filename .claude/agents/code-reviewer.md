@@ -38,7 +38,7 @@ Before ANY Write/Edit/Read operation:
 
 ## Key Documents
 
-- `docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md` — Architectural principles
+- `docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md` — Architectural principles
 - `.claude/skills/code-quality/SKILL.md` — Detailed patterns
 
 ## Load Skills for Detailed Patterns

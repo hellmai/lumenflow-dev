@@ -149,10 +149,8 @@ If you see something broken on main (failing gates, format issues, typos, lint e
 
 1. Check baseline: `cat .lumenflow/test-baseline.json`
 2. If failure is pre-existing: warning shown, WU proceeds
-3. If failure is NEW: fix the test or add to baseline with:
-   ```bash
-   pnpm baseline:add --test "<test_name>" --reason "<why>" --fix-wu WU-XXXX
-   ```
+3. If failure is NEW: fix the test or add to baseline manually:
+   Edit `.lumenflow/test-baseline.json` and document the reason in your WU notes.
 
 **Why:** Agents should not be blocked by unrelated failures. The ratchet ensures quality improves over time (failures can only be removed, never added without justification).
 

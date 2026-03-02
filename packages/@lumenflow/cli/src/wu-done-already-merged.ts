@@ -17,12 +17,7 @@
  */
 
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
-import {
-  LOG_PREFIX,
-  EMOJI,
-  STRING_LITERALS,
-  GIT_REFS,
-} from '@lumenflow/core/wu-constants';
+import { LOG_PREFIX, EMOJI, STRING_LITERALS, GIT_REFS } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { collectMetadataToTransaction } from '@lumenflow/core/wu-done-metadata';
 import { WUTransaction } from '@lumenflow/core/wu-transaction';
@@ -103,12 +98,7 @@ export async function verifyCodePathsOnMainHead(
 
   for (const filePath of codePaths) {
     try {
-      const result = await gitAdapter.raw([
-        GIT_LS_TREE,
-        GIT_REFS.HEAD,
-        '--',
-        filePath,
-      ]);
+      const result = await gitAdapter.raw([GIT_LS_TREE, GIT_REFS.HEAD, '--', filePath]);
       if (!result || result.trim() === '') {
         missing.push(filePath);
       }

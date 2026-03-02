@@ -31,7 +31,7 @@ cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXX
 ```
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md]({{QUICK_REF_PATH}})
+> **Complete CLI reference (100+ commands):** See [quick-ref-commands.md]({{QUICK_REF_PATH}})
 
 ## CLI Commands
 
@@ -43,7 +43,7 @@ pnpm wu:done --id WU-XXX
 | `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree                |
 | `pnpm wu:prep --id WU-XXX`                     | Run gates in worktree                       |
 | `pnpm wu:done --id WU-XXX`                     | Complete WU (from main)                     |
-| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (no execution)      |
+| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt + record evidence   |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage |
 | `pnpm wu:recover --id WU-XXX`                  | Fix WU state inconsistencies                |
 | `pnpm wu:escalate --id WU-XXX`                 | Show or resolve WU escalation status        |
@@ -68,7 +68,8 @@ pnpm wu:done --id WU-XXX
 | 2. Claim     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                        |
 | 3. Work      | `cd worktrees/<lane>-wu-xxx`                                     |
 | 4. Gates     | `pnpm gates`                                                     |
-| 5. Complete  | `pnpm wu:done --id WU-XXX`                                       |
+| 5. Prep      | `pnpm wu:prep --id WU-XXX`                                       |
+| 6. Complete  | `pnpm wu:done --id WU-XXX`                                       |
 
 ## Safety Reminders
 

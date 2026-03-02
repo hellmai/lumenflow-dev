@@ -77,6 +77,9 @@ Available agents in `.claude/agents/`:
 - `lumenflow-pm` — Backlog & lifecycle management
 - `test-engineer` — TDD, coverage enforcement
 - `code-reviewer` — Quality checks
+- `bug-triage` — Bug classification and triage
+- `lumenflow-enforcer` — Workflow compliance enforcement
+- `lumenflow-doc-sync` — Documentation synchronization
 
 ## Safe YAML Modification (Constraint 9)
 

@@ -45,7 +45,7 @@ pnpm wu:prep --id WU-XXXX
 # This prints a copy-paste instruction for step 6
 
 # 6. Complete (from main) - copy-paste from wu:prep output
-cd /home/USER/source/hellmai/os && pnpm wu:done --id WU-XXXX
+cd <project-root> && pnpm wu:done --id WU-XXXX
 ```
 
 ---
@@ -211,5 +211,5 @@ This repo follows the vendor-agnostic LumenFlow documentation structure:
 - [LUMENFLOW.md](LUMENFLOW.md) - Main workflow documentation
 - [.lumenflow/constraints.md](.lumenflow/constraints.md) - Constraints capsule
 - [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/](docs/04-operations/_frameworks/lumenflow/agent/onboarding/) - Agent onboarding
-- [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)
+- [LumenFlow Agent Capsule](docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md)
 - [Release Process](docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md) - Versioning, npm publish, Starlight docs

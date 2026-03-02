@@ -165,7 +165,7 @@ Always load context in this order for best comprehension:
 
 1. `LUMENFLOW.md` — Workflow fundamentals
 2. `README.md` — Project structure
-3. `lumenflow-complete.md` §§1-7 — Constraints
+3. `lumenflow-agent-capsule.md` — Constraints
 4. WU YAML — Current task spec
 5. Task instructions — What to do
 6. Constraints block — Critical rules (at END per "Lost in Middle" research)

@@ -69,13 +69,7 @@ cat .lumenflow/test-baseline.json | grep -i "<test_name>"
 
 **Option B: Add to baseline** (for infrastructure issues only)
 
-```bash
-pnpm baseline:add \
-  --test "should handle edge case" \
-  --file "path/to/test.ts" \
-  --reason "CI flakiness - infrastructure issue" \
-  --fix-wu WU-XXXX
-```
+To add a test to the baseline, edit `.lumenflow/test-baseline.json` and document the reason in your WU notes.
 
 ---
 
@@ -127,5 +121,5 @@ When encountering test failures:
 ## Related Documentation
 
 - [constraints.md](../../../../../../.lumenflow/constraints.md) - Constraint #7: Test Ratchet
-- [lumenflow-complete.md](../../lumenflow-complete.md) - Definition of Done
+- [LumenFlow Agent Capsule](../../lumenflow-agent-capsule.md) - Definition of Done
 - [troubleshooting-wu-done.md](./troubleshooting-wu-done.md) - wu:done issues

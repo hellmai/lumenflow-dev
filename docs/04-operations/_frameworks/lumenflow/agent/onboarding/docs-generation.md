@@ -273,5 +273,5 @@ Source Code                    Generator                      Output
 ## Related Documentation
 
 - [Release Process](./release-process.md) - Deployment workflow including docs
-- [LumenFlow Complete Guide](../../lumenflow-complete.md) - Full framework reference
+- [LumenFlow Agent Capsule](../../lumenflow-agent-capsule.md) - Full framework reference
 - [Quick Reference Commands](./quick-ref-commands.md) - Command cheat sheet

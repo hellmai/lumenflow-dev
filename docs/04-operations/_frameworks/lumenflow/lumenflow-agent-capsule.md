@@ -4,7 +4,7 @@ This capsule is the **agent-facing** summary of LumenFlow for day-to-day work in
 It is designed to be loaded into context quickly without triggering “prompt too long”.
 
 For the full framework (rationale, extended examples, ceremonies), see:
-`docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md`.
+`docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md`.
 
 ---
 
