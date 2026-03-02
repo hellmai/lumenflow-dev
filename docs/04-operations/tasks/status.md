@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-- [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1206,3 +1206,4 @@ _Last updated: 2026-03-02_
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml) — 2026-03-02
 - [WU-2166 — Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — 2026-03-02
 - [WU-2167 — Slim wu:done main orchestrator](wu/WU-2167.yaml) — 2026-03-02
+- [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml) — 2026-03-02

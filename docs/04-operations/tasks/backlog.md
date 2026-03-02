@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1241,6 +1241,7 @@ sections:
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml)
 - [WU-2166 — Extract wu:done memory and telemetry module](wu/WU-2166.yaml)
 - [WU-2167 — Slim wu:done main orchestrator](wu/WU-2167.yaml)
+- [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

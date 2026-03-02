@@ -2675,3 +2675,4 @@
 {"type":"claim","wuId":"WU-2168","timestamp":"2026-03-02T13:24:28.619Z","lane":"Framework: Core Lifecycle","title":"Audit and categorize core API surface"}
 {"type":"checkpoint","wuId":"WU-2168","timestamp":"2026-03-02T13:24:37.783Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2168","timestamp":"2026-03-02T13:24:59.486Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"complete","wuId":"WU-2168","timestamp":"2026-03-02T13:30:42.754Z"}
