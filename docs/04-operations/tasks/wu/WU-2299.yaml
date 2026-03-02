@@ -2,7 +2,7 @@ id: WU-2299
 title: Add wildcard export for @lumenflow/packs-sidekick
 lane: 'Framework: Core Lifecycle'
 type: chore
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-02
 code_paths:
@@ -40,3 +40,6 @@ session_id: c576810e-4a15-4d3a-bc60-35f1c23f08ec
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-02T18:32:46.075Z
+locked: true
+completed_at: 2026-03-02T18:35:10.188Z
+completed: 2026-03-02
