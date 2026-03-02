@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-2154
 title: OSS-complete CI gate for local-only test pass
 lane: 'Operations: Tooling'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - CI gate passes on clean local-only configuration
   - Gate cannot be bypassed or skipped
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/operations-tooling-wu-2154
+claimed_at: 2026-03-02T00:18:08.240Z
+baseline_main_sha: c5a26c8108b7b999b986957380e9c0a45f750c39
+session_id: 5dfeff03-cc07-4453-9132-f9763a6be115
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T00:18:08.252Z
