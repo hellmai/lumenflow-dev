@@ -219,7 +219,7 @@ export function isHeadlessAllowed(): boolean {
   if (process.env[ENV_VARS.HEADLESS] !== '1') return false;
   return (
     process.env[ENV_VARS.ADMIN] === '1' ||
-    Boolean(process.env.CI) || // Any truthy CI value (true, 1, yes, etc.)
-    Boolean(process.env.GITHUB_ACTIONS) // Any truthy value
+    Boolean(process.env[ENV_VARS.CI]) || // Any truthy CI value (true, 1, yes, etc.)
+    Boolean(process.env[ENV_VARS.GITHUB_ACTIONS]) // Any truthy value
   );
 }

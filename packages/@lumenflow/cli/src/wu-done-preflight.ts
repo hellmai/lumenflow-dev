@@ -12,7 +12,7 @@ import {
   runPreflightTasksValidation,
   validateAllPreCommitHooks,
 } from '@lumenflow/core/wu-done-validators';
-import { EMOJI, FILE_SYSTEM, LOG_PREFIX } from '@lumenflow/core/wu-constants';
+import { EMOJI, ENV_VARS, FILE_SYSTEM, LOG_PREFIX } from '@lumenflow/core/wu-constants';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
@@ -200,7 +200,7 @@ export async function checkOwnership(
   try {
     currentUser = (await getGitForCwd().getConfigValue(GIT_CONFIG_USER_EMAIL)).trim();
   } catch {
-    currentUser = process.env.GIT_USER || process.env.USER || null;
+    currentUser = process.env[ENV_VARS.GIT_USER] || process.env[ENV_VARS.USER] || null;
   }
 
   if (!currentUser) {

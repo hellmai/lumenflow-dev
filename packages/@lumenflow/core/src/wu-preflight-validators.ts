@@ -12,7 +12,7 @@
 
 import { WU_PATHS } from './wu-paths.js';
 import { readWURaw } from './wu-yaml.js';
-import { TEST_TYPES, LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { ENV_VARS, TEST_TYPES, LOG_PREFIX, EMOJI } from './wu-constants.js';
 import { BaseWUSchema } from './wu-schema.js';
 import { detectFixableIssues, FIXABLE_ISSUES } from './wu-yaml-fixer.js';
 import fg from 'fast-glob';
@@ -288,7 +288,7 @@ export async function validatePreflight(
     try {
       suggestedTestPaths = await findSuggestedTestPaths(missingTestPaths, searchRoot);
     } catch (err: unknown) {
-      if (process.env.DEBUG) {
+      if (process.env[ENV_VARS.DEBUG]) {
         console.log(`[wu-preflight] Failed to find suggestions: ${getUnknownErrorMessage(err)}`);
       }
     }

@@ -26,6 +26,7 @@ import {
   COMMIT_FORMATS,
   GIT_COMMANDS,
   LUMENFLOW_PATHS,
+  ENV_VARS,
 } from './wu-constants.js';
 import { REBASE } from './wu-done-messages.js';
 import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
@@ -313,8 +314,8 @@ export async function autoRebaseBranch(
 
   // WU-1541: Use explicit baseDir instead of process.chdir for git operations
   const gitWorktree = createGitForPath(worktreePath);
-  const previousEditor = process.env.GIT_EDITOR;
-  process.env.GIT_EDITOR = 'true';
+  const previousEditor = process.env[ENV_VARS.GIT_EDITOR];
+  process.env[ENV_VARS.GIT_EDITOR] = 'true';
 
   try {
     // Fetch latest main (using worktree git context)
@@ -449,9 +450,9 @@ export async function autoRebaseBranch(
     };
   } finally {
     if (previousEditor === undefined) {
-      delete process.env.GIT_EDITOR;
+      delete process.env[ENV_VARS.GIT_EDITOR];
     } else {
-      process.env.GIT_EDITOR = previousEditor;
+      process.env[ENV_VARS.GIT_EDITOR] = previousEditor;
     }
   }
 }

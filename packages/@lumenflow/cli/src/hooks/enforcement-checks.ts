@@ -18,6 +18,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 import {
   resolveWorktreesDirSegment,
   resolveMainWriteAllowlistPrefixes,
@@ -111,7 +112,7 @@ export async function checkWorktreeEnforcement(
   input: ToolInput,
   projectDir?: string,
 ): Promise<EnforcementCheckResult> {
-  const mainRepoPath = projectDir ?? process.env.CLAUDE_PROJECT_DIR;
+  const mainRepoPath = projectDir ?? process.env[ENV_VARS.CLAUDE_PROJECT_DIR];
 
   // Graceful degradation: no project dir
   if (!mainRepoPath) {
@@ -229,7 +230,7 @@ export async function checkWuRequirement(
   input: ToolInput,
   projectDir?: string,
 ): Promise<EnforcementCheckResult> {
-  const mainRepoPath = projectDir ?? process.env.CLAUDE_PROJECT_DIR;
+  const mainRepoPath = projectDir ?? process.env[ENV_VARS.CLAUDE_PROJECT_DIR];
 
   if (!mainRepoPath) {
     return {

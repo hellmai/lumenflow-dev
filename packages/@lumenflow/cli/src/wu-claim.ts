@@ -723,7 +723,7 @@ export async function main() {
     // WU-1605: Record claim-time pickup evidence for delegation provenance.
     // Non-blocking: this metadata should not block claim completion.
     try {
-      let claimedBy = process.env.GIT_AUTHOR_EMAIL?.trim();
+      let claimedBy = process.env[ENV_VARS.GIT_AUTHOR_EMAIL]?.trim();
       try {
         claimedBy = await getAssignedEmail(getGitForCwd());
       } catch {

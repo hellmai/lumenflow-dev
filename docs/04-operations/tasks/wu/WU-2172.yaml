@@ -14,6 +14,9 @@ tests:
       with ENV_VARS-backed reads
   unit:
     - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
+    - packages/@lumenflow/core/src/__tests__/env-vars-migration-guard.test.ts
+    - packages/@lumenflow/cli/src/__tests__/guard-main-branch.test.ts
+    - packages/@lumenflow/cli/src/__tests__/hooks/path-utils.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2172.done

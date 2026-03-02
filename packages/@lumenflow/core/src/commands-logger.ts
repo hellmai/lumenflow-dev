@@ -19,7 +19,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getCurrentBranch, isMainWorktree } from './wu-helpers.js';
-import { GIT_FLAGS, STRING_LITERALS } from './wu-constants.js';
+import { ENV_VARS, GIT_FLAGS, STRING_LITERALS } from './wu-constants.js';
 import { MS_PER_DAY } from './constants/duration-constants.js';
 import { createPathFactory } from './path-factory.js';
 
@@ -94,9 +94,9 @@ export function logGitCommand(
 
     // Get current context
     let branch, worktree;
-    if (process.env.TEST_MODE === 'true') {
-      branch = process.env.TEST_BRANCH || COMMAND_LOG.USER.UNKNOWN;
-      worktree = process.env.TEST_WORKTREE || COMMAND_LOG.USER.UNKNOWN;
+    if (process.env[ENV_VARS.TEST_MODE] === 'true') {
+      branch = process.env[ENV_VARS.TEST_BRANCH] || COMMAND_LOG.USER.UNKNOWN;
+      worktree = process.env[ENV_VARS.TEST_WORKTREE] || COMMAND_LOG.USER.UNKNOWN;
     } else {
       branch = getCurrentBranch();
       worktree = isMainWorktree() ? '.' : process.cwd();

@@ -29,7 +29,7 @@ import {
   type ValidationSummary,
 } from '@lumenflow/core/validators/wu-tasks';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
-import { EMOJI, PATTERNS } from '@lumenflow/core/wu-constants';
+import { EMOJI, ENV_VARS, PATTERNS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[validate]';
@@ -119,7 +119,7 @@ Examples:
         result.errors.forEach((e) => console.log(`    ${e}`));
       } else if (result.warnings.length > 0) {
         console.log(`${EMOJI.WARNING} ${result.wuId}: ${result.warnings.length} warning(s)`);
-        if (process.env.VERBOSE) {
+        if (process.env[ENV_VARS.VERBOSE]) {
           result.warnings.forEach((w) => console.log(`    ${w}`));
         }
       }

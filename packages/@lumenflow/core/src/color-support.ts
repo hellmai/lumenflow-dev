@@ -15,6 +15,7 @@
  */
 
 import chalk from 'chalk';
+import { ENV_VARS } from './wu-constants.js';
 
 /** Internal storage for color level (allows testing without chalk singleton issues) */
 let currentColorLevel: number = chalk.level;
@@ -44,7 +45,7 @@ export function getColorLevel(): number {
 export function initColorSupport(argv: string[] = process.argv): void {
   // NO_COLOR standard (https://no-color.org/)
   // "When set (to UnsafeAny value, including empty string), it should disable colors"
-  if (process.env.NO_COLOR !== undefined) {
+  if (process.env[ENV_VARS.NO_COLOR] !== undefined) {
     chalk.level = 0;
     currentColorLevel = 0;
     return;
@@ -59,8 +60,8 @@ export function initColorSupport(argv: string[] = process.argv): void {
 
   // FORCE_COLOR override (chalk standard)
   // Values: 0 = no color, 1 = basic, 2 = 256, 3 = 16m
-  if (process.env.FORCE_COLOR !== undefined) {
-    const level = parseInt(process.env.FORCE_COLOR, 10);
+  if (process.env[ENV_VARS.FORCE_COLOR] !== undefined) {
+    const level = parseInt(process.env[ENV_VARS.FORCE_COLOR] ?? '', 10);
     if (!isNaN(level) && level >= 0 && level <= 3) {
       chalk.level = level as 0 | 1 | 2 | 3;
       currentColorLevel = level;

@@ -33,7 +33,7 @@ import {
   mkdirSync,
 } from 'node:fs';
 import path from 'node:path';
-import { toKebab, LUMENFLOW_PATHS, getProjectRoot } from './wu-constants.js';
+import { ENV_VARS, toKebab, LUMENFLOW_PATHS, getProjectRoot } from './wu-constants.js';
 // WU-1325: Import lock policy getter
 import { getLockPolicyForLane } from './lane-checker.js';
 
@@ -105,7 +105,7 @@ const DEFAULT_STALE_LOCK_THRESHOLD_HOURS = 2;
  * @returns {number} Threshold in milliseconds
  */
 export function getStaleThresholdMs(): number {
-  const envValue = process.env.STALE_LOCK_THRESHOLD_HOURS;
+  const envValue = process.env[ENV_VARS.STALE_LOCK_THRESHOLD_HOURS];
   if (envValue) {
     const hours = parseFloat(envValue);
     if (!Number.isNaN(hours) && hours > 0) {

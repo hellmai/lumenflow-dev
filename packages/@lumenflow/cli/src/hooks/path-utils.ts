@@ -11,6 +11,7 @@
 
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 
 const GIT_STATUS_QUOTE = '"';
 const PATH_PREFIX_CURRENT_DIR = './';
@@ -55,7 +56,7 @@ function resolveHomeDirectory(homeDir?: string): string | undefined {
   if (homeDir && homeDir.length > 0) {
     return homeDir;
   }
-  const envHome = process.env.HOME ?? process.env.USERPROFILE;
+  const envHome = process.env[ENV_VARS.HOME] ?? process.env[ENV_VARS.USERPROFILE];
   if (envHome && envHome.length > 0) {
     return envHome;
   }

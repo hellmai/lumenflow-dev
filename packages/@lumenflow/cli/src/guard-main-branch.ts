@@ -17,6 +17,7 @@
 
 import { createGitForPath, getGitForCwd, isAgentBranch, getConfig } from '@lumenflow/core';
 import { isInWorktree } from '@lumenflow/core/core/worktree-guard';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 
 /**
  * Arguments for guard-main-branch operation
@@ -245,7 +246,7 @@ async function main(): Promise<void> {
       process.exit(1);
     } else {
       // Silent success in normal mode
-      if (process.env.DEBUG) {
+      if (process.env[ENV_VARS.DEBUG]) {
         console.log(`[guard-main-branch] OK: Branch '${result.currentBranch}' is not protected`);
       }
       process.exit(0);

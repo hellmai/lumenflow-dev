@@ -10,6 +10,7 @@
 
 import { z } from 'zod';
 import { createError, ErrorCodes } from './error-handler.js';
+import { ENV_VARS } from './wu-constants.js';
 
 /**
  * Zod schema for validating email addresses.
@@ -57,7 +58,7 @@ export async function getAssignedEmail(gitAdapter: {
   }
 
   // Fallback to GIT_AUTHOR_EMAIL (commonly set in CI/scripting)
-  const authorEmail = process.env.GIT_AUTHOR_EMAIL?.trim();
+  const authorEmail = process.env[ENV_VARS.GIT_AUTHOR_EMAIL]?.trim();
   if (authorEmail && isValidEmail(authorEmail)) {
     return authorEmail;
   }

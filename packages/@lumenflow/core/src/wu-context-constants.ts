@@ -321,6 +321,40 @@ export const ENV_VARS = {
   REGISTRY_TOKEN: 'LUMENFLOW_REGISTRY_TOKEN',
   /** Agent log directory override */
   LOG_DIR: 'LUMENFLOW_LOG_DIR',
+  /** CI environment marker */
+  CI: 'CI',
+  /** GitHub Actions environment marker */
+  GITHUB_ACTIONS: 'GITHUB_ACTIONS',
+  /** Debug logging toggle */
+  DEBUG: 'DEBUG',
+  /** Hostname provided by runtime/container */
+  HOSTNAME: 'HOSTNAME',
+  /** Git author email override */
+  GIT_AUTHOR_EMAIL: 'GIT_AUTHOR_EMAIL',
+  /** Git editor override used for non-interactive rebase flows */
+  GIT_EDITOR: 'GIT_EDITOR',
+  /** Optional user identity used by wu:done preflight */
+  GIT_USER: 'GIT_USER',
+  /** Shell user identity fallback */
+  USER: 'USER',
+  /** User profile path fallback on Windows */
+  USERPROFILE: 'USERPROFILE',
+  /** Explicit color disable flag */
+  NO_COLOR: 'NO_COLOR',
+  /** Explicit color level override */
+  FORCE_COLOR: 'FORCE_COLOR',
+  /** Verbose validate output toggle */
+  VERBOSE: 'VERBOSE',
+  /** Test-mode toggle for command logging */
+  TEST_MODE: 'TEST_MODE',
+  /** Test-only branch override for command logging */
+  TEST_BRANCH: 'TEST_BRANCH',
+  /** Test-only worktree override for command logging */
+  TEST_WORKTREE: 'TEST_WORKTREE',
+  /** Stale lock threshold override (hours) */
+  STALE_LOCK_THRESHOLD_HOURS: 'STALE_LOCK_THRESHOLD_HOURS',
+  /** Claude project directory provided by client runtime */
+  CLAUDE_PROJECT_DIR: 'CLAUDE_PROJECT_DIR',
 } as const;
 
 /** Type for ENV_VARS keys */

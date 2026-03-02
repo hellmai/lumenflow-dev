@@ -22,7 +22,7 @@
 
 import { simpleGit, type SimpleGit } from 'simple-git';
 import { existsSync, rmSync } from 'node:fs';
-import { GIT_COMMANDS, GIT_FLAGS, GIT_REFS } from './wu-constants.js';
+import { ENV_VARS, GIT_COMMANDS, GIT_FLAGS, GIT_REFS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import type {
   DeleteBranchOptions,
@@ -127,7 +127,7 @@ export class GitAdapter {
    * @param {string} [options.baseDir] - Base directory for git operations
    */
   constructor(options: GitAdapterOptions = {}) {
-    if (options.baseDir && process.env.DEBUG) {
+    if (options.baseDir && process.env[ENV_VARS.DEBUG]) {
       console.log(`[git-adapter] DEBUG: GitAdapter constructor with baseDir=${options.baseDir}`);
     }
     this.git = options.git || simpleGit(options.baseDir);
@@ -778,7 +778,7 @@ export function createGitForPath(baseDir: string): GitAdapter {
  */
 export function getGitForCwd(): GitAdapter {
   const cwd = process.cwd();
-  if (process.env.DEBUG) {
+  if (process.env[ENV_VARS.DEBUG]) {
     console.log(`[git-adapter] DEBUG: getGitForCwd() creating adapter with baseDir=${cwd}`);
   }
   return new GitAdapter({ baseDir: cwd });

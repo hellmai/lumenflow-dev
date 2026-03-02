@@ -2693,3 +2693,5 @@
 {"type":"checkpoint","wuId":"WU-2177","timestamp":"2026-03-02T14:01:25.080Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2177.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2178","timestamp":"2026-03-02T14:01:31.889Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2178.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2172","timestamp":"2026-03-02T14:01:52.128Z","lane":"Framework: Core Validation","title":"Migrate remaining raw env reads to ENV_VARS"}
+{"type":"checkpoint","wuId":"WU-2172","timestamp":"2026-03-02T14:02:01.445Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2172","timestamp":"2026-03-02T14:02:03.146Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}

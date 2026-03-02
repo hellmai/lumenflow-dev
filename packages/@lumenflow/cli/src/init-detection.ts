@@ -14,6 +14,7 @@ import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import {
   LUMENFLOW_CLIENT_IDS,
+  ENV_VARS,
   getDocsLayoutPreset,
   type DocsLayoutPreset,
   type DocsLayoutType,
@@ -68,7 +69,7 @@ export type DefaultClient = typeof DEFAULT_CLIENT_CLAUDE | 'none';
  */
 export function detectIDEEnvironment(): DetectedIDE {
   // Claude Code detection (highest priority - most specific)
-  if (process.env.CLAUDE_PROJECT_DIR || process.env.CLAUDE_CODE) {
+  if (process.env[ENV_VARS.CLAUDE_PROJECT_DIR] || process.env[ENV_VARS.CLAUDE_CODE]) {
     return 'claude';
   }
 
@@ -213,7 +214,7 @@ export function detectDocsStructure(targetDir: string): DocsStructureType {
  * Detect default client from environment
  */
 export function detectDefaultClient(): DefaultClient {
-  if (process.env.CLAUDE_PROJECT_DIR || process.env.CLAUDE_CODE) {
+  if (process.env[ENV_VARS.CLAUDE_PROJECT_DIR] || process.env[ENV_VARS.CLAUDE_CODE]) {
     return DEFAULT_CLIENT_CLAUDE;
   }
   return 'none';

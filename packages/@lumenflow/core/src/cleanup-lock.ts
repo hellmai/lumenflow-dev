@@ -35,7 +35,7 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS, LOCK_DIR_NAME } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS, LOCK_DIR_NAME, ENV_VARS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import {
   LOCK_TIMEOUT_MS,
@@ -329,7 +329,7 @@ export async function acquireCleanupLock(wuId: string, options: AcquireCleanupLo
         lockId,
         createdAt: new Date().toISOString(),
         pid: process.pid,
-        hostname: process.env.HOSTNAME || 'unknown',
+        hostname: process.env[ENV_VARS.HOSTNAME] || 'unknown',
         worktreePath,
       };
 
