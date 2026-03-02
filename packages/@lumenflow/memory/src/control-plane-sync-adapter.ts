@@ -187,7 +187,9 @@ function isCircuitOpen(state: SyncState, nowMs: number): boolean {
 
 function markRemoteFailure(
   state: SyncState,
-  options: Required<Pick<ControlPlaneSyncAdapterOptions, 'circuitFailureThreshold' | 'circuitOpenMs'>>,
+  options: Required<
+    Pick<ControlPlaneSyncAdapterOptions, 'circuitFailureThreshold' | 'circuitOpenMs'>
+  >,
   nowMs: number,
 ): SyncState {
   const nextFailureCount = state.remoteFailureCount + 1;
