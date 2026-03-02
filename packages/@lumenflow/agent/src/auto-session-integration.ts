@@ -113,9 +113,9 @@ function resolveControlPlaneSessionSyncConfig(
 
   let parsedWorkspace: WorkspaceControlPlaneDocument | null;
   try {
-    parsedWorkspace = parseYAML(readFileSync(workspacePath, { encoding: 'utf-8' })) as
-      | WorkspaceControlPlaneDocument
-      | null;
+    parsedWorkspace = parseYAML(
+      readFileSync(workspacePath, { encoding: 'utf-8' }),
+    ) as WorkspaceControlPlaneDocument | null;
   } catch {
     return null;
   }
