@@ -13,6 +13,7 @@
  * - Checks lane locks for zombie PIDs
  * - Generates recovery suggestions
  * - WU-1968: Processes delegation_failure signals from memory bus
+ * - WU-2171: Delegation extraction decision recorded in ADR-006 (defer package split, keep delegation in core for now)
  *
  * Library-First Note: This is project-specific monitoring code for
  * ExampleApp's delegation-registry.jsonl and lane-lock files. No external
@@ -22,6 +23,7 @@
  * @see {@link packages/@lumenflow/cli/src/lib/__tests__/delegation-monitor.test.ts} - Signal handler tests
  * @see {@link packages/@lumenflow/cli/src/orchestrate-monitor.ts} - CLI entry point
  * @see {@link packages/@lumenflow/cli/src/lib/delegation-registry-store.ts} - Registry storage
+ * @see {@link ../../../../docs/04-operations/adr/ADR-006-delegation-package-extraction.md} - Extraction decision record
  */
 
 import fs from 'node:fs/promises';

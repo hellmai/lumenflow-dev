@@ -13,7 +13,8 @@ tests:
     - Review delegation extraction decision record and verify recommendation and migration path are
       documented
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
+    - packages/@lumenflow/core/src/__tests__/delegation-tree.test.ts
+    - packages/@lumenflow/cli/__tests__/orchestrate-monitor.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2171.done

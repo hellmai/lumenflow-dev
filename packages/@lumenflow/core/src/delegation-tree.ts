@@ -5,6 +5,9 @@
  * Delegation Tree Builder (WU-1674)
  *
  * Builds and formats delegation trees for visualization.
+ *
+ * WU-2171: Extraction decision captured in ADR-006; delegation remains in core until
+ * extraction triggers are met.
  */
 
 import fs from 'node:fs/promises';
