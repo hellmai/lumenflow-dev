@@ -50,6 +50,7 @@ export const VERSION = '0.0.0';
 export * from './arg-parser.js';
 export * from './date-utils.js';
 export * from './error-handler.js';
+export * from './env-accessors.js';
 export * from './retry-strategy.js';
 export * from './sandbox-allowlist.js';
 export * from './sandbox-profile.js';

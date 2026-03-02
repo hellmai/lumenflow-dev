@@ -15,6 +15,7 @@
 import micromatch from 'micromatch';
 import { getConfig } from './lumenflow-config.js';
 import { ENV_VARS } from './wu-context-constants.js';
+import { getEnv } from './env-accessors.js';
 import {
   resolveAgentPatterns,
   DEFAULT_AGENT_PATTERNS,
@@ -216,10 +217,10 @@ export function isAgentBranchSync(branch: string | null | undefined): boolean {
  * Requires LUMENFLOW_HEADLESS=1 AND (LUMENFLOW_ADMIN=1 OR CI truthy OR GITHUB_ACTIONS truthy)
  */
 export function isHeadlessAllowed(): boolean {
-  if (process.env[ENV_VARS.HEADLESS] !== '1') return false;
+  if (getEnv(ENV_VARS.HEADLESS) !== '1') return false;
   return (
-    process.env[ENV_VARS.ADMIN] === '1' ||
-    Boolean(process.env[ENV_VARS.CI]) || // Any truthy CI value (true, 1, yes, etc.)
-    Boolean(process.env[ENV_VARS.GITHUB_ACTIONS]) // Any truthy value
+    getEnv(ENV_VARS.ADMIN) === '1' ||
+    Boolean(getEnv(ENV_VARS.CI)) || // Any truthy CI value (true, 1, yes, etc.)
+    Boolean(getEnv(ENV_VARS.GITHUB_ACTIONS)) // Any truthy value
   );
 }

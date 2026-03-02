@@ -14,6 +14,8 @@ tests:
       optional vars preserve defaults
   unit:
     - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
+    - packages/@lumenflow/core/src/__tests__/env-accessors.test.ts
+    - packages/@lumenflow/cli/src/__tests__/guard-main-branch.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2174.done

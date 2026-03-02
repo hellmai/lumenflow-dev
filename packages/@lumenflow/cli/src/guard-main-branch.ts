@@ -15,7 +15,7 @@
  * WU-1109: INIT-003 Phase 4b - Migrate git operations
  */
 
-import { createGitForPath, getGitForCwd, isAgentBranch, getConfig } from '@lumenflow/core';
+import { createGitForPath, getGitForCwd, isAgentBranch, getConfig, getEnv } from '@lumenflow/core';
 import { isInWorktree } from '@lumenflow/core/core/worktree-guard';
 import { ENV_VARS } from '@lumenflow/core/wu-constants';
 
@@ -246,7 +246,7 @@ async function main(): Promise<void> {
       process.exit(1);
     } else {
       // Silent success in normal mode
-      if (process.env[ENV_VARS.DEBUG]) {
+      if (getEnv(ENV_VARS.DEBUG)) {
         console.log(`[guard-main-branch] OK: Branch '${result.currentBranch}' is not protected`);
       }
       process.exit(0);
