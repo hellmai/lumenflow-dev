@@ -2,7 +2,7 @@ id: WU-2298
 title: Fix stale lockfile importer blocking frozen install for release
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-02
 code_paths:
@@ -16,7 +16,9 @@ artifacts:
   - .lumenflow/stamps/WU-2298.done
 dependencies: []
 risks: []
-notes: 'Prerequisite release unblock: lockfile-only change validated with CI=true pnpm install --frozen-lockfile in worktree. tdd-exception: lockfile importer consistency fix only; no runtime or API logic changed.'
+notes: 'Prerequisite release unblock: lockfile-only change validated with CI=true pnpm install
+  --frozen-lockfile in worktree. tdd-exception: lockfile importer consistency fix only; no runtime
+  or API logic changed.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -42,3 +44,6 @@ session_id: 2acbd94a-a112-4ecd-8015-92efad2768da
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-02T15:50:22.509Z
+locked: true
+completed_at: 2026-03-02T15:56:44.612Z
+completed: 2026-03-02

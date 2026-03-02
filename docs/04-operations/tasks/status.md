@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-- [WU-2298 — Fix stale lockfile importer blocking frozen install for release](wu/WU-2298.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1218,3 +1218,4 @@ _Last updated: 2026-03-02_
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — 2026-03-02
 - [WU-2296 — Remove legacy .lumenflow.config.yaml references from active docs and config](wu/WU-2296.yaml) — 2026-03-02
 - [WU-2297 — Fix sync:templates gitignore exclusion for .lumenflow template dir](wu/WU-2297.yaml) — 2026-03-02
+- [WU-2298 — Fix stale lockfile importer blocking frozen install for release](wu/WU-2298.yaml) — 2026-03-02
