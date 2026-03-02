@@ -6,6 +6,7 @@ _Last updated: 2026-03-02_
 
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml)
 - [WU-2292 — Clean redesign of wu:brief guidance system (core+cli+templates)](wu/WU-2292.yaml)
+- [WU-2293 — Update spawn prompt docs for clean wu:brief redesign](wu/WU-2293.yaml)
 
 ## Completed
 

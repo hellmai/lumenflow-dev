@@ -2647,3 +2647,4 @@
 {"type":"checkpoint","wuId":"WU-2165","timestamp":"2026-03-02T10:15:35.129Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2165.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2165","timestamp":"2026-03-02T10:16:05.535Z","lane":"Framework: CLI WU Commands","title":"Extract wu:done gates orchestration module"}
 {"type":"claim","wuId":"WU-2292","timestamp":"2026-03-02T11:56:04.800Z","lane":"Framework: Core Lifecycle","title":"Clean redesign of wu:brief guidance system (core+cli+templates)"}
+{"type":"claim","wuId":"WU-2293","timestamp":"2026-03-02T11:56:35.761Z","lane":"Content: Site Comms","title":"Update spawn prompt docs for clean wu:brief redesign"}

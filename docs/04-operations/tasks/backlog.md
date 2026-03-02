@@ -35,12 +35,12 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2293 — Update spawn prompt docs for clean wu:brief redesign](wu/WU-2293.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
 - [WU-2292 — Clean redesign of wu:brief guidance system (core+cli+templates)](wu/WU-2292.yaml) — Framework: Core Lifecycle
+- [WU-2293 — Update spawn prompt docs for clean wu:brief redesign](wu/WU-2293.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 

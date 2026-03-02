@@ -2,7 +2,7 @@ id: WU-2293
 title: Update spawn prompt docs for clean wu:brief redesign
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-02
 code_paths:
@@ -33,9 +33,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update public docs to reflect spawn-prompt path canonicalization, short client alias override mapping, and new template keys (code-craft, read-before-write, self-review).
+description: Update public docs to reflect spawn-prompt path canonicalization, short client alias
+  override mapping, and new template keys (code-craft, read-before-write, self-review).
 acceptance:
   - Customizing docs document the new template keys and expected section purpose.
   - Reference docs use spawn-prompt paths (no delegation-prompt references).
-  - Client mapping documents short alias override directories (for example claude-code -> templates.claude).
+  - Client mapping documents short alias override directories (for example claude-code ->
+    templates.claude).
   - Examples stay consistent across pack, guide, and reference docs.
+claimed_mode: worktree
+worktree_path: worktrees/content-site-comms-wu-2293
+claimed_at: 2026-03-02T11:56:35.732Z
+baseline_main_sha: f69f34e8ab3be54e2bbff707bb06fe784cf8f7d7
+session_id: 6dd281c5-3b88-425b-953c-c02a0c81caea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T11:56:35.738Z
