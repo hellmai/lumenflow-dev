@@ -2,7 +2,7 @@ id: WU-2292
 title: Clean redesign of wu:brief guidance system (core+cli+templates)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-02
 code_paths:
@@ -23,8 +23,10 @@ code_paths:
   - .lumenflow/templates.claude/spawn-prompt/code-craft.md
 tests:
   manual:
-    - Run pnpm wu:brief --id WU-2292 --client claude-code and verify Code Craft, Read Before Write, and Self-Review sections are present in order.
-    - Run pnpm wu:brief --id WU-2292 --client codex-cli and verify vendor-neutral guidance with no context7 references.
+    - Run pnpm wu:brief --id WU-2292 --client claude-code and verify Code Craft, Read Before Write,
+      and Self-Review sections are present in order.
+    - Run pnpm wu:brief --id WU-2292 --client codex-cli and verify vendor-neutral guidance with no
+      context7 references.
   unit:
     - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
@@ -48,11 +50,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Clean redesign of wu:brief prompt generation: fix spawn template path and client alias resolution, replace abstract code-quality bullets with concrete Code Craft guidance, add Read Before Write and Self-Review sections, and wire core+cli prompt builders to remain vendor-agnostic with template overrides.'
+description: 'Clean redesign of wu:brief prompt generation: fix spawn template path and client alias
+  resolution, replace abstract code-quality bullets with concrete Code Craft guidance, add Read
+  Before Write and Self-Review sections, and wire core+cli prompt builders to remain vendor-agnostic
+  with template overrides.'
 acceptance:
-  - Template loader resolves spawn-prompt path and short client alias directories (claude-code->templates.claude, codex-cli->templates.codex).
+  - Template loader resolves spawn-prompt path and short client alias directories
+    (claude-code->templates.claude, codex-cli->templates.codex).
   - Path constant is renamed to SPAWN_PROMPT_DIR with no compatibility alias.
-  - Mandatory Standards removes bumper-sticker bullets and cross-references Code Craft + KISS/YAGNI scope rule.
-  - Task and Codex prompt outputs include Code Craft, Read Before Write, and Self-Review in the agreed order.
+  - Mandatory Standards removes bumper-sticker bullets and cross-references Code Craft + KISS/YAGNI
+    scope rule.
+  - Task and Codex prompt outputs include Code Craft, Read Before Write, and Self-Review in the
+    agreed order.
   - CLI Codex prompt path uses policy-based guidance and includes the new sections.
-  - Core and CLI tests cover section ordering, template override/fallback, alias resolution, and vendor-agnostic core output.
+  - Core and CLI tests cover section ordering, template override/fallback, alias resolution, and
+    vendor-agnostic core output.
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2292
+claimed_at: 2026-03-02T11:56:04.765Z
+baseline_main_sha: b1e73dd94f54b96239a11ee2afc88dc3ff2b4648
+session_id: 6dd281c5-3b88-425b-953c-c02a0c81caea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T11:56:04.771Z

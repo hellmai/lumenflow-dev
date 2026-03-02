@@ -5,6 +5,7 @@ _Last updated: 2026-03-02_
 ## In Progress
 
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml)
+- [WU-2292 — Clean redesign of wu:brief guidance system (core+cli+templates)](wu/WU-2292.yaml)
 
 ## Completed
 
