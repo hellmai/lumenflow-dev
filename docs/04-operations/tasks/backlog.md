@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2170 — Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1241,6 +1241,7 @@ sections:
 - [WU-2167 — Slim wu:done main orchestrator](wu/WU-2167.yaml)
 - [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml)
 - [WU-2169 — Add domain-scoped core barrel exports](wu/WU-2169.yaml)
+- [WU-2170 — Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

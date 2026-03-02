@@ -2,7 +2,7 @@ id: WU-2170
 title: Migrate consumers and deprecate root core barrel
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -10,8 +10,11 @@ code_paths:
   - packages/@lumenflow
 tests:
   manual:
-    - Build workspace and verify MCP runtime files use scoped @lumenflow/core entrypoints (for example @lumenflow/core/validation, @lumenflow/core/config, @lumenflow/core/lifecycle) rather than root @lumenflow/core imports.
-    - Verify root @lumenflow/core barrel remains compatible while index guidance points new usage to grouped entrypoints.
+    - Build workspace and verify MCP runtime files use scoped @lumenflow/core entrypoints (for
+      example @lumenflow/core/validation, @lumenflow/core/config, @lumenflow/core/lifecycle) rather
+      than root @lumenflow/core imports.
+    - Verify root @lumenflow/core barrel remains compatible while index guidance points new usage to
+      grouped entrypoints.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
     - packages/@lumenflow/mcp/src/__tests__/core-import-paths.test.ts
@@ -50,3 +53,6 @@ session_id: 442d1c1e-a905-4d1d-8fab-b0e28c314c53
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-02T13:39:28.190Z
+locked: true
+completed_at: 2026-03-02T13:52:31.993Z
+completed: 2026-03-02
