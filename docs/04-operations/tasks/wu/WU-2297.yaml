@@ -2,14 +2,15 @@ id: WU-2297
 title: Fix sync:templates gitignore exclusion for .lumenflow template dir
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-02
 code_paths:
   - packages/@lumenflow/.gitignore
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -25,7 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: sync:templates fails because packages/@lumenflow/.gitignore blocks .lumenflow/ which catches cli/templates/core/.lumenflow/. Need to add negation pattern.
+description: sync:templates fails because packages/@lumenflow/.gitignore blocks .lumenflow/ which
+  catches cli/templates/core/.lumenflow/. Need to add negation pattern.
 acceptance:
   - sync:templates completes successfully
   - Templates are synced and committed
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2297
+claimed_at: 2026-03-02T15:24:22.513Z
+baseline_main_sha: b58f3c0749bd9f3710b8d6f7c132fcc277792052
+session_id: 986ba533-5d8b-44ae-899f-365889d106cf
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T15:24:22.519Z

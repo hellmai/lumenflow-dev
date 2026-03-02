@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2297 — Fix sync:templates gitignore exclusion for .lumenflow template dir](wu/WU-2297.yaml)
 
 ## Completed
 
