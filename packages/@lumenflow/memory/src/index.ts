@@ -32,6 +32,7 @@ export * from './mem-delete-core.js';
 export * from './mem-recover-core.js';
 export * from './memory-schema.js';
 export * from './memory-store.js';
+export * from './control-plane-sync-adapter.js';
 
 // WU-1238: Decay scoring and access tracking
 export * from './decay/scoring.js';
