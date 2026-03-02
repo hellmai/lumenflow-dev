@@ -21,6 +21,8 @@ artifacts:
 dependencies: []
 risks: []
 notes: 'Source plan: /home/tom/.claude/plans/cryptic-floating-flamingo.md'
+spec_refs:
+  - lumenflow://plans/cryptic-floating-flamingo.md
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
