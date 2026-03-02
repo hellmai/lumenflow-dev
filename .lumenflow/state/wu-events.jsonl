@@ -2666,3 +2666,4 @@
 {"type":"checkpoint","wuId":"WU-2165","timestamp":"2026-03-02T12:41:44.510Z","note":"[wu:done] force ownership override claimed_session=6dd281c5-3b88-425b-953c-c02a0c81caea active_session=none","progress":"wu:done ownership override","nextSteps":"orphan recovery: same operator resuming claimed WU after interrupted session"}
 {"type":"complete","wuId":"WU-2165","timestamp":"2026-03-02T12:41:50.062Z"}
 {"type":"checkpoint","wuId":"WU-2166","timestamp":"2026-03-02T12:43:03.521Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2166.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"claim","wuId":"WU-2166","timestamp":"2026-03-02T12:43:20.795Z","lane":"Framework: CLI WU Commands","title":"Extract wu:done memory and telemetry module"}

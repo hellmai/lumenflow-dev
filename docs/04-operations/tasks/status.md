@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2166 — Extract wu:done memory and telemetry module](wu/WU-2166.yaml)
 
 ## Completed
 
