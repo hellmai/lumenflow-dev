@@ -27,7 +27,13 @@
     "./storage": "./dist/tool-impl/storage.js",
     "./tools": "./dist/tools/index.js",
     "./tool-impl": "./dist/tool-impl/index.js",
-    "./tool-impl/*": "./dist/tool-impl/*.js"
+    "./tool-impl/channel-tools": "./dist/tool-impl/channel-tools.js",
+    "./tool-impl/memory-tools": "./dist/tool-impl/memory-tools.js",
+    "./tool-impl/routine-tools": "./dist/tool-impl/routine-tools.js",
+    "./tool-impl/shared": "./dist/tool-impl/shared.js",
+    "./tool-impl/storage": "./dist/tool-impl/storage.js",
+    "./tool-impl/system-tools": "./dist/tool-impl/system-tools.js",
+    "./tool-impl/task-tools": "./dist/tool-impl/task-tools.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

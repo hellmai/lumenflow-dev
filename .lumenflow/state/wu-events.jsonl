@@ -2728,3 +2728,4 @@
 {"type":"checkpoint","wuId":"WU-2299","timestamp":"2026-03-02T18:32:56.266Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"complete","wuId":"WU-2299","timestamp":"2026-03-02T18:35:14.697Z"}
 {"type":"claim","wuId":"WU-2300","timestamp":"2026-03-02T18:37:08.408Z","lane":"Framework: Core Lifecycle","title":"Fix sidekick export map for release validator"}
+{"type":"checkpoint","wuId":"WU-2300","timestamp":"2026-03-02T18:37:18.725Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}

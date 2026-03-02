@@ -39,7 +39,7 @@ const EXPECTED_TOOL_NAMES = [
 ] as const;
 
 describe('sidekick manifest contract', () => {
-  it('exports wildcard tool implementation subpaths for consumers', async () => {
+  it('exports tool implementation subpaths for consumers', async () => {
     const packageJsonPath = path.resolve(
       path.dirname(fileURLToPath(import.meta.url)),
       '..',
@@ -50,7 +50,19 @@ describe('sidekick manifest contract', () => {
       exports?: Record<string, string>;
     };
 
-    expect(packageJson.exports?.['./tool-impl/*']).toBe('./dist/tool-impl/*.js');
+    const expectedExports: Record<string, string> = {
+      './tool-impl/channel-tools': './dist/tool-impl/channel-tools.js',
+      './tool-impl/memory-tools': './dist/tool-impl/memory-tools.js',
+      './tool-impl/routine-tools': './dist/tool-impl/routine-tools.js',
+      './tool-impl/shared': './dist/tool-impl/shared.js',
+      './tool-impl/storage': './dist/tool-impl/storage.js',
+      './tool-impl/system-tools': './dist/tool-impl/system-tools.js',
+      './tool-impl/task-tools': './dist/tool-impl/task-tools.js',
+    };
+
+    for (const [exportKey, exportPath] of Object.entries(expectedExports)) {
+      expect(packageJson.exports?.[exportKey]).toBe(exportPath);
+    }
   });
 
   it('defines the expected pack identity', () => {
