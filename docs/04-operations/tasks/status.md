@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml)
 
 ## Completed
 

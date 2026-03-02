@@ -2,7 +2,7 @@ id: WU-2153
 title: Session lifecycle hooks for control-plane registration
 lane: 'Framework: Agent'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - No-op when control_plane not configured
   - Remote registration failure does not block claim or done
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-agent-wu-2153
+claimed_at: 2026-03-02T00:05:19.371Z
+baseline_main_sha: bc26558e3bdbb28dd3778f4a1e676066d8685d14
+session_id: 64311f0d-af0b-447b-bbab-3f463a2fe285
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T00:05:19.376Z
