@@ -15,6 +15,40 @@
     "url": "https://github.com/hellmai/lumenflow-dev.git",
     "directory": "packages/@lumenflow/core"
   },
+  "lumenflow": {
+    "coreApiAudit": {
+      "wu": "WU-2168",
+      "initiative": "INIT-042",
+      "phase": 1,
+      "groups": [
+        {
+          "id": "foundation",
+          "owner": "Framework: Core Lifecycle",
+          "migrationIntent": "Remain root-stable and optionally mirror as domain entrypoint."
+        },
+        {
+          "id": "wu-lifecycle-state",
+          "owner": "Framework: CLI WU Commands",
+          "migrationIntent": "Primary consumer migration target for domain-scoped barrels."
+        },
+        {
+          "id": "delegation-spawn",
+          "owner": "Framework: Core Lifecycle",
+          "migrationIntent": "Candidate extraction boundary and delegation-scoped exports."
+        },
+        {
+          "id": "validation-policy",
+          "owner": "Framework: Core Validation",
+          "migrationIntent": "Move consumers to validation-focused entrypoints."
+        },
+        {
+          "id": "context-recovery",
+          "owner": "Framework: Core Lifecycle",
+          "migrationIntent": "Introduce context/recovery domain barrels with root compatibility."
+        }
+      ]
+    }
+  },
   "license": "AGPL-3.0-only",
   "author": {
     "name": "HellmAI",

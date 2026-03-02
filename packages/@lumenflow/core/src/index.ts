@@ -4,6 +4,34 @@
 /**
  * @lumenflow/core - Battle-tested LumenFlow workflow framework
  * @module @lumenflow/core
+ *
+ * API Surface Audit (WU-2168, INIT-042 Phase 1)
+ *
+ * Group boundaries and ownership for root-barrel migration:
+ * 1. Foundation Utilities
+ *    Owner: Framework: Core Lifecycle
+ *    Scope: generic runtime helpers, git adapter, constants, shared primitives.
+ *    Migration intent: keep stable in root barrel; optionally mirror in `core/foundation`.
+ *
+ * 2. WU Lifecycle + State
+ *    Owner: Framework: CLI WU Commands
+ *    Scope: wu-* validators/helpers, backlog/state/stamp/checkpoint orchestration.
+ *    Migration intent: move primary consumption to a dedicated lifecycle barrel in Phase 2.
+ *
+ * 3. Delegation + Spawn
+ *    Owner: Framework: Core Lifecycle
+ *    Scope: delegation tree/recovery/monitoring and spawn prompt contracts.
+ *    Migration intent: evaluate extraction boundary and expose via delegation barrel.
+ *
+ * 4. Validation + Policy
+ *    Owner: Framework: Core Validation
+ *    Scope: rules engine, validators, context validation, command registry contracts.
+ *    Migration intent: migrate consumers to validation-focused entrypoints in Phase 3.
+ *
+ * 5. Context + Recovery Domains
+ *    Owner: Framework: Core Lifecycle
+ *    Scope: context readers/computers and recovery analyzers/schemas.
+ *    Migration intent: provide domain barrels while preserving root compatibility during rollout.
  */
 
 // Package version

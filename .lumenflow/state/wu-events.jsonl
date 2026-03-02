@@ -2673,3 +2673,5 @@
 {"type":"complete","wuId":"WU-2167","timestamp":"2026-03-02T13:22:49.153Z"}
 {"type":"checkpoint","wuId":"WU-2168","timestamp":"2026-03-02T13:24:09.613Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2168.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2168","timestamp":"2026-03-02T13:24:28.619Z","lane":"Framework: Core Lifecycle","title":"Audit and categorize core API surface"}
+{"type":"checkpoint","wuId":"WU-2168","timestamp":"2026-03-02T13:24:37.783Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2168","timestamp":"2026-03-02T13:24:59.486Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
