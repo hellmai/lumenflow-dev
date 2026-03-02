@@ -52,9 +52,16 @@ import type { ZodIssue } from 'zod';
 import { runGates } from './gates.js';
 // WU-2102: Import scoped test resolver for wu:done gate fallback
 import { resolveScopedUnitTestsForPrep } from './wu-prep.js';
-import { resolveWuDonePreCommitGateDecision } from '@lumenflow/core/gates-agent-mode';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
 import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resolvers.js';
+import {
+  appendClaimSessionOverrideAuditEvent,
+  auditOwnershipOverride,
+  checkBacklogConsistencyForWU,
+  checkOwnership,
+  computeBranchOnlyFallback,
+  runWuDoneStagedValidation,
+} from './wu-done-preflight.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
 import { die, getErrorMessage, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
@@ -78,13 +85,9 @@ import {
   defaultBranchFrom,
   runCleanup,
   validateSpecCompleteness,
-  runPreflightTasksValidation,
-  buildPreflightErrorMessage,
   // WU-1805: Preflight code_paths validation before gates
   executePreflightCodePathValidation,
   buildPreflightCodePathErrorMessage,
-  // WU-2308: Pre-commit hooks with worktree context
-  validateAllPreCommitHooks,
   // WU-2310: Type vs code_paths preflight validation
   validateTypeVsCodePathsPreflight,
   buildTypeVsCodePathsErrorMessage,
@@ -128,7 +131,6 @@ import {
   validateDoneWU,
   validateApprovalGates,
 } from '@lumenflow/core/wu-schema';
-import { validateBacklogSync } from '@lumenflow/core/backlog-sync-validator';
 import {
   executeBranchOnlyCompletion,
   // WU-1492: Import branch-pr completion path
@@ -213,6 +215,11 @@ export {
   validateDocsOnlyFlag,
 } from './wu-done-policies.js';
 export { isBranchAlreadyMerged } from './wu-done-git-ops.js';
+export {
+  checkBacklogConsistencyForWU,
+  computeBranchOnlyFallback,
+  normalizeUsername,
+} from './wu-done-preflight.js';
 
 // WU-1588: Memory layer constants
 const MEMORY_SIGNAL_TYPES = {
@@ -471,12 +478,6 @@ interface TransactionState {
   statusContent: string | null;
   mainSHA: string;
   laneBranch: string;
-}
-
-interface OwnershipCheckResult {
-  valid: boolean;
-  error: string | null;
-  auditEntry: Record<string, unknown> | null;
 }
 
 interface WuDoneArgsLike {
@@ -773,72 +774,10 @@ const GIT_CONFIG_USER_EMAIL = 'user.email';
 // Default fallback messages
 const DEFAULT_NO_REASON = '(no reason provided)';
 
-/**
- * WU-1234: Normalize username for ownership comparison
- * Extracts username from email address for comparison.
- * This allows tom@hellm.ai to match 'tom' assigned_to field.
- *
- * @param {string|null|undefined} value - Email address or username
- * @returns {string} Normalized username (lowercase)
- */
-export function normalizeUsername(value: string | null | undefined): string {
-  if (!value) return '';
-  const str = String(value).trim();
-  // Extract username from email: tom@hellm.ai -> tom
-  // WU-1281: Using string split instead of regex
-  const atIndex = str.indexOf('@');
-  const username = atIndex > 0 ? str.slice(0, atIndex) : str;
-  return username.toLowerCase();
-}
-
 // WU-1281: isDocsOnlyByPaths removed - use shouldSkipWebTests from path-classifiers.ts
 // The validators already use shouldSkipWebTests via detectDocsOnlyByPaths wrapper.
 // Keeping the export for backward compatibility but re-exporting the canonical function.
 export { shouldSkipWebTests as isDocsOnlyByPaths } from '@lumenflow/core/path-classifiers';
-
-/**
- * WU-1234: Pre-flight check for backlog state consistency
- * Fails fast if the WU appears in both Done and In Progress sections.
- *
- * @param {string} id - WU ID to check
- * @param {string} backlogPath - Path to backlog.md
- * @returns {{ valid: boolean, error: string|null }}
- */
-export function checkBacklogConsistencyForWU(
-  id: string,
-  backlogPath: string,
-): { valid: boolean; error: string | null } {
-  try {
-    const result = validateBacklogSync(backlogPath);
-
-    // Check if this specific WU is in both Done and In Progress
-    if (!result.valid) {
-      for (const error of result.errors) {
-        // Check if the error mentions both Done and In Progress AND mentions our WU
-        if (error.includes('Done and In Progress') && error.includes(id)) {
-          return {
-            valid: false,
-            error:
-              `❌ BACKLOG STATE INCONSISTENCY: ${id} found in both Done and In Progress sections.\n\n` +
-              `This is an invalid state that must be fixed manually before wu:done can proceed.\n\n` +
-              `Fix options:\n` +
-              `  1. If ${id} is truly done: Remove from In Progress in backlog.md\n` +
-              `  2. If ${id} needs more work: Remove from Done in backlog.md, update WU YAML status\n\n` +
-              `After fixing backlog.md, retry: pnpm wu:done --id ${id}`,
-          };
-        }
-      }
-    }
-
-    return { valid: true, error: null };
-  } catch (e) {
-    // If validation fails (e.g., file not found), warn but don't block
-    console.warn(
-      `${LOG_PREFIX.DONE} Warning: Could not validate backlog consistency: ${getErrorMessage(e)}`,
-    );
-    return { valid: true, error: null };
-  }
-}
 
 /**
  * Read commitlint header-max-length from config, fallback to DEFAULTS.MAX_COMMIT_SUBJECT
@@ -1333,198 +1272,6 @@ function runWUValidator(
   }
 
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU validator passed`);
-}
-
-/**
- * GUARDRAIL 2: Enforce ownership semantics in wu:done
- *
- * Validates that the current user owns the WU before allowing completion.
- * Prevents agents/humans from finishing WUs they do not own.
- *
- * @param {string} id - WU ID
- * @param {object} doc - WU YAML document
- * @param {string|null} worktreePath - Expected worktree path
- * @param {boolean} overrideOwner - Override flag (requires reason)
- * @param {string|null} overrideReason - Reason for override
- * @returns {{valid: boolean, error: string|null, auditEntry: object|null}}
- */
-
-async function appendClaimSessionOverrideAuditEvent({
-  wuId,
-  claimedSessionId,
-  activeSessionId,
-  reason,
-  worktreePath,
-}: {
-  wuId: string;
-  claimedSessionId: string;
-  activeSessionId: string | null;
-  reason: string;
-  worktreePath: string;
-}): Promise<void> {
-  const stateDir = resolveStateDir(worktreePath);
-  const stateStore = new WUStateStore(stateDir);
-  await stateStore.load();
-  await stateStore.checkpoint(
-    wuId,
-    `[wu:done] force ownership override claimed_session=${claimedSessionId} active_session=${activeSessionId || 'none'}`,
-    {
-      progress: 'wu:done ownership override',
-      nextSteps: reason,
-    },
-  );
-}
-
-async function checkOwnership(
-  id: string,
-  doc: WUDocLike,
-  worktreePath: string | null,
-  overrideOwner = false,
-  overrideReason: string | null = null,
-): Promise<OwnershipCheckResult> {
-  // Missing worktree means WU was not claimed properly (unless escape hatch applies)
-  if (!worktreePath || !existsSync(worktreePath)) {
-    return {
-      valid: false,
-      error:
-        `Missing worktree for ${id}.\n\n` +
-        `Expected worktree at: ${worktreePath || 'unknown'}\n\n` +
-        `Worktrees are required for proper WU completion in Worktree mode.\n` +
-        `If the worktree was removed, recreate it and retry, or use --skip-gates with justification.`,
-      auditEntry: null,
-    };
-  }
-
-  // Get assigned owner from WU YAML - read directly from worktree to ensure we get the lane branch version
-  let assignedTo = doc.assigned_to || null;
-  if (!assignedTo && worktreePath) {
-    // Fallback: Read directly from worktree YAML if not present in doc (fixes WU-1106)
-    const wtWUPath = path.join(worktreePath, WU_PATHS.WU(id));
-    if (existsSync(wtWUPath)) {
-      try {
-        const text = readFileSync(wtWUPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-        const wtDoc = parseYAML(text);
-        assignedTo = (wtDoc?.assigned_to as string) || null;
-        if (assignedTo) {
-          console.log(
-            `${LOG_PREFIX.DONE} Note: Read assigned_to from worktree YAML (not found in main)`,
-          );
-        }
-      } catch (err) {
-        console.warn(
-          `${LOG_PREFIX.DONE} Warning: Failed to read assigned_to from worktree: ${getErrorMessage(err)}`,
-        );
-      }
-    }
-  }
-  if (!assignedTo) {
-    return {
-      valid: false,
-      error:
-        `WU ${id} has no assigned_to field.\n\n` +
-        `This WU was claimed before ownership tracking was implemented.\n` +
-        `To complete this WU:\n` +
-        `  1. Add assigned_to: <your-email> to ${id}.yaml\n` +
-        `  2. Commit the change\n` +
-        `  3. Re-run: pnpm wu:done --id ${id}`,
-      auditEntry: null,
-    };
-  }
-
-  // Get current user identity
-  let currentUser: string | null;
-  try {
-    currentUser = (await getGitForCwd().getConfigValue(GIT_CONFIG_USER_EMAIL)).trim();
-  } catch {
-    // Fallback to environment variable
-    currentUser = process.env.GIT_USER || process.env.USER || null;
-  }
-
-  if (!currentUser) {
-    return {
-      valid: false,
-      error:
-        `Cannot determine current user identity.\n\n` +
-        `Set git user.email or GIT_USER environment variable.`,
-      auditEntry: null,
-    };
-  }
-
-  // WU-1234: Normalize usernames for comparison (allows email vs username match)
-  // e.g., tom@hellm.ai matches 'tom' assigned_to field
-  const normalizedAssigned = normalizeUsername(assignedTo);
-  const normalizedCurrent = normalizeUsername(currentUser);
-  const isOwner = normalizedAssigned === normalizedCurrent;
-
-  if (isOwner) {
-    // Owner is completing their own WU - allow
-    if (assignedTo !== currentUser) {
-      console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Ownership match via normalization: "${assignedTo}" == "${currentUser}"`,
-      );
-    }
-    return { valid: true, error: null, auditEntry: null };
-  }
-
-  // Not the owner - check for override
-  if (overrideOwner) {
-    if (!overrideReason) {
-      return {
-        valid: false,
-        error: `--override-owner requires --reason "<why you're completing someone else's WU>"`,
-        auditEntry: null,
-      };
-    }
-
-    // Create audit entry
-    const auditEntry = {
-      timestamp: new Date().toISOString(),
-      wu_id: id,
-      assigned_to: assignedTo,
-      completed_by: currentUser,
-      reason: overrideReason,
-      git_commit: (await getGitForCwd().getCommitHash()).trim(),
-    };
-
-    console.log(`\n⚠️  --override-owner: Completing WU assigned to someone else`);
-    console.log(`   Assigned to: ${assignedTo}`);
-    console.log(`   Completed by: ${currentUser}`);
-    console.log(`   Reason: ${overrideReason}\n`);
-
-    return { valid: true, error: null, auditEntry };
-  }
-
-  // Not the owner and no override - block
-  return {
-    valid: false,
-    error:
-      `\n❌ OWNERSHIP VIOLATION: ${id} is assigned to someone else\n\n` +
-      `   Assigned to: ${assignedTo}\n` +
-      `   Current user: ${currentUser}\n\n` +
-      `   You cannot complete WUs you do not own.\n\n` +
-      `   📋 Options:\n` +
-      `      1. Contact ${assignedTo} to complete the WU\n` +
-      `      2. Reassign the WU to yourself in ${id}.yaml (requires approval)\n` +
-      `      3. Add co_assigned field for pairing (requires approval)\n\n` +
-      `   ⚠️  To override (use with extreme caution):\n` +
-      `      pnpm wu:done --id ${id} --override-owner --reason "<why>"\n\n` +
-      `   AGENTS: NEVER use --override-owner without explicit instruction.\n` +
-      `   Language protocol: "pick up WU-${id.replace('WU-', '')}" = READ ONLY.\n`,
-    auditEntry: null,
-  };
-}
-
-/**
- * Log ownership override to audit trail
- * @param {object} auditEntry - Audit entry to log
- */
-function auditOwnershipOverride(auditEntry: Record<string, unknown>): void {
-  const auditPath = path.join('.lumenflow', 'ownership-override-audit.log');
-  const auditDir = path.dirname(auditPath);
-  if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
-  const line = JSON.stringify(auditEntry);
-  appendFileSync(auditPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-  console.log(`${LOG_PREFIX.DONE} ${EMOJI.MEMO} Ownership override logged to ${auditPath}`);
 }
 
 /**
@@ -2209,25 +1956,6 @@ async function executeGates({
  * @param {string|null} params.derivedWorktree - Derived worktree path
  * @param {string} params.STAMPS_DIR - Stamps directory path
  */
-export function computeBranchOnlyFallback({
-  isBranchOnly,
-  branchOnlyRequested,
-  worktreeExists,
-  derivedWorktree,
-}: {
-  isBranchOnly: boolean;
-  branchOnlyRequested: boolean | undefined;
-  worktreeExists: boolean;
-  derivedWorktree: string | null;
-}) {
-  const allowFallback =
-    Boolean(branchOnlyRequested) && !isBranchOnly && !worktreeExists && Boolean(derivedWorktree);
-  return {
-    allowFallback,
-    effectiveBranchOnly: isBranchOnly || allowFallback,
-  };
-}
-
 export function getYamlStatusForDisplay(status: unknown) {
   return getWUStatusDisplay(status);
 }
@@ -2559,35 +2287,18 @@ export async function main() {
     STAMPS_DIR,
   });
 
-  // Step 0.5: Pre-flight hook validation policy.
-  // WU-1659: Reuse Step 0 gate attestation/checkpoint and avoid duplicate full-suite execution.
-  const preCommitGateDecision = resolveWuDonePreCommitGateDecision({
+  // Step 0.5 + 0.6: Pre-flight staged validation policy and tasks:validate guard.
+  await runWuDoneStagedValidation({
+    id,
+    worktreePath,
+    gateResult: {
+      fullGatesRanInCurrentRun: gateExecutionResult.fullGatesRanInCurrentRun,
+      skippedByCheckpoint: gateExecutionResult.skippedByCheckpoint,
+      checkpointId: gateExecutionResult.checkpointId,
+    },
     skipGates: Boolean(args.skipGates),
-    fullGatesRanInCurrentRun: gateExecutionResult.fullGatesRanInCurrentRun,
-    skippedByCheckpoint: gateExecutionResult.skippedByCheckpoint,
-    checkpointId: gateExecutionResult.checkpointId,
+    runGatesFn: ({ cwd }) => runGates({ cwd, docsOnly: false }),
   });
-  console.log(`${LOG_PREFIX.DONE} ${preCommitGateDecision.message}`);
-
-  // Fallback path remains available if gate attestation is missing for any reason.
-  if (preCommitGateDecision.runPreCommitFullSuite) {
-    const hookResult = await validateAllPreCommitHooks(id, worktreePath, {
-      runGates: ({ cwd }) => runGates({ cwd, docsOnly: false }),
-    });
-    if (!hookResult.valid) {
-      die('Pre-flight validation failed. Fix hook issues and try again.');
-    }
-  }
-
-  // Step 0.6: WU-1781 - Run tasks:validate preflight BEFORE any merge/push operations
-  // This prevents deadlocks where validation fails after merge, leaving local main ahead of origin
-  // Specifically catches stamp-status mismatches from legacy WUs that would block pre-push hooks
-  const tasksValidationResult = runPreflightTasksValidation(id);
-  if (!tasksValidationResult.valid) {
-    const errorMessage = buildPreflightErrorMessage(id, tasksValidationResult.errors);
-    console.error(errorMessage);
-    die('Preflight tasks:validate failed. See errors above for fix options.');
-  }
 
   // Step 1: Execute mode-specific completion workflow (WU-1215: extracted to mode modules)
   // Worktree mode: Update metadata in worktree → commit → merge to main

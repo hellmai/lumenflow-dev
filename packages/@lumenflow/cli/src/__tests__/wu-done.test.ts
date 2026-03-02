@@ -198,8 +198,13 @@ status: done
 
     it('wu-done uses the gate dedup policy before pre-flight hook validation', async () => {
       const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
-      expect(source).toContain('resolveWuDonePreCommitGateDecision');
-      expect(source).toContain('preCommitGateDecision.runPreCommitFullSuite');
+      const preflightSource = await readFile(
+        new URL('../wu-done-preflight.ts', import.meta.url),
+        'utf-8',
+      );
+      expect(source).toContain('runWuDoneStagedValidation({');
+      expect(preflightSource).toContain('resolveWuDonePreCommitGateDecision');
+      expect(preflightSource).toContain('preCommitGateDecision.runPreCommitFullSuite');
     });
 
     it('worktree preflight no longer runs redundant parity sync check before canonical not-behind guard', async () => {
@@ -773,10 +778,15 @@ status: done
       expect(source).toContain('pipelineActor.getSnapshot()');
     });
 
-    it('preserves existing preCommitGateDecision flow alongside pipeline actor', async () => {
+    it('routes preCommitGateDecision flow through preflight module alongside pipeline actor', async () => {
       const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
-      // Both the legacy preCommitGateDecision AND the pipeline actor events must coexist
-      expect(source).toContain('resolveWuDonePreCommitGateDecision');
+      const preflightSource = await readFile(
+        new URL('../wu-done-preflight.ts', import.meta.url),
+        'utf-8',
+      );
+      expect(source).toContain('runWuDoneStagedValidation({');
+      expect(preflightSource).toContain('resolveWuDonePreCommitGateDecision');
+      expect(preflightSource).toContain('preCommitGateDecision.runPreCommitFullSuite');
       expect(source).toContain('WU_DONE_EVENTS.GATES_PASSED');
     });
 
