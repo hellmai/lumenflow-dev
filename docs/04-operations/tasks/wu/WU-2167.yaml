@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/wu-done-machine.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:prep --id WU-2167 and verify gates pass with orchestrator-only changes
+    - Run pnpm wu:done --id WU-2167 in a controlled dry completion and verify pipeline states/logs
+      remain intact
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
   e2e: []
