@@ -2711,6 +2711,7 @@
 {"type":"claim","wuId":"WU-2177","timestamp":"2026-03-02T14:50:07.480Z","lane":"Framework: Core Validation","title":"Create shared test-helpers package"}
 {"type":"complete","wuId":"WU-2177","timestamp":"2026-03-02T15:00:21.150Z"}
 {"type":"claim","wuId":"WU-2178","timestamp":"2026-03-02T15:01:38.046Z","lane":"Operations: Runtime","title":"Raise runtime and agent test coverage to target"}
+{"type":"checkpoint","wuId":"WU-2178","timestamp":"2026-03-02T15:08:58.949Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"claim","wuId":"WU-2296","timestamp":"2026-03-02T15:06:34.305Z","lane":"Content: Framework Docs","title":"Remove legacy .lumenflow.config.yaml references from active docs and config"}
 {"type":"checkpoint","wuId":"WU-2296","timestamp":"2026-03-02T15:10:58.186Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2296.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2296","timestamp":"2026-03-02T15:11:49.448Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2296.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}

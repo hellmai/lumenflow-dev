@@ -13,6 +13,10 @@ tests:
     - Run runtime/agent coverage command and verify coverage target is met and tests are stable
   unit:
     - packages/@lumenflow/runtime/__tests__/daemon.test.ts
+    - packages/@lumenflow/runtime/__tests__/daemon-client.test.ts
+    - packages/@lumenflow/runtime/__tests__/index.test.ts
+    - packages/@lumenflow/agent/__tests__/agent-session.test.ts
+    - packages/@lumenflow/agent/__tests__/index.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2178.done
