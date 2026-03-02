@@ -47,7 +47,6 @@ import { wuDoneMachine, WU_DONE_EVENTS } from '@lumenflow/core/wu-done-machine';
 // See: packages/@lumenflow/core/src/wu-done-validation.ts
 
 import { execSync } from 'node:child_process';
-import prettyMs from 'pretty-ms';
 import type { ZodIssue } from 'zod';
 import { runGates } from './gates.js';
 import { executeGates } from './wu-done-gates.js';
@@ -64,7 +63,7 @@ import {
   runWuDoneStagedValidation,
 } from './wu-done-preflight.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
-import { die, getErrorMessage, createError, ErrorCodes } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import {
@@ -73,7 +72,6 @@ import {
   mkdirSync,
   appendFileSync,
   unlinkSync,
-  statSync,
   readdirSync,
 } from 'node:fs';
 import path from 'node:path';
@@ -105,22 +103,18 @@ import {
   GIT,
   SESSION,
   WU_STATUS,
-  PKG_MANAGER,
-  SCRIPTS,
-  CLI_FLAGS,
   FILE_SYSTEM,
   EXIT_CODES,
   STRING_LITERALS,
   MICRO_WORKTREE_OPERATIONS,
   TELEMETRY_STEPS,
-  CHECKPOINT_MESSAGES,
   ENV_VARS,
   getWUStatusDisplay,
   // WU-1223: Location types for worktree detection
   CONTEXT_VALIDATION,
 } from '@lumenflow/core/wu-constants';
 import { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES } from '@lumenflow/core';
-import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/wu-done-ui';
+import { printStatusPreview } from '@lumenflow/core/wu-done-ui';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { getConfig, clearConfigCache } from '@lumenflow/core/config';
