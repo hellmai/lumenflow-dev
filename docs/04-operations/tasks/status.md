@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1196,3 +1196,4 @@ _Last updated: 2026-03-02_
 - [WU-2290 — Block wu:edit from main for in-progress worktree WUs](wu/WU-2290.yaml) — 2026-03-01
 - [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml) — 2026-03-02
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — 2026-03-02
+- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — 2026-03-02

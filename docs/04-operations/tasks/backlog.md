@@ -40,7 +40,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1236,6 +1236,7 @@ sections:
 - [WU-2290 — Block wu:edit from main for in-progress worktree WUs](wu/WU-2290.yaml)
 - [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml)
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml)
+- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

@@ -3,7 +3,7 @@ slug: agent-memory-coordination
 title: Agent Memory + Coordination Layer
 description: 'Local-first signal surfacing, project-memory promotion, and optional control-plane
   bridge for agent coordination. OSS-complete: all local behavior works without network.'
-status: in_progress
+status: done
 priority: P1
 owner: tom@hellm.ai
 created: 2026-02-25
@@ -16,7 +16,7 @@ phases:
     status: done
   - id: 3
     title: 'Phase 3: Integration Hooks'
-    status: in_progress
+    status: done
 success_metrics:
   - Project-memory survives wu:done cleanup
   - Signals surface automatically via CLI and MCP touchpoints
