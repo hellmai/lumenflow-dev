@@ -2,7 +2,7 @@ id: WU-2176
 title: Document validator boundaries and ownership
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-25
 code_paths:
