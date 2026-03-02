@@ -2,7 +2,7 @@ id: WU-2165
 title: Extract wu:done gates orchestration module
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -40,3 +40,11 @@ description: Extract gate execution flow, checkpoint skip handling, and node_mod
   checks from wu-done.ts.
 acceptance:
   - Gate orchestration is extracted and still enforces non-bypassable invariants and policy behavior.
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2165
+claimed_at: 2026-03-02T10:16:05.510Z
+baseline_main_sha: 31cb688fa8094fda914627a1ccc658c2bf2e0f56
+session_id: 6dd281c5-3b88-425b-953c-c02a0c81caea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-02T10:16:05.516Z

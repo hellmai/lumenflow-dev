@@ -4,7 +4,7 @@ _Last updated: 2026-03-02_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml)
 
 ## Completed
 
