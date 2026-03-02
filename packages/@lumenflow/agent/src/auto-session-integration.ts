@@ -20,8 +20,12 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from '
 import { join } from 'path';
 import { startSession as startMemorySession } from '@lumenflow/memory/start';
 import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
 
 const SESSION_FILENAME = 'current.json';
+const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+const CONTROL_PLANE_REGISTER_PATH = '/api/v1/sessions/register';
+const CONTROL_PLANE_DEREGISTER_PATH = '/api/v1/sessions/deregister';
 
 // Default context tier for auto-started sessions
 const DEFAULT_TIER: 1 | 2 | 3 = 2;
@@ -53,6 +57,116 @@ interface SessionFileData {
   auto_started?: boolean;
 }
 
+interface RegisterSessionInput {
+  workspace_id: string;
+  session_id: string;
+  agent_id: string;
+  started_at: string;
+  lane?: string;
+  wu_id?: string;
+}
+
+interface DeregisterSessionInput {
+  workspace_id: string;
+  session_id: string;
+  ended_at?: string;
+  reason?: string;
+}
+
+interface ControlPlaneSessionSyncPort {
+  registerSession(input: RegisterSessionInput): Promise<unknown>;
+  deregisterSession(input: DeregisterSessionInput): Promise<unknown>;
+}
+
+interface ResolvedControlPlaneSyncConfig {
+  workspaceId: string;
+  endpoint: string;
+  token: string;
+}
+
+interface WorkspaceControlPlaneDocument {
+  id?: unknown;
+  control_plane?: {
+    endpoint?: unknown;
+    auth?: {
+      token_env?: unknown;
+    };
+  };
+}
+
+function asNonEmptyString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function normalizeEndpoint(endpoint: string): string {
+  return endpoint.endsWith('/') ? endpoint.slice(0, endpoint.length - 1) : endpoint;
+}
+
+function resolveControlPlaneSessionSyncConfig(
+  workspaceRoot: string,
+  environment: NodeJS.ProcessEnv,
+): ResolvedControlPlaneSyncConfig | null {
+  const workspacePath = join(workspaceRoot, WORKSPACE_CONFIG_FILE);
+  if (!existsSync(workspacePath)) {
+    return null;
+  }
+
+  let parsedWorkspace: WorkspaceControlPlaneDocument | null;
+  try {
+    parsedWorkspace = parseYAML(readFileSync(workspacePath, { encoding: 'utf-8' })) as
+      | WorkspaceControlPlaneDocument
+      | null;
+  } catch {
+    return null;
+  }
+
+  const workspaceId = asNonEmptyString(parsedWorkspace?.id);
+  const endpoint = asNonEmptyString(parsedWorkspace?.control_plane?.endpoint);
+  const tokenEnv = asNonEmptyString(parsedWorkspace?.control_plane?.auth?.token_env);
+  if (!workspaceId || !endpoint || !tokenEnv) {
+    return null;
+  }
+
+  const token = asNonEmptyString(environment[tokenEnv]);
+  if (!token) {
+    return null;
+  }
+
+  try {
+    // Validate endpoint before creating outbound requests.
+    void new URL(endpoint);
+  } catch {
+    return null;
+  }
+
+  return {
+    workspaceId,
+    endpoint: normalizeEndpoint(endpoint),
+    token,
+  };
+}
+
+async function postControlPlaneSessionHook(
+  endpoint: string,
+  token: string,
+  path: string,
+  payload: object,
+  fetchFn: typeof fetch,
+): Promise<void> {
+  const response = await fetchFn(`${endpoint}${path}`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+}
+
 /**
  * Get the session file path for a given session directory
  * @param sessionDir - Session directory path
@@ -69,7 +183,12 @@ interface StartSessionOptions {
   wuId: string;
   tier?: 1 | 2 | 3;
   agentType?: string;
+  lane?: string;
   sessionDir?: string;
+  workspaceRoot?: string;
+  environment?: NodeJS.ProcessEnv;
+  controlPlaneSyncPort?: ControlPlaneSessionSyncPort;
+  fetchFn?: typeof fetch;
   baseDir?: string;
 }
 
@@ -99,7 +218,12 @@ export async function startSessionForWU(options: StartSessionOptions): Promise<S
     wuId,
     tier = DEFAULT_TIER,
     agentType = DEFAULT_AGENT_TYPE,
+    lane,
     sessionDir,
+    workspaceRoot = process.cwd(),
+    environment = process.env,
+    controlPlaneSyncPort,
+    fetchFn = fetch,
     baseDir = process.cwd(),
   } = options;
 
@@ -152,6 +276,36 @@ export async function startSessionForWU(options: StartSessionOptions): Promise<S
     // Session file was already created, so the session is functional
   }
 
+  // WU-2153: Optional control-plane session registration.
+  // Fail-open by design: session lifecycle must not be blocked by remote errors.
+  const controlPlaneConfig = resolveControlPlaneSessionSyncConfig(workspaceRoot, environment);
+  if (controlPlaneConfig) {
+    const registerInput: RegisterSessionInput = {
+      workspace_id: controlPlaneConfig.workspaceId,
+      session_id: sessionId,
+      agent_id: agentType,
+      started_at: session.started,
+      lane,
+      wu_id: wuId,
+    };
+
+    try {
+      if (controlPlaneSyncPort) {
+        await controlPlaneSyncPort.registerSession(registerInput);
+      } else {
+        await postControlPlaneSessionHook(
+          controlPlaneConfig.endpoint,
+          controlPlaneConfig.token,
+          CONTROL_PLANE_REGISTER_PATH,
+          registerInput,
+          fetchFn,
+        );
+      }
+    } catch {
+      // Fail-open: remote registration must not block wu:claim.
+    }
+  }
+
   return {
     sessionId,
     alreadyActive: false,
@@ -164,6 +318,10 @@ export async function startSessionForWU(options: StartSessionOptions): Promise<S
  */
 interface EndSessionOptions {
   sessionDir?: string;
+  workspaceRoot?: string;
+  environment?: NodeJS.ProcessEnv;
+  controlPlaneSyncPort?: ControlPlaneSessionSyncPort;
+  fetchFn?: typeof fetch;
 }
 
 /**
@@ -201,7 +359,13 @@ interface EndSessionResult {
  * @returns Session end result
  */
 export function endSessionForWU(options: EndSessionOptions = {}): EndSessionResult {
-  const { sessionDir } = options;
+  const {
+    sessionDir,
+    workspaceRoot = process.cwd(),
+    environment = process.env,
+    controlPlaneSyncPort,
+    fetchFn = fetch,
+  } = options;
 
   const sessDir = sessionDir ?? LUMENFLOW_PATHS.SESSIONS;
   const sessionFile = getSessionFilePath(sessDir);
@@ -234,6 +398,30 @@ export function endSessionForWU(options: EndSessionOptions = {}): EndSessionResu
 
   // Remove session file
   unlinkSync(sessionFile);
+
+  // WU-2153: Optional control-plane session deregistration.
+  // Fail-open by design: completion path must not block on remote errors.
+  const controlPlaneConfig = resolveControlPlaneSessionSyncConfig(workspaceRoot, environment);
+  if (controlPlaneConfig) {
+    const deregisterInput: DeregisterSessionInput = {
+      workspace_id: controlPlaneConfig.workspaceId,
+      session_id: session.session_id,
+      ended_at: session.completed,
+      reason: 'wu_done',
+    };
+
+    if (controlPlaneSyncPort) {
+      void controlPlaneSyncPort.deregisterSession(deregisterInput).catch(() => {});
+    } else {
+      void postControlPlaneSessionHook(
+        controlPlaneConfig.endpoint,
+        controlPlaneConfig.token,
+        CONTROL_PLANE_DEREGISTER_PATH,
+        deregisterInput,
+        fetchFn,
+      ).catch(() => {});
+    }
+  }
 
   return {
     ended: true,

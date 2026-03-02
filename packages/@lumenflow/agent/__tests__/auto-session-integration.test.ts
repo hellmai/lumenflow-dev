@@ -19,6 +19,25 @@ import {
 // Test directories
 const TEST_SESSION_DIR = '.lumenflow/sessions-test';
 const TEST_SESSION_FILE = join(TEST_SESSION_DIR, 'current.json');
+const TEST_WORKSPACE_DIR = '.lumenflow/workspace-test';
+const TEST_WORKSPACE_FILE = join(TEST_WORKSPACE_DIR, 'workspace.yaml');
+const CONTROL_PLANE_TOKEN_ENV = 'CONTROL_PLANE_TOKEN';
+
+function writeControlPlaneWorkspaceConfig(): void {
+  mkdirSync(TEST_WORKSPACE_DIR, { recursive: true });
+  writeFileSync(
+    TEST_WORKSPACE_FILE,
+    [
+      'id: ws-test',
+      'control_plane:',
+      '  endpoint: https://control.example.com',
+      '  auth:',
+      `    token_env: ${CONTROL_PLANE_TOKEN_ENV}`,
+      '',
+    ].join('\n'),
+    'utf8',
+  );
+}
 
 describe('Auto-Session Integration', () => {
   beforeEach(() => {
@@ -26,12 +45,18 @@ describe('Auto-Session Integration', () => {
     if (existsSync(TEST_SESSION_DIR)) {
       rmSync(TEST_SESSION_DIR, { recursive: true });
     }
+    if (existsSync(TEST_WORKSPACE_DIR)) {
+      rmSync(TEST_WORKSPACE_DIR, { recursive: true });
+    }
   });
 
   afterEach(() => {
     // Clean up test session directory
     if (existsSync(TEST_SESSION_DIR)) {
       rmSync(TEST_SESSION_DIR, { recursive: true });
+    }
+    if (existsSync(TEST_WORKSPACE_DIR)) {
+      rmSync(TEST_WORKSPACE_DIR, { recursive: true });
     }
     vi.restoreAllMocks();
   });
@@ -143,6 +168,147 @@ describe('Auto-Session Integration', () => {
 
       expect(result.ended).toBe(false);
       expect(result.reason).toBe('no_active_session');
+    });
+  });
+
+  describe('control-plane session lifecycle hooks (WU-2153)', () => {
+    it('registers a session on start when control_plane is configured', async () => {
+      writeControlPlaneWorkspaceConfig();
+      const registerSession = vi.fn().mockResolvedValue(undefined);
+
+      const result = await startSessionForWU({
+        wuId: 'WU-2153',
+        lane: 'Framework: Agent',
+        sessionDir: TEST_SESSION_DIR,
+        workspaceRoot: TEST_WORKSPACE_DIR,
+        environment: {
+          [CONTROL_PLANE_TOKEN_ENV]: 'token-value',
+        } as NodeJS.ProcessEnv,
+        controlPlaneSyncPort: {
+          registerSession,
+          deregisterSession: vi.fn().mockResolvedValue(undefined),
+        },
+      });
+
+      expect(result.sessionId).toBeDefined();
+      expect(registerSession).toHaveBeenCalledTimes(1);
+      expect(registerSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workspace_id: 'ws-test',
+          session_id: result.sessionId,
+          agent_id: 'claude-code',
+          lane: 'Framework: Agent',
+          wu_id: 'WU-2153',
+        }),
+      );
+    });
+
+    it('deregisters a session on end when control_plane is configured', async () => {
+      writeControlPlaneWorkspaceConfig();
+      const registerSession = vi.fn().mockResolvedValue(undefined);
+      const deregisterSession = vi.fn().mockResolvedValue(undefined);
+
+      const startResult = await startSessionForWU({
+        wuId: 'WU-2153',
+        sessionDir: TEST_SESSION_DIR,
+        workspaceRoot: TEST_WORKSPACE_DIR,
+        environment: {
+          [CONTROL_PLANE_TOKEN_ENV]: 'token-value',
+        } as NodeJS.ProcessEnv,
+        controlPlaneSyncPort: {
+          registerSession,
+          deregisterSession,
+        },
+      });
+
+      const endResult = endSessionForWU({
+        sessionDir: TEST_SESSION_DIR,
+        workspaceRoot: TEST_WORKSPACE_DIR,
+        environment: {
+          [CONTROL_PLANE_TOKEN_ENV]: 'token-value',
+        } as NodeJS.ProcessEnv,
+        controlPlaneSyncPort: {
+          registerSession,
+          deregisterSession,
+        },
+      });
+
+      expect(endResult.ended).toBe(true);
+      expect(deregisterSession).toHaveBeenCalledTimes(1);
+      expect(deregisterSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workspace_id: 'ws-test',
+          session_id: startResult.sessionId,
+          reason: 'wu_done',
+        }),
+      );
+    });
+
+    it('does not register or deregister when control_plane is not configured', async () => {
+      const registerSession = vi.fn().mockResolvedValue(undefined);
+      const deregisterSession = vi.fn().mockResolvedValue(undefined);
+
+      const startResult = await startSessionForWU({
+        wuId: 'WU-2153',
+        sessionDir: TEST_SESSION_DIR,
+        workspaceRoot: TEST_WORKSPACE_DIR,
+        environment: {} as NodeJS.ProcessEnv,
+        controlPlaneSyncPort: {
+          registerSession,
+          deregisterSession,
+        },
+      });
+
+      const endResult = endSessionForWU({
+        sessionDir: TEST_SESSION_DIR,
+        workspaceRoot: TEST_WORKSPACE_DIR,
+        environment: {} as NodeJS.ProcessEnv,
+        controlPlaneSyncPort: {
+          registerSession,
+          deregisterSession,
+        },
+      });
+
+      expect(startResult.sessionId).toBeDefined();
+      expect(endResult.ended).toBe(true);
+      expect(registerSession).not.toHaveBeenCalled();
+      expect(deregisterSession).not.toHaveBeenCalled();
+    });
+
+    it('fails open when remote register and deregister fail', async () => {
+      writeControlPlaneWorkspaceConfig();
+      const registerSession = vi.fn().mockRejectedValue(new Error('register failed'));
+      const deregisterSession = vi.fn().mockRejectedValue(new Error('deregister failed'));
+
+      const startResult = await startSessionForWU({
+        wuId: 'WU-2153',
+        sessionDir: TEST_SESSION_DIR,
+        workspaceRoot: TEST_WORKSPACE_DIR,
+        environment: {
+          [CONTROL_PLANE_TOKEN_ENV]: 'token-value',
+        } as NodeJS.ProcessEnv,
+        controlPlaneSyncPort: {
+          registerSession,
+          deregisterSession,
+        },
+      });
+
+      expect(startResult.sessionId).toBeDefined();
+      expect(existsSync(TEST_SESSION_FILE)).toBe(true);
+
+      expect(() =>
+        endSessionForWU({
+          sessionDir: TEST_SESSION_DIR,
+          workspaceRoot: TEST_WORKSPACE_DIR,
+          environment: {
+            [CONTROL_PLANE_TOKEN_ENV]: 'token-value',
+          } as NodeJS.ProcessEnv,
+          controlPlaneSyncPort: {
+            registerSession,
+            deregisterSession,
+          },
+        }),
+      ).not.toThrow();
     });
   });
 
