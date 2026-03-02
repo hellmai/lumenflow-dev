@@ -11,6 +11,7 @@
 import { z } from 'zod';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { RuntimeTaskToolNames } from '../tools/runtime-task-constants.js';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 
 vi.mock('../tools.js', () => ({
   registeredTools: [
@@ -218,11 +219,15 @@ async function createServerHarness(options: ServerHarnessOptions = {}) {
 }
 
 describe('MCP stdio handshake', () => {
+  let originalEnv: NodeJS.ProcessEnv;
+
   beforeEach(() => {
+    originalEnv = { ...process.env };
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    process.env = originalEnv;
     vi.restoreAllMocks();
   });
 
@@ -343,6 +348,22 @@ describe('MCP stdio handshake', () => {
         const server = createMcpServer({ logLevel: level });
         expect(server.config.logLevel).toBe(level);
       }
+    });
+
+    it('fails fast with actionable diagnostics when log level env is invalid', () => {
+      process.env[ENV_VARS.MCP_LOG_LEVEL] = 'verbose';
+
+      expect(() => createMcpServer()).toThrow(
+        /LUMENFLOW_MCP_LOG_LEVEL[\s\S]*Expected one of: debug, info, warn, error/,
+      );
+    });
+
+    it('fails fast with actionable diagnostics when project root env is empty', () => {
+      process.env[ENV_VARS.PROJECT_ROOT] = '';
+
+      expect(() => createMcpServer()).toThrow(
+        /LUMENFLOW_PROJECT_ROOT[\s\S]*Expected a non-empty value/,
+      );
     });
   });
 

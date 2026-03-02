@@ -164,3 +164,15 @@ export {
   type EnvVarKey,
   type EnvVarName,
 } from './wu-context-constants.js';
+
+// Startup environment schema validation utilities
+export {
+  STARTUP_ENV_POLICY,
+  parseEnumEnvValue,
+  parseNonEmptyEnvValue,
+  validateStartupEnvSchema,
+  type StartupEnvPolicy,
+  type StartupEnvSchema,
+  type StartupEnvSchemaField,
+  type StartupEnvValues,
+} from './startup-env-validation.js';

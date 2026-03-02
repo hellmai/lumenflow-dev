@@ -23,7 +23,13 @@ import {
   ListResourceTemplatesRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { ENV_VARS } from '@lumenflow/core/wu-constants';
+import {
+  ENV_VARS,
+  STARTUP_ENV_POLICY,
+  parseEnumEnvValue,
+  parseNonEmptyEnvValue,
+  validateStartupEnvSchema,
+} from '@lumenflow/core/wu-constants';
 import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { registeredTools, runtimeTaskTools } from './tools.js';
 import { staticResources, resourceTemplates, type ResourceDefinition } from './resources.js';
@@ -76,6 +82,9 @@ const REQUIRED_RUNTIME_TOOL_NAMES: readonly string[] = [
 ];
 
 const REQUIRED_RUNTIME_MISSING_PREFIX = 'Required runtime MCP tool(s) missing from registry';
+const MCP_STARTUP_CONTEXT = '@lumenflow/mcp startup';
+const DEFAULT_LOG_LEVEL: LogLevel = 'info';
+const MCP_LOG_LEVEL_VALUES = ['debug', 'info', 'warn', 'error'] as const;
 
 /**
  * Convert a Zod schema to JSON Schema format for MCP
@@ -105,9 +114,31 @@ function collectMissingTools(
  * await server.start();
  */
 export function createMcpServer(config: McpServerConfig = {}): McpServer {
+  const startupValues = validateStartupEnvSchema({
+    context: MCP_STARTUP_CONTEXT,
+    policy: STARTUP_ENV_POLICY.ERROR,
+    env: {
+      ...process.env,
+      [ENV_VARS.PROJECT_ROOT]: config.projectRoot ?? process.env[ENV_VARS.PROJECT_ROOT],
+      [ENV_VARS.MCP_LOG_LEVEL]: config.logLevel ?? process.env[ENV_VARS.MCP_LOG_LEVEL],
+    },
+    schema: {
+      projectRoot: {
+        envVar: ENV_VARS.PROJECT_ROOT,
+        defaultValue: process.cwd(),
+        parse: parseNonEmptyEnvValue('a non-empty value'),
+      },
+      logLevel: {
+        envVar: ENV_VARS.MCP_LOG_LEVEL,
+        defaultValue: DEFAULT_LOG_LEVEL,
+        parse: parseEnumEnvValue(MCP_LOG_LEVEL_VALUES),
+      },
+    },
+  });
+
   const resolvedConfig: Required<McpServerConfig> = {
-    projectRoot: config.projectRoot || process.env[ENV_VARS.PROJECT_ROOT] || process.cwd(),
-    logLevel: config.logLevel || (process.env[ENV_VARS.MCP_LOG_LEVEL] as LogLevel) || 'info',
+    projectRoot: startupValues.projectRoot,
+    logLevel: startupValues.logLevel as LogLevel,
   };
 
   const runtimeToolNames = new Set(runtimeTaskTools.map((tool) => tool.name));
