@@ -87,6 +87,9 @@ describe('control-plane sync adapter (WU-2152)', () => {
         read: false,
         wu_id: 'WU-2152',
         type: 'handoff',
+        sender: 'agent-local',
+        origin: 'local',
+        remote_id: 'sig-local01',
       } satisfies LocalSignal,
       {
         id: 'sig-remote01',
@@ -94,7 +97,10 @@ describe('control-plane sync adapter (WU-2152)', () => {
         created_at: '2026-03-02T00:00:01.000Z',
         read: false,
         wu_id: 'WU-2152',
+        type: 'handoff',
+        sender: 'agent-remote',
         origin: 'remote',
+        remote_id: 'sig-remote01',
       } satisfies LocalSignal,
     ]);
 
@@ -265,6 +271,10 @@ describe('control-plane sync adapter (WU-2152)', () => {
         message: 'local signal',
         created_at: '2026-03-02T00:00:00.000Z',
         read: false,
+        type: 'coordination',
+        sender: 'agent-local',
+        origin: 'local',
+        remote_id: 'sig-local-fail',
       } satisfies LocalSignal,
     ]);
 

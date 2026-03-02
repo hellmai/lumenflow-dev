@@ -6,8 +6,8 @@
  *
  * Acceptance Criteria:
  * 1. markSignalsAsRead appends receipts instead of rewriting signals.jsonl
- * 2. loadSignals derives effective read state from inline read:true and appended receipts
- * 3. signal cleanup remains correct and receipt-aware under mixed legacy/new data
+ * 2. loadSignals derives effective read state from strict records and appended receipts
+ * 3. signal cleanup remains correct and receipt-aware under mixed inline/receipt read states
  * 4. Concurrent read-marking tests demonstrate no lost updates
  */
 
@@ -101,11 +101,16 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
  * Create a test signal with specified properties
  */
 function createTestSignal(overrides: Partial<Signal> = {}): Signal {
+  const id = overrides.id ?? `sig-${Math.random().toString(16).slice(2, 10)}`;
   return {
-    id: `sig-${Math.random().toString(16).slice(2, 10)}`,
+    id,
     message: 'Test signal',
     created_at: new Date().toISOString(),
     read: false,
+    type: 'coordination',
+    sender: 'system',
+    origin: 'local',
+    remote_id: id,
     ...overrides,
   };
 }
@@ -221,14 +226,17 @@ describe('signal-receipts (WU-1472)', () => {
     });
   });
 
-  describe('AC2: loadSignals derives effective read state from inline read:true and receipts', () => {
-    it('should show signal as read when inline read:true is set (legacy data)', async () => {
-      const sig1 = createTestSignal({ id: 'sig-aaaaaaaa', read: true });
-      await writeSignalsFile(testDir, [sig1]);
+  describe('AC2: loadSignals derives effective read state from strict records and receipts', () => {
+    it('should fail explicitly for legacy records that omit strict metadata', async () => {
+      const legacySignal = {
+        id: 'sig-legacy1',
+        message: 'legacy signal',
+        created_at: new Date().toISOString(),
+        read: false,
+      } as Signal;
+      await writeSignalsFile(testDir, [legacySignal]);
 
-      const signals = await loadSignals(testDir);
-      expect(signals).toHaveLength(1);
-      expect(signals[0].read).toBe(true);
+      await expect(loadSignals(testDir)).rejects.toThrow(/legacy signal record is not supported/i);
     });
 
     it('should show signal as read when a receipt exists', async () => {
@@ -266,8 +274,8 @@ describe('signal-receipts (WU-1472)', () => {
       expect(unread[0].id).toBe('sig-bbbbbbbb');
     });
 
-    it('should handle mixed legacy (inline read) and receipt-based read state', async () => {
-      const sig1 = createTestSignal({ id: 'sig-aaaaaaaa', read: true }); // legacy inline
+    it('should handle mixed inline and receipt-based read state for strict records', async () => {
+      const sig1 = createTestSignal({ id: 'sig-aaaaaaaa', read: true }); // inline read
       const sig2 = createTestSignal({ id: 'sig-bbbbbbbb', read: false }); // receipt-based
       const sig3 = createTestSignal({ id: 'sig-cccccccc', read: false }); // unread
       await writeSignalsFile(testDir, [sig1, sig2, sig3]);
@@ -349,10 +357,10 @@ describe('signal-receipts (WU-1472)', () => {
       expect(remainingReceipts[0].signal_id).toBe('sig-aaaaaaaa');
     });
 
-    it('should handle cleanup with legacy inline read and new receipts mixed', async () => {
+    it('should handle cleanup with inline read and receipt-based read mixed', async () => {
       const sig1 = createTestSignal({
         id: 'sig-aaaaaaaa',
-        read: true, // legacy inline
+        read: true, // inline
         created_at: new Date(Date.now() - 10 * ONE_DAY_MS).toISOString(),
       });
       const sig2 = createTestSignal({

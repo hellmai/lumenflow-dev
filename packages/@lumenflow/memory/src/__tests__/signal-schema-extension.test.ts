@@ -16,7 +16,7 @@ async function writeSignals(baseDir: string, records: unknown[]): Promise<void> 
   await fs.writeFile(signalsPath, `${lines}${lines ? '\n' : ''}`, 'utf-8');
 }
 
-describe('signal schema extension (WU-2146)', () => {
+describe('signal contract enforcement (WU-2291)', () => {
   const tempRoots: string[] = [];
 
   afterEach(async () => {
@@ -24,7 +24,7 @@ describe('signal schema extension (WU-2146)', () => {
     tempRoots.length = 0;
   });
 
-  it('parses legacy signals without the new metadata fields', async () => {
+  it('fails explicitly on legacy signals that omit strict metadata fields', async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), 'signal-schema-extension-'));
     tempRoots.push(root);
 
@@ -38,14 +38,34 @@ describe('signal schema extension (WU-2146)', () => {
       },
     ]);
 
-    const signals = await loadSignals(root, { wuId: 'WU-2146' });
-
-    expect(signals).toHaveLength(1);
-    expect(signals[0]?.id).toBe('sig-legacy1');
-    expect(signals[0]?.message).toBe('legacy signal');
+    await expect(loadSignals(root, { wuId: 'WU-2146' })).rejects.toThrow(
+      /legacy signal record is not supported/i,
+    );
   });
 
-  it('round-trips extended metadata fields through create/load JSONL flow', async () => {
+  it('writes canonical strict metadata defaults for local signals', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'signal-schema-extension-'));
+    tempRoots.push(root);
+
+    const created = await createSignal(root, {
+      message: 'local signal without explicit metadata',
+      wuId: 'WU-2146',
+    });
+
+    expect(created.signal.type).toBe('coordination');
+    expect(created.signal.sender).toBe('system');
+    expect(created.signal.origin).toBe('local');
+    expect(created.signal.remote_id).toBe(created.signal.id);
+
+    const loaded = await loadSignals(root, { wuId: 'WU-2146' });
+    expect(loaded).toHaveLength(1);
+    expect(loaded[0]?.type).toBe('coordination');
+    expect(loaded[0]?.sender).toBe('system');
+    expect(loaded[0]?.origin).toBe('local');
+    expect(loaded[0]?.remote_id).toBe(loaded[0]?.id);
+  });
+
+  it('round-trips explicit metadata fields through create/load JSONL flow', async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), 'signal-schema-extension-'));
     tempRoots.push(root);
 

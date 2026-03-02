@@ -69,7 +69,15 @@ const SIGNAL_ID_LENGTH = 8;
 const ERROR_MESSAGES = {
   MESSAGE_REQUIRED: 'message is required and cannot be empty',
   INVALID_WU_ID: 'Invalid WU ID format. Expected WU-XXX (e.g., WU-1473)',
+  INVALID_SIGNAL_METADATA: 'Signal metadata fields must be non-empty strings when provided',
+  LEGACY_SIGNAL_RECORD:
+    'Legacy signal record is not supported by the strict signal contract. Migrate records before loading signals.',
+  INVALID_SIGNAL_RECORD: 'Invalid signal record in signals.jsonl',
 };
+
+const DEFAULT_SIGNAL_TYPE = 'coordination';
+const DEFAULT_SIGNAL_SENDER = 'system';
+const DEFAULT_SIGNAL_ORIGIN = 'local';
 
 /**
  * Signal structure
@@ -129,6 +137,80 @@ export interface CreateSignalOptions {
   origin?: string;
   /** Remote signal ID for cross-system correlation */
   remote_id?: string;
+}
+
+function normalizeOptionalString(value: string | undefined, fieldName: string): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const normalized = value.trim();
+  if (normalized.length === 0) {
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `${ERROR_MESSAGES.INVALID_SIGNAL_METADATA}: ${fieldName}`,
+    );
+  }
+  return normalized;
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function parseStrictSignalRecord(line: string, lineNumber: number): Signal {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(line);
+  } catch {
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `${ERROR_MESSAGES.INVALID_SIGNAL_RECORD} at line ${lineNumber}`,
+    );
+  }
+
+  if (typeof parsed !== 'object' || parsed === null) {
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `${ERROR_MESSAGES.INVALID_SIGNAL_RECORD} at line ${lineNumber}`,
+    );
+  }
+
+  const candidate = parsed as Partial<Signal>;
+  if (
+    !isNonEmptyString(candidate.id) ||
+    !isNonEmptyString(candidate.message) ||
+    !isNonEmptyString(candidate.created_at) ||
+    typeof candidate.read !== 'boolean'
+  ) {
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `${ERROR_MESSAGES.INVALID_SIGNAL_RECORD} at line ${lineNumber}`,
+    );
+  }
+
+  if (
+    !isNonEmptyString(candidate.type) ||
+    !isNonEmptyString(candidate.sender) ||
+    !isNonEmptyString(candidate.origin) ||
+    !isNonEmptyString(candidate.remote_id)
+  ) {
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `${ERROR_MESSAGES.LEGACY_SIGNAL_RECORD} (line ${lineNumber})`,
+    );
+  }
+
+  return {
+    ...candidate,
+    id: candidate.id,
+    message: candidate.message,
+    created_at: candidate.created_at,
+    read: candidate.read,
+    type: candidate.type,
+    sender: candidate.sender,
+    origin: candidate.origin,
+    remote_id: candidate.remote_id,
+  };
 }
 
 /**
@@ -275,13 +357,25 @@ export async function createSignal(
     throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.INVALID_WU_ID);
   }
 
+  const normalizedType = normalizeOptionalString(type, 'type') ?? DEFAULT_SIGNAL_TYPE;
+  const normalizedSender = normalizeOptionalString(sender, 'sender') ?? DEFAULT_SIGNAL_SENDER;
+  const normalizedTargetAgent = normalizeOptionalString(target_agent, 'target_agent');
+  const normalizedOrigin = normalizeOptionalString(origin, 'origin') ?? DEFAULT_SIGNAL_ORIGIN;
+  const normalizedRemoteId = normalizeOptionalString(remote_id, 'remote_id');
+
   // Build signal object
   const signal: Signal = {
     id: generateSignalId(),
     message: message.trim(),
     created_at: new Date().toISOString(),
     read: false,
+    type: normalizedType,
+    sender: normalizedSender,
+    origin: normalizedOrigin,
+    remote_id: '',
   };
+
+  signal.remote_id = normalizedRemoteId ?? signal.id;
 
   // Add optional fields
   if (wuId) {
@@ -290,20 +384,8 @@ export async function createSignal(
   if (lane) {
     signal.lane = lane;
   }
-  if (type) {
-    signal.type = type;
-  }
-  if (sender) {
-    signal.sender = sender;
-  }
-  if (target_agent) {
-    signal.target_agent = target_agent;
-  }
-  if (origin) {
-    signal.origin = origin;
-  }
-  if (remote_id) {
-    signal.remote_id = remote_id;
+  if (normalizedTargetAgent) {
+    signal.target_agent = normalizedTargetAgent;
   }
 
   // Ensure memory directory exists
@@ -366,7 +448,7 @@ export async function loadSignals(
 
   // Parse JSONL content
   const lines = content.split('\n').filter((line) => line.trim());
-  const signals: Signal[] = lines.map((line) => JSON.parse(line));
+  const signals = lines.map((line, index) => parseStrictSignalRecord(line, index + 1));
 
   // Merge receipt-based read state (WU-1472)
   const receiptIds = await loadReceiptIds(baseDir);

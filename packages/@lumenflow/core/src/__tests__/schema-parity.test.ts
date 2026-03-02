@@ -943,6 +943,17 @@ describe('Memory Command Schemas (WU-1456)', () => {
       expect(result.data?.origin).toBe('mcp');
       expect(result.data?.remote_id).toBe('remote-123');
     });
+
+    it('should reject partial metadata payloads (strict metadata contract)', () => {
+      const input = {
+        message: 'partial metadata',
+        wu: 'WU-1234',
+        type: 'handoff',
+        sender: 'agent-a',
+      };
+      const result = memSignalSchema.safeParse(input);
+      expect(result.success).toBe(false);
+    });
   });
 
   describe('memSummarizeSchema', () => {

@@ -226,7 +226,7 @@ export type MemInboxInput = z.infer<typeof memInboxSchema>;
  * Schema for mem:signal command
  *
  * Required: message, wu
- * Optional: type, sender, target_agent, origin, remote_id
+ * Optional metadata fields must be supplied as a complete set.
  */
 export const memSignalSchema = z.object({
   message: z.string().describe('Signal message'),
@@ -236,6 +236,19 @@ export const memSignalSchema = z.object({
   target_agent: z.string().optional().describe('Target agent identifier'),
   origin: z.string().optional().describe('Signal origin context (e.g., cli, mcp, remote)'),
   remote_id: z.string().optional().describe('Remote signal ID for cross-system correlation'),
+}).superRefine((input, ctx) => {
+  const metadataValues = [input.type, input.sender, input.target_agent, input.origin, input.remote_id];
+  const providedCount = metadataValues.filter(
+    (value) => typeof value === 'string' && value.trim().length > 0,
+  ).length;
+
+  if (providedCount > 0 && providedCount < metadataValues.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message:
+        'Partial signal metadata is not allowed. Provide all metadata fields: type, sender, target_agent, origin, remote_id.',
+    });
+  }
 });
 
 export type MemSignalInput = z.infer<typeof memSignalSchema>;
