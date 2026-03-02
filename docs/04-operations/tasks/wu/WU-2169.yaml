@@ -2,7 +2,7 @@ id: WU-2169
 title: Add domain-scoped core barrel exports
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -49,3 +49,6 @@ session_id: 42e9c376-dc2d-4db9-91d8-237b26faaba0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-02T13:32:12.358Z
+locked: true
+completed_at: 2026-03-02T13:38:25.534Z
+completed: 2026-03-02

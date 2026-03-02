@@ -13,7 +13,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 2: Domain-scoped barrel introduction'
-    status: pending
+    status: done
   - id: 3
     title: 'Phase 3: Consumer migration and root-barrel deprecation path'
     status: pending
