@@ -2,7 +2,7 @@ id: WU-2294
 title: 'Fix doc parity: stale commands, broken links, missing steps across all consumer-facing docs'
 lane: 'Operations: Tooling'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-02
 code_paths: []
@@ -43,3 +43,6 @@ session_id: 6dd281c5-3b88-425b-953c-c02a0c81caea
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-02T12:03:38.036Z
+locked: true
+completed_at: 2026-03-02T12:21:14.515Z
+completed: 2026-03-02

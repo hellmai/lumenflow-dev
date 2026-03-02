@@ -2652,3 +2652,5 @@
 {"type":"checkpoint","wuId":"WU-2294","timestamp":"2026-03-02T12:03:46.651Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2294","timestamp":"2026-03-02T12:14:16.548Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2292","timestamp":"2026-03-02T12:14:58.357Z"}
+{"type":"checkpoint","wuId":"WU-2294","timestamp":"2026-03-02T12:21:13.253Z","note":"[wu:done] force ownership override claimed_session=6dd281c5-3b88-425b-953c-c02a0c81caea active_session=none","progress":"wu:done ownership override","nextSteps":"Continuation of same user session after context compaction"}
+{"type":"complete","wuId":"WU-2294","timestamp":"2026-03-02T12:21:18.873Z"}
