@@ -2,7 +2,7 @@ id: WU-2176
 title: Document validator boundaries and ownership
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-25
 code_paths:
@@ -38,3 +38,6 @@ description: Document ownership and boundaries across validator modules and clar
   validation concern belongs.
 acceptance:
   - Validator boundary documentation is published and linked for maintainers.
+locked: true
+completed_at: 2026-03-02T14:47:52.557Z
+completed: 2026-03-02

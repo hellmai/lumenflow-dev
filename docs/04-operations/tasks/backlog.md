@@ -28,7 +28,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1241,6 +1241,7 @@ sections:
 - [WU-2172 — Migrate remaining raw env reads to ENV_VARS](wu/WU-2172.yaml)
 - [WU-2173 — Add startup environment schema validation](wu/WU-2173.yaml)
 - [WU-2174 — Introduce getEnv and requireEnv accessors](wu/WU-2174.yaml)
+- [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
