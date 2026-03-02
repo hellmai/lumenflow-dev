@@ -162,10 +162,7 @@ import { hasSessionCheckpoints } from '@lumenflow/core/wu-done-worktree';
 // WU-1603: Atomic lane locking - release lock on WU completion
 import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 // WU-1747: Checkpoint and lock for concurrent load resilience
-import {
-  canSkipGates,
-  clearCheckpoint,
-} from '@lumenflow/core/wu-checkpoint';
+import { canSkipGates, clearCheckpoint } from '@lumenflow/core/wu-checkpoint';
 // WU-1946: Spawn registry for tracking sub-agent spawns
 import { DelegationRegistryStore } from '@lumenflow/core/delegation-registry-store';
 import { DelegationStatus } from '@lumenflow/core/delegation-registry-schema';

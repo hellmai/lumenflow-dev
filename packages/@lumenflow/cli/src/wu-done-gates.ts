@@ -7,7 +7,11 @@ import path from 'node:path';
 import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
 import { resolveWuEventsRelativePath } from './state-path-resolvers.js';
-import { canSkipGates, createPreGatesCheckpoint as createWU1747Checkpoint, markGatesPassed } from '@lumenflow/core/wu-checkpoint';
+import {
+  canSkipGates,
+  createPreGatesCheckpoint as createWU1747Checkpoint,
+  markGatesPassed,
+} from '@lumenflow/core/wu-checkpoint';
 import { printGateFailureBox } from '@lumenflow/core/wu-done-ui';
 import {
   CHECKPOINT_MESSAGES,
@@ -172,7 +176,15 @@ export interface ExecuteGatesResult {
  * WU-2165: Gate orchestration extracted from wu-done.ts.
  */
 export async function executeGates(
-  { id, args, isBranchOnly, isDocsOnly, worktreePath, branchName, scopedTestPaths }: ExecuteGatesParams,
+  {
+    id,
+    args,
+    isBranchOnly,
+    isDocsOnly,
+    worktreePath,
+    branchName,
+    scopedTestPaths,
+  }: ExecuteGatesParams,
   dependencies: ExecuteGatesDependencies,
 ): Promise<ExecuteGatesResult> {
   const gateResult: ExecuteGatesResult = {
@@ -376,4 +388,3 @@ export async function executeGates(
   markGatesPassed(id, { baseDir: worktreePath || undefined });
   return gateResult;
 }
-

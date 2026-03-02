@@ -14,4 +14,3 @@ describe('WU-2165: gate orchestration extraction', () => {
     expect(source).not.toContain('function checkNodeModulesStaleness(');
   });
 });
-
