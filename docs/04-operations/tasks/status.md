@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-03-01_
+_Last updated: 2026-03-02_
 
 ## In Progress
 
-- [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1194,3 +1194,4 @@ _Last updated: 2026-03-01_
 - [WU-2151 — Mock signal and memory sync adapter for testing](wu/WU-2151.yaml) — 2026-03-01
 - [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml) — 2026-03-01
 - [WU-2290 — Block wu:edit from main for in-progress worktree WUs](wu/WU-2290.yaml) — 2026-03-01
+- [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml) — 2026-03-02

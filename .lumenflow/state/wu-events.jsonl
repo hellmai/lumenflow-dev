@@ -2632,3 +2632,4 @@
 {"type":"complete","wuId":"WU-2290","timestamp":"2026-03-01T23:45:53.698Z"}
 {"type":"claim","wuId":"WU-2152","timestamp":"2026-03-01T23:51:52.430Z","lane":"Framework: Memory","title":"Local JSONL to control-plane sync adapter"}
 {"type":"checkpoint","wuId":"WU-2152","timestamp":"2026-03-02T00:03:43.956Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"complete","wuId":"WU-2152","timestamp":"2026-03-02T00:04:37.155Z"}
