@@ -99,7 +99,7 @@ done
 CURRENT_BRANCH=$(git -C "$MAIN_REPO_PATH" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 
 # Check if branch is an agent branch using shared helper
-# This reads .lumenflow.config.yaml for agentBranchPatterns (single source of truth)
+# This reads workspace.yaml for agentBranchPatterns (single source of truth)
 # Prerequisite: @lumenflow/core must be built (pnpm build)
 if [[ -n "$IS_AGENT_BRANCH_CLI" ]] && [[ -n "$CURRENT_BRANCH" ]]; then
   if node "$IS_AGENT_BRANCH_CLI" "$CURRENT_BRANCH" 2>/dev/null; then

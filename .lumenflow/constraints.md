@@ -162,7 +162,7 @@ If you see something broken on main (failing gates, format issues, typos, lint e
 
 **Enforcement:**
 
-- Before claiming a WU, verify that the WU's `code_paths` align with the claimed lane's `code_paths` in `.lumenflow.config.yaml`
+- Before claiming a WU, verify that the WU's `code_paths` align with the claimed lane's `code_paths` in `workspace.yaml`
 - If a WU's scope expands beyond its lane's boundaries (e.g., a "Content: Documentation" WU that also modifies CLI code), propose a lane change or split the WU
 - During initiative planning, ensure each WU is assigned to the lane whose `code_paths` cover the majority of the work
 - Use `pnpm lane:suggest --paths "..."` to get lane recommendations for ambiguous scoping
@@ -179,21 +179,21 @@ If you see something broken on main (failing gates, format issues, typos, lint e
 
 ### 9. YAML Files Must Be Modified via CLI Tooling Only (WU-1907)
 
-**Rule:** Never use raw Write/Edit tools to modify `.lumenflow.config.yaml` or WU YAML specification files. Always use the dedicated CLI commands.
+**Rule:** Never use raw Write/Edit tools to modify `workspace.yaml` or WU YAML specification files. Always use the dedicated CLI commands.
 
 **Safe commands:**
 
-| File                     | Command                     | Example                                                        |
-| ------------------------ | --------------------------- | -------------------------------------------------------------- |
-| `.lumenflow.config.yaml` | `pnpm config:set`           | `pnpm config:set --key methodology.testing --value test-after` |
-| `.lumenflow.config.yaml` | `pnpm config:get` (read)    | `pnpm config:get --key methodology.testing`                    |
-| WU YAML specs            | `pnpm wu:edit`              | `pnpm wu:edit --id WU-XXX --description "..."`                 |
-| WU YAML specs            | `pnpm wu:create` (creation) | `pnpm wu:create --lane "Framework: Core" --title "..."`        |
+| File             | Command                     | Example                                                        |
+| ---------------- | --------------------------- | -------------------------------------------------------------- |
+| `workspace.yaml` | `pnpm config:set`           | `pnpm config:set --key methodology.testing --value test-after` |
+| `workspace.yaml` | `pnpm config:get` (read)    | `pnpm config:get --key methodology.testing`                    |
+| WU YAML specs    | `pnpm wu:edit`              | `pnpm wu:edit --id WU-XXX --description "..."`                 |
+| WU YAML specs    | `pnpm wu:create` (creation) | `pnpm wu:create --lane "Framework: Core" --title "..."`        |
 
 **Blocked operations:**
 
-- `Write(.lumenflow.config.yaml, ...)` -- use `pnpm config:set` instead
-- `Edit(.lumenflow.config.yaml, ...)` -- use `pnpm config:set` instead
+- `Write(workspace.yaml, ...)` -- use `pnpm config:set` instead
+- `Edit(workspace.yaml, ...)` -- use `pnpm config:set` instead
 - `Write(docs/04-operations/tasks/wu/WU-XXX.yaml, ...)` -- use `pnpm wu:edit` instead
 - `Edit(docs/04-operations/tasks/wu/WU-XXX.yaml, ...)` -- use `pnpm wu:edit` instead
 

@@ -12,14 +12,14 @@ This document defines the mandatory policy for modifying YAML configuration file
 
 This applies to:
 
-- `.lumenflow.config.yaml` (project configuration)
+- `workspace.yaml` (project configuration — the sole config contract)
 - `docs/04-operations/tasks/wu/*.yaml` (WU specification files)
 
 ---
 
 ## Safe Commands
 
-### For .lumenflow.config.yaml
+### For workspace.yaml
 
 | Operation       | Safe Command                                 | Example                                                                          |
 | --------------- | -------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -46,16 +46,16 @@ The following operations are policy violations:
 
 ```bash
 # WRONG: Raw-editing config
-Write(.lumenflow.config.yaml, "...")
-Edit(.lumenflow.config.yaml, old, new)
+Write(workspace.yaml, "...")
+Edit(workspace.yaml, old, new)
 
 # WRONG: Raw-editing WU YAML
 Write(docs/04-operations/tasks/wu/WU-123.yaml, "...")
 Edit(docs/04-operations/tasks/wu/WU-123.yaml, old, new)
 
 # WRONG: Using Bash to edit YAML
-sed -i 's/old/new/' .lumenflow.config.yaml
-echo "key: value" >> .lumenflow.config.yaml
+sed -i 's/old/new/' workspace.yaml
+echo "key: value" >> workspace.yaml
 ```
 
 **Exception:** Reading YAML files with the Read tool is acceptable for inspection purposes. The restriction applies only to writes.
@@ -103,7 +103,7 @@ Raw edits frequently introduce type mismatches (e.g., YAML string `"true"` vs. b
 
 **Current:** This policy is enforced via Constraint 9 in `.lumenflow/constraints.md` and this rule document. Agents are expected to follow the policy based on onboarding documentation and spawn prompt injection.
 
-**Future:** A dedicated enforcement hook will block raw Write/Edit operations to `.lumenflow.config.yaml` at the tool level, redirecting agents to `config:set` with a clear error message.
+**Future:** A dedicated enforcement hook will block raw Write/Edit operations to `workspace.yaml` at the tool level, redirecting agents to `config:set` with a clear error message.
 
 ---
 

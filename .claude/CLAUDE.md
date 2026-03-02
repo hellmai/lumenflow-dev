@@ -83,16 +83,16 @@ Available agents in `.claude/agents/`:
 
 ## Safe YAML Modification (Constraint 9)
 
-**Never use Write or Edit tools to modify `.lumenflow.config.yaml` or WU YAML files.**
+**Never use Write or Edit tools to modify `workspace.yaml` or WU YAML files.**
 
 Claude Code has tool-level hooks (PreToolUse) that validate worktree paths, but YAML config files are in the allowlist. This means Write/Edit to these files is not blocked by hooks -- you must follow the policy voluntarily.
 
-| File                     | Safe Command                                 | Do NOT Use           |
-| ------------------------ | -------------------------------------------- | -------------------- |
-| `.lumenflow.config.yaml` | `pnpm config:set --key <path> --value <val>` | Write/Edit tools     |
-| `.lumenflow.config.yaml` | `pnpm config:get --key <path>` (read)        | --                   |
-| WU YAML specs            | `pnpm wu:edit --id WU-XXX --field value`     | Write/Edit tools     |
-| WU YAML specs            | `pnpm wu:create ...` (creation)              | Write to create YAML |
+| File            | Safe Command                                 | Do NOT Use           |
+| --------------- | -------------------------------------------- | -------------------- |
+| `workspace.yaml`| `pnpm config:set --key <path> --value <val>` | Write/Edit tools     |
+| `workspace.yaml`| `pnpm config:get --key <path>` (read)        | --                   |
+| WU YAML specs   | `pnpm wu:edit --id WU-XXX --field value`     | Write/Edit tools     |
+| WU YAML specs   | `pnpm wu:create ...` (creation)              | Write to create YAML |
 
 **Exception:** Reading YAML files with the Read tool is acceptable.
 

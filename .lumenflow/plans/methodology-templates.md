@@ -67,7 +67,7 @@ Recommendation:
 ## Config Schema (v1)
 
 ```yaml
-# .lumenflow.config.yaml
+# workspace.yaml
 methodology:
   testing: 'tdd' # tdd | test-after | none
   architecture: 'hexagonal' # hexagonal | layered | none

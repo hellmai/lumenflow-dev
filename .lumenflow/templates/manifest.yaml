@@ -9,7 +9,7 @@
 #
 # Methodology Templates (WU-1260):
 #   Templates in methodology/ and architecture/ are selected based on
-#   resolved policy from .lumenflow.config.yaml methodology settings.
+#   resolved policy from workspace.yaml methodology settings.
 #   Conditions use policy.testing and policy.architecture context values.
 
 version: '1.0'

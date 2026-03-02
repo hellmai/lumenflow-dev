@@ -38,7 +38,7 @@ Blocked actions are logged to:
 
 ## Safe YAML Modification (Constraint 9)
 
-Never use file-editing tools to modify `.lumenflow.config.yaml` or WU YAML files directly.
+Never use file-editing tools to modify `workspace.yaml` or WU YAML files directly.
 
 Cursor does not have tool-level hooks like Claude Code. Your only enforcement for file writes
 comes from git hooks at commit time (pre-commit, pre-push). YAML config files are in the

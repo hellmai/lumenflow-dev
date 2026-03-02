@@ -99,5 +99,5 @@ All agents must load and verify against `.lumenflow/constraints.md` before start
 ## Related
 
 - `.claude/skills/` — Domain expertise and validation checklists
-- `.lumenflow.config.yaml` — Agent configuration
+- `workspace.yaml` — Agent configuration
 - `pnpm wu:brief` / `pnpm wu:delegate` — Generate agent prompts
