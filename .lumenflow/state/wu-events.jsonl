@@ -2663,3 +2663,5 @@
 {"type":"checkpoint","wuId":"WU-2295","timestamp":"2026-03-02T12:31:31.570Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2295","timestamp":"2026-03-02T12:36:05.164Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2295.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2295","timestamp":"2026-03-02T12:36:41.288Z"}
+{"type":"checkpoint","wuId":"WU-2165","timestamp":"2026-03-02T12:41:44.510Z","note":"[wu:done] force ownership override claimed_session=6dd281c5-3b88-425b-953c-c02a0c81caea active_session=none","progress":"wu:done ownership override","nextSteps":"orphan recovery: same operator resuming claimed WU after interrupted session"}
+{"type":"complete","wuId":"WU-2165","timestamp":"2026-03-02T12:41:50.062Z"}
