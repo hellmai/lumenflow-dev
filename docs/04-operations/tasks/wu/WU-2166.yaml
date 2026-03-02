@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/telemetry.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:prep --id WU-2166 and verify gates pass with no behavior change in wu:done flow
+    - Run pnpm wu:done --id WU-2166 in a dry recovery session and verify checkpoint/telemetry logs
+      still emit expected messages
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
   e2e: []
