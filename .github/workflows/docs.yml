@@ -45,17 +45,17 @@ jobs:
           path: apps/docs/dist
           if-no-files-found: error
 
-      - name: Deploy docs to Vercel
-        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
+      - name: Deploy docs to Vercel (optional)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "Skipping deploy because Vercel secrets are not fully configured."
+            exit 0
+          fi
+
           pnpm dlx vercel pull --yes --environment=production --cwd apps/docs --token "$VERCEL_TOKEN"
           pnpm dlx vercel build --prod --cwd apps/docs --token "$VERCEL_TOKEN"
           pnpm dlx vercel deploy --prebuilt --prod --cwd apps/docs --token "$VERCEL_TOKEN"
-
-      - name: Skip Vercel deploy (missing secrets)
-        if: ${{ secrets.VERCEL_TOKEN == '' || secrets.VERCEL_ORG_ID == '' || secrets.VERCEL_PROJECT_ID == '' }}
-        run: echo "Skipping deploy because Vercel secrets are not fully configured."
