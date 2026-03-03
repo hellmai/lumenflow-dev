@@ -6,11 +6,11 @@ status: ready
 priority: P1
 created: 2026-03-03
 code_paths:
-  - packages/@lumenflow/packs/sidekick/tool-impl/**
+  - packages/@lumenflow/packs/sidekick/tool-impl
   - packages/@lumenflow/packs/sidekick/manifest.ts
   - packages/@lumenflow/packs/sidekick/manifest.yaml
   - packages/@lumenflow/packs/sidekick/package.json
-  - packages/@lumenflow/packs/sidekick/__tests__/**
+  - packages/@lumenflow/packs/sidekick/__tests__
 tests:
   manual:
     - Run provider path with registered transport and verify deterministic unregistered-provider

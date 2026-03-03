@@ -2746,3 +2746,4 @@
 {"type":"complete","wuId":"WU-2304","timestamp":"2026-03-03T15:18:00.793Z"}
 {"type":"claim","wuId":"WU-2305","timestamp":"2026-03-03T17:24:26.670Z","lane":"Framework: Core Lifecycle","title":"Move channel provider routing into Sidekick pack"}
 {"type":"checkpoint","wuId":"WU-2305","timestamp":"2026-03-03T17:30:53.069Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2305.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"checkpoint","wuId":"WU-2305","timestamp":"2026-03-03T17:37:29.421Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2305.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
