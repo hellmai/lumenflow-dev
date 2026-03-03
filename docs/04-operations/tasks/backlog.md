@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1254,6 +1254,7 @@ sections:
 - [WU-2305 — Move channel provider routing into Sidekick pack](wu/WU-2305.yaml)
 - [WU-2306 — Align wu:claim guidance with wu:prep -> wu:done workflow](wu/WU-2306.yaml)
 - [WU-2307 — Audit and align LumenFlow commands/kernel/pack docs](wu/WU-2307.yaml)
+- [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

@@ -2,7 +2,7 @@ id: WU-2308
 title: Fix normalizeSteps silent drop of string steps in routine:create
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-03
 code_paths:
@@ -41,3 +41,6 @@ acceptance:
   - 'String step entries are coerced to {tool: str, input: {}}'
   - Invalid entries produce indexed validation errors instead of silent drop
   - Tests cover all-string, mixed, and empty-after-normalization cases
+locked: true
+completed_at: 2026-03-03T20:25:11.148Z
+completed: 2026-03-03

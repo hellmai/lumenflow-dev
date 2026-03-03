@@ -4,7 +4,7 @@ _Last updated: 2026-03-03_
 
 ## In Progress
 
-- [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1228,3 +1228,4 @@ _Last updated: 2026-03-03_
 - [WU-2305 — Move channel provider routing into Sidekick pack](wu/WU-2305.yaml) — 2026-03-03
 - [WU-2306 — Align wu:claim guidance with wu:prep -> wu:done workflow](wu/WU-2306.yaml) — 2026-03-03
 - [WU-2307 — Audit and align LumenFlow commands/kernel/pack docs](wu/WU-2307.yaml) — 2026-03-03
+- [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml) — 2026-03-03
