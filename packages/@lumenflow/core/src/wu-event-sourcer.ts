@@ -16,6 +16,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import type { WUStateIndexer } from './wu-state-indexer.js';
 import { getErrorMessage, createError, ErrorCodes } from './error-handler.js';
@@ -34,6 +35,15 @@ export interface WuBriefEvidence {
 }
 
 const WU_BRIEF_HASH_CAPTURE_REGEX = /(?:^|[;\s])hash=([a-f0-9]{64})(?=$|[;\s])/;
+
+function hashesEqualTimingSafe(left: string, right: string): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+  const leftBuffer = Buffer.from(left, 'utf8');
+  const rightBuffer = Buffer.from(right, 'utf8');
+  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
+}
 
 /**
  * Returns true when a checkpoint note represents wu:brief evidence.
@@ -196,7 +206,7 @@ export function hasWuBriefEvidenceHash(
       continue;
     }
     const hash = extractWuBriefEvidenceHash(event.nextSteps);
-    if (hash === expectedHash) {
+    if (hash && hashesEqualTimingSafe(hash, expectedHash)) {
       return true;
     }
   }

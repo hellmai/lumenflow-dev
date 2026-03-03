@@ -792,7 +792,7 @@ export async function enforceSpawnProvenanceForDone(
       return;
     }
 
-    let hashMatchesEvidence = false;
+    let hashMatchesEvidence: boolean;
     try {
       hashMatchesEvidence = await hasMatchingWuBriefEvidenceHash(stateDir, id, attestedPromptHash);
     } catch (error) {
