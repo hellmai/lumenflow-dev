@@ -16,6 +16,7 @@
 
 import { Command } from 'commander';
 import { DelegationRegistryStore } from './delegation-registry-store.js';
+import type { DelegationBriefAttestation } from './delegation-registry-schema.js';
 import { ProcessExitError, createError, ErrorCodes } from './error-handler.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from './wu-constants.js';
 
@@ -255,13 +256,25 @@ const LOG_PREFIX = '[wu:spawn]';
  * }
  */
 export async function recordSpawnToRegistry(options: UnsafeAny) {
-  const { parentWuId, targetWuId, lane, baseDir = LUMENFLOW_PATHS.STATE_DIR } = options;
+  const {
+    parentWuId,
+    targetWuId,
+    lane,
+    baseDir = LUMENFLOW_PATHS.STATE_DIR,
+    briefAttestation,
+  }: {
+    parentWuId: string;
+    targetWuId: string;
+    lane: string;
+    baseDir?: string;
+    briefAttestation?: DelegationBriefAttestation;
+  } = options;
 
   try {
     const store = new DelegationRegistryStore(baseDir);
     await store.load();
 
-    const spawnId = await store.record(parentWuId, targetWuId, lane);
+    const spawnId = await store.record(parentWuId, targetWuId, lane, undefined, briefAttestation);
 
     return {
       success: true,

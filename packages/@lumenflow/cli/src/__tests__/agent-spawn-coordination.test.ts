@@ -626,6 +626,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should pass when spawn registry entry includes pickup evidence for initiative-governed WU', async () => {
         process.chdir(tempDir);
         const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const promptHash = 'a'.repeat(64);
         writeFileSync(
           registryPath,
           JSON.stringify({
@@ -637,10 +638,28 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
             delegatedAt: new Date().toISOString(),
             pickedUpAt: new Date().toISOString(),
             pickedUpBy: 'agent@test.com',
+            briefAttestation: {
+              algorithm: 'sha256',
+              promptHash,
+              promptLength: 1024,
+              generatedAt: new Date().toISOString(),
+              clientName: 'codex-cli',
+            },
             status: 'pending',
             completedAt: null,
           }) + '\n',
           'utf-8',
+        );
+
+        await recordWuBriefEvidence(
+          {
+            wuId: TEST_WU_ID,
+            workspaceRoot: tempDir,
+            clientName: 'codex-cli',
+            promptHash,
+            forceRecord: true,
+          },
+          { isInWorktree: () => false },
         );
 
         await expect(
@@ -650,6 +669,53 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
             { baseDir: tempDir, force: false },
           ),
         ).resolves.toBeUndefined();
+      });
+
+      it('should block when attested hash does not match wu:brief evidence', async () => {
+        process.chdir(tempDir);
+        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        writeFileSync(
+          registryPath,
+          JSON.stringify({
+            id: 'dlg-a1b2',
+            parentWuId: 'WU-1500',
+            targetWuId: TEST_WU_ID,
+            lane: TEST_LANE,
+            intent: 'delegation',
+            delegatedAt: new Date().toISOString(),
+            pickedUpAt: new Date().toISOString(),
+            pickedUpBy: 'agent@test.com',
+            briefAttestation: {
+              algorithm: 'sha256',
+              promptHash: 'a'.repeat(64),
+              promptLength: 1024,
+              generatedAt: new Date().toISOString(),
+              clientName: 'codex-cli',
+            },
+            status: 'pending',
+            completedAt: null,
+          }) + '\n',
+          'utf-8',
+        );
+
+        await recordWuBriefEvidence(
+          {
+            wuId: TEST_WU_ID,
+            workspaceRoot: tempDir,
+            clientName: 'codex-cli',
+            promptHash: 'b'.repeat(64),
+            forceRecord: true,
+          },
+          { isInWorktree: () => false },
+        );
+
+        await expect(
+          enforceSpawnProvenanceForDone(
+            TEST_WU_ID,
+            { initiative: 'INIT-023', lane: TEST_LANE },
+            { baseDir: tempDir, force: false },
+          ),
+        ).rejects.toThrow('attestation mismatch');
       });
 
       it('should not enforce provenance for non-initiative WUs', () => {

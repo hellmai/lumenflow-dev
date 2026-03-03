@@ -24,6 +24,9 @@ export type { IWuStateStore } from './ports/wu-state.ports.js';
 
 // Re-export from extracted services for backward compatibility
 export {
+  extractWuBriefEvidenceHash,
+  hasWuBriefEvidenceHash,
+  hasMatchingWuBriefEvidenceHash,
   WU_EVENTS_FILE_NAME,
   WU_BRIEF_EVIDENCE_NOTE_PREFIX,
   findLatestWuBriefEvidence,

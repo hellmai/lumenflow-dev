@@ -70,7 +70,23 @@ const ERROR_MESSAGES = {
   INTENT: `Intent must be one of: ${DELEGATION_INTENTS.join(', ')}`,
   TIMESTAMP_REQUIRED: 'Timestamp is required',
   PICKUP_BY_REQUIRED: 'pickedUpBy must be a non-empty string when pickup is recorded',
+  BRIEF_HASH: 'briefAttestation.promptHash must be a 64-character lowercase sha256 hex digest',
+  BRIEF_ALGORITHM: 'briefAttestation.algorithm must be sha256',
+  BRIEF_CLIENT_REQUIRED: 'briefAttestation.clientName must be a non-empty string',
 } as const;
+
+const SHA256_HEX_256_REGEX = /^[a-f0-9]{64}$/;
+
+/**
+ * Optional wu:brief prompt attestation captured by wu:delegate.
+ */
+export const DelegationBriefAttestationSchema = z.object({
+  algorithm: z.literal('sha256', { error: ERROR_MESSAGES.BRIEF_ALGORITHM }),
+  promptHash: z.string().regex(SHA256_HEX_256_REGEX, { message: ERROR_MESSAGES.BRIEF_HASH }),
+  promptLength: z.number().int().nonnegative(),
+  generatedAt: z.string().datetime({ message: ERROR_MESSAGES.TIMESTAMP_REQUIRED }),
+  clientName: z.string().min(1, { message: ERROR_MESSAGES.BRIEF_CLIENT_REQUIRED }),
+});
 
 /**
  * Delegation event schema.
@@ -88,10 +104,12 @@ export const DelegationEventSchema = z.object({
   completedAt: z.string().datetime().nullable(),
   pickedUpAt: z.string().datetime().optional(),
   pickedUpBy: z.string().min(1, { message: ERROR_MESSAGES.PICKUP_BY_REQUIRED }).optional(),
+  briefAttestation: DelegationBriefAttestationSchema.optional(),
 });
 
 /** TypeScript type inferred from schema */
 export type DelegationEvent = z.infer<typeof DelegationEventSchema>;
+export type DelegationBriefAttestation = z.infer<typeof DelegationBriefAttestationSchema>;
 
 /**
  * Validates delegation event data against schema.

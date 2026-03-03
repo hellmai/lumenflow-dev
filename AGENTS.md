@@ -86,7 +86,7 @@ For complete CLI command documentation (100+ commands), see [quick-ref-commands.
 | `pnpm wu:done`            | Complete WU (merge or PR, stamp, cleanup)             |
 | `pnpm wu:status`          | Show WU status, location, valid commands              |
 | `pnpm wu:brief`           | Generate handoff prompt + record evidence             |
-| `pnpm wu:delegate`        | Generate prompt + record delegation lineage           |
+| `pnpm wu:delegate`        | Generate prompt + record lineage + brief hash attestation |
 | `pnpm wu:recover`         | Analyze and fix WU state inconsistencies              |
 | `pnpm wu:escalate`        | Show or resolve WU escalation status                  |
 | `pnpm wu:delete`          | Delete WU spec and cleanup                            |

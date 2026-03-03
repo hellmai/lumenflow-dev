@@ -27,6 +27,7 @@ import {
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/wu-spawn-helpers';
+import type { DelegationBriefAttestation } from '@lumenflow/core/delegation-registry-schema';
 import { WUStateStore, WU_BRIEF_EVIDENCE_NOTE_PREFIX } from '@lumenflow/core/wu-state-store';
 import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
 import { getConfig } from '@lumenflow/core/config';
@@ -49,6 +50,7 @@ import { isInWorktree as isInWorktreeDefault } from '@lumenflow/core/core/worktr
 // WU-2141: Import sizing check for advisory/strict enforcement
 import { checkBriefSizing } from './wu-brief-sizing.js';
 import type { SizingEstimate } from './wu-sizing-validation.js';
+import crypto from 'node:crypto';
 
 // Re-export types used by consumers
 export type { WUDocument, SpawnOptions, ClientContext };
@@ -59,6 +61,20 @@ export { SpawnStrategyFactory };
 const BRIEF_LOG_PREFIX = '[wu:brief]';
 const DELEGATE_LOG_PREFIX = '[wu:delegate]';
 const BRIEF_EVIDENCE_PROGRESS = 'wu:brief executed';
+
+function buildBriefAttestation(
+  output: string,
+  clientName: string,
+  generatedAt: string = new Date().toISOString(),
+): DelegationBriefAttestation {
+  return {
+    algorithm: 'sha256',
+    promptHash: crypto.createHash('sha256').update(output, 'utf8').digest('hex'),
+    promptLength: output.length,
+    generatedAt,
+    clientName,
+  };
+}
 
 // ─── Lane Occupation ───
 
@@ -310,6 +326,7 @@ interface SpawnOutputWithRegistryOptions {
   isCodexClient: boolean;
   parentWu?: string;
   lane?: string;
+  briefAttestation?: DelegationBriefAttestation;
   /** Record lineage intent in registry (wu:delegate explicit path only). */
   recordDelegationIntent?: boolean;
   /** WU-1608: Log prefix to use instead of module-level default */
@@ -326,6 +343,8 @@ interface RecordWuBriefEvidenceOptions {
   wuId: string;
   workspaceRoot: string;
   clientName: string;
+  promptHash?: string;
+  forceRecord?: boolean;
   claimedMode?: string;
   claimedBranch?: string;
 }
@@ -357,12 +376,13 @@ export async function recordWuBriefEvidence(
   options: RecordWuBriefEvidenceOptions,
   dependencies: RecordWuBriefEvidenceDependencies = {},
 ): Promise<void> {
-  const { wuId, workspaceRoot, clientName, claimedMode, claimedBranch } = options;
+  const { wuId, workspaceRoot, clientName, promptHash, forceRecord, claimedMode, claimedBranch } =
+    options;
 
   const checkWorktree = dependencies.isInWorktree ?? isInWorktreeDefault;
   const isInWorktree = checkWorktree({ cwd: workspaceRoot });
 
-  let shouldRecordEvidence = isInWorktree;
+  let shouldRecordEvidence = forceRecord === true || isInWorktree;
 
   if (!shouldRecordEvidence) {
     const normalizedClaimedMode = typeof claimedMode === 'string' ? claimedMode.trim() : '';
@@ -403,10 +423,13 @@ export async function recordWuBriefEvidence(
   const createStore = dependencies.createStore ?? ((dir: string) => new WUStateStore(dir));
   const store = createStore(stateDir);
   const note = `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} generated via ${clientName}`;
+  const nextSteps = promptHash
+    ? `client=${clientName};hash=${promptHash}`
+    : `client=${clientName}`;
 
   await store.checkpoint(wuId, note, {
     progress: BRIEF_EVIDENCE_PROGRESS,
-    nextSteps: `client=${clientName}`,
+    nextSteps,
   });
 }
 
@@ -426,6 +449,7 @@ export async function emitSpawnOutputWithRegistry(
     isCodexClient,
     parentWu,
     lane,
+    briefAttestation,
     recordDelegationIntent = false,
     logPrefix: prefix = BRIEF_LOG_PREFIX,
   } = options;
@@ -453,6 +477,7 @@ export async function emitSpawnOutputWithRegistry(
     targetWuId: id,
     lane: lane || 'Unknown',
     baseDir: config.state.stateDir,
+    briefAttestation,
   });
 
   const registryMessage = formatSpawnMessage(registryResult.spawnId, registryResult.error);
@@ -576,16 +601,14 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   const clientName = resolveClientName(args, config, effectiveLogPrefix);
   const baseDir = process.cwd();
 
-  const recordEvidenceOrFail = async () => {
-    if (explicitDelegation) {
-      return;
-    }
-
+  const recordEvidenceOrFail = async (options: { promptHash?: string; forceRecord?: boolean } = {}) => {
     try {
       await recordWuBriefEvidence({
         wuId: id,
         workspaceRoot: baseDir,
         clientName,
+        promptHash: options.promptHash,
+        forceRecord: options.forceRecord,
         claimedMode: typeof doc.claimed_mode === 'string' ? doc.claimed_mode : undefined,
         claimedBranch: typeof doc.claimed_branch === 'string' ? doc.claimed_branch : undefined,
       });
@@ -642,16 +665,21 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
       client: clientContext,
       config,
     });
+    const briefAttestation = explicitDelegation ? buildBriefAttestation(prompt, clientName) : undefined;
     await emitSpawnOutputWithRegistry({
       id,
       output: prompt,
       isCodexClient: true,
       parentWu: args.parentWu,
       lane: doc.lane,
+      briefAttestation,
       recordDelegationIntent: explicitDelegation,
       logPrefix: effectiveLogPrefix,
     });
-    await recordEvidenceOrFail();
+    await recordEvidenceOrFail({
+      promptHash: briefAttestation?.promptHash,
+      forceRecord: explicitDelegation,
+    });
     return;
   }
 
@@ -666,14 +694,21 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
     memoryContextContent,
     noContext: args.noContext,
   });
+  const briefAttestation = explicitDelegation
+    ? buildBriefAttestation(invocation, clientName)
+    : undefined;
   await emitSpawnOutputWithRegistry({
     id,
     output: invocation,
     isCodexClient: false,
     parentWu: args.parentWu,
     lane: doc.lane,
+    briefAttestation,
     recordDelegationIntent: explicitDelegation,
     logPrefix: effectiveLogPrefix,
   });
-  await recordEvidenceOrFail();
+  await recordEvidenceOrFail({
+    promptHash: briefAttestation?.promptHash,
+    forceRecord: explicitDelegation,
+  });
 }

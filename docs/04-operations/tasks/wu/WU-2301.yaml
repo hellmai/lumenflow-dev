@@ -25,7 +25,7 @@ plan: lumenflow://plans/WU-2301-plan.md
 spec_refs:
   - lumenflow://plans/WU-2301-plan.md
 risks: []
-notes: ''
+notes: 'Enforce delegated prompt hash attestation across wu:delegate, delegation registry, and wu:done provenance checks. Includes internal + Starlight docs updates for behavior changes.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

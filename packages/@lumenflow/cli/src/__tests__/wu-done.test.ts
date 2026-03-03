@@ -17,10 +17,13 @@ import {
   sanitizeWorktreePathMetadataInRepo,
 } from '../wu-done.js';
 import {
+  buildMissingSpawnBriefAttestationMessage,
+  buildSpawnBriefAttestationMismatchMessage,
   buildMissingWuBriefEvidenceMessage,
   buildMissingWuBriefEvidenceMessageForPrep,
   enforceWuBriefEvidenceForDone,
   enforceWuBriefEvidenceForPrep,
+  hasSpawnBriefAttestation,
   resolveWuBriefFreshnessMinutes,
   resolveWuBriefPolicyMode,
   shouldEnforceWuBriefEvidence,
@@ -648,6 +651,46 @@ status: done
 
       expect(blocker).not.toHaveBeenCalled();
       expect(warn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('WU-2301: delegated brief attestation helpers', () => {
+    it('detects valid spawn brief attestation metadata', () => {
+      expect(
+        hasSpawnBriefAttestation({
+          briefAttestation: {
+            algorithm: 'sha256',
+            promptHash: 'a'.repeat(64),
+            promptLength: 100,
+            generatedAt: '2026-03-03T10:00:00.000Z',
+            clientName: 'codex-cli',
+          },
+        }),
+      ).toBe(true);
+    });
+
+    it('rejects invalid spawn brief attestation metadata', () => {
+      expect(
+        hasSpawnBriefAttestation({
+          briefAttestation: {
+            algorithm: 'sha256',
+            promptHash: 'invalid',
+            promptLength: 100,
+            generatedAt: '2026-03-03T10:00:00.000Z',
+            clientName: 'codex-cli',
+          },
+        }),
+      ).toBe(false);
+      expect(hasSpawnBriefAttestation({})).toBe(false);
+    });
+
+    it('includes remediation guidance for missing and mismatched attestation', () => {
+      const missingMessage = buildMissingSpawnBriefAttestationMessage('WU-2301', 'INIT-2301');
+      const mismatchMessage = buildSpawnBriefAttestationMismatchMessage('WU-2301', 'INIT-2301');
+      expect(missingMessage).toContain('Missing brief attestation');
+      expect(missingMessage).toContain('pnpm wu:delegate --id WU-2301');
+      expect(mismatchMessage).toContain('attestation mismatch');
+      expect(mismatchMessage).toContain('wu:delegate');
     });
   });
 

@@ -242,7 +242,7 @@ For the full worktree lifecycle (parallel execution, bootstrap, isolation guaran
 | `pnpm wu:unblock`         | Unblock WU (transitions to in_progress)                |
 | `pnpm wu:release`         | Release orphaned WU (in_progress to ready for reclaim) |
 | `pnpm wu:brief`           | Generate handoff prompt + record evidence              |
-| `pnpm wu:delegate`        | Generate prompt + record delegation lineage            |
+| `pnpm wu:delegate`        | Generate prompt + record lineage + brief hash attestation |
 | `pnpm wu:escalate`        | Show or resolve WU escalation status                   |
 | `pnpm wu:delete`          | Delete WU spec and cleanup                             |
 | `pnpm gates`              | Run quality gates (`--docs-only` for docs WUs)         |

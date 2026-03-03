@@ -1214,11 +1214,21 @@ pnpm wu:create --lane <lane> --title <title>
 
 ### wu:delegate
 
-Generate delegation prompt and record explicit lineage intent
+Generate delegation prompt and record explicit lineage intent plus brief attestation metadata.
 
 ```bash
-pnpm wu:delegate
+pnpm wu:delegate --id WU-100 --parent-wu WU-050 --client claude-code
 ```
+
+`wu:delegate` records:
+
+- Parent and target WU lineage
+- Delegation status/timestamps
+- Brief attestation (`sha256` prompt hash, prompt length, generated timestamp, client)
+
+For initiative-governed and explicitly delegated WUs, `wu:done` validates claim pickup evidence and
+matching attested `wu:brief` hash before completion. Use `--force` only for audited legacy
+overrides.
 
 ### wu:done
 

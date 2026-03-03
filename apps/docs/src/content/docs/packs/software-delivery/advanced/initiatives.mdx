@@ -272,8 +272,15 @@ The delegation record captures:
 - Child WU (the delegated work)
 - Timestamp and client type
 - Delegation state (`pending`, `completed`, `timeout`, `crashed`, `escalated`)
+- Brief attestation (`sha256` prompt hash, prompt length, generated timestamp)
 
 Use `wu:delegate` for initiative work where you need traceability of who-delegated-what.
+
+For initiative-governed and explicitly delegated WUs, `wu:done` enforces:
+
+- Delegation lineage exists
+- Pickup evidence exists (claim handshake)
+- Brief attestation exists and hash matches recorded `wu:brief` evidence
 
 ### delegation:list -- Inspect the Tree
 

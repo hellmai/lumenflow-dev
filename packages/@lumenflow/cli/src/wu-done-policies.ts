@@ -18,9 +18,11 @@ import {
 import {
   getLatestWuBriefEvidence,
   getWuBriefEvidenceAgeMinutes,
+  hasMatchingWuBriefEvidenceHash,
   isWuBriefEvidenceStale,
   WUStateStore,
 } from '@lumenflow/core/wu-state-store';
+import type { DelegationBriefAttestation } from '@lumenflow/core/delegation-registry-schema';
 import { validateExposure, validateFeatureAccessibility } from '@lumenflow/core/wu-validation';
 import { createSignal } from '@lumenflow/memory/signal';
 import { resolveStateDir } from './state-path-resolvers.js';
@@ -40,8 +42,10 @@ const PREP_FORCE_REASON_REQUIRED_MESSAGE =
   'Missing required --reason for wu:brief policy bypass in wu:prep.';
 
 interface SpawnEntryLike {
+  intent?: string;
   pickedUpAt?: string;
   pickedUpBy?: string;
+  briefAttestation?: DelegationBriefAttestation;
 }
 
 interface ExposureOptions {
@@ -625,6 +629,37 @@ export function buildMissingSpawnPickupEvidenceMessage(id: string, initiativeId:
 }
 
 /**
+ * Build actionable remediation guidance for missing brief attestation.
+ */
+export function buildMissingSpawnBriefAttestationMessage(id: string, initiativeId: string): string {
+  return (
+    `Missing brief attestation for delegated WU ${id} (${initiativeId}).\n\n` +
+    `Delegation provenance exists, but no attested wu:brief payload hash was stored.\n` +
+    `Completion policy now requires auditable prompt-hash attestation.\n\n` +
+    `Fix options:\n` +
+    `  1. Re-run delegation from parent WU using full wu:delegate output:\n` +
+    `     pnpm wu:delegate --id ${id} --parent-wu WU-XXXX --client codex-cli\n` +
+    `  2. Re-run with --force for audited legacy override\n\n` +
+    `Then retry: pnpm wu:done --id ${id}`
+  );
+}
+
+/**
+ * Build actionable remediation guidance for attestation hash mismatch.
+ */
+export function buildSpawnBriefAttestationMismatchMessage(id: string, initiativeId: string): string {
+  return (
+    `Spawn brief attestation mismatch for delegated WU ${id} (${initiativeId}).\n\n` +
+    `Stored delegation hash could not be matched to wu:brief evidence for this WU.\n` +
+    `This indicates the delegated prompt was modified, condensed, or not generated through wu:delegate.\n\n` +
+    `Fix options:\n` +
+    `  1. Re-run delegation using full wu:delegate output for ${id}\n` +
+    `  2. Re-run with --force for audited legacy override\n\n` +
+    `Then retry: pnpm wu:done --id ${id}`
+  );
+}
+
+/**
  * Returns true when spawn provenance includes claim-time pickup evidence.
  */
 export function hasSpawnPickupEvidence(spawnEntry: SpawnEntryLike | null | undefined): boolean {
@@ -637,6 +672,28 @@ export function hasSpawnPickupEvidence(spawnEntry: SpawnEntryLike | null | undef
       ? spawnEntry.pickedUpBy
       : '';
   return pickedUpAt.length > 0 && pickedUpBy.length > 0;
+}
+
+/**
+ * Returns true when spawn provenance includes delegation intent.
+ */
+export function hasDelegationIntent(spawnEntry: SpawnEntryLike | null | undefined): boolean {
+  return typeof spawnEntry?.intent === 'string' && spawnEntry.intent.trim() === 'delegation';
+}
+
+/**
+ * Returns true when spawn provenance includes brief prompt-hash attestation.
+ */
+export function hasSpawnBriefAttestation(spawnEntry: SpawnEntryLike | null | undefined): boolean {
+  const attestation = spawnEntry?.briefAttestation;
+  if (!attestation) {
+    return false;
+  }
+  return (
+    attestation.algorithm === 'sha256' &&
+    typeof attestation.promptHash === 'string' &&
+    /^[a-f0-9]{64}$/.test(attestation.promptHash)
+  );
 }
 
 /**
@@ -668,7 +725,7 @@ async function recordSpawnProvenanceOverride(
 }
 
 /**
- * Enforce spawn provenance policy for initiative-governed WUs before completion.
+ * Enforce spawn provenance policy for initiative-governed and explicitly delegated WUs.
  */
 export async function enforceSpawnProvenanceForDone(
   id: string,
@@ -678,18 +735,22 @@ export async function enforceSpawnProvenanceForDone(
     force?: boolean;
   } = {},
 ): Promise<void> {
-  if (!shouldEnforceSpawnProvenance(doc)) {
-    return;
-  }
-
   const initiativeId =
     typeof doc.initiative === 'string' && doc.initiative.trim() ? doc.initiative.trim() : 'unknown';
+  const enforceForInitiative = shouldEnforceSpawnProvenance(doc);
   const baseDir = options.baseDir ?? process.cwd();
   const force = options.force === true;
-  const store = new DelegationRegistryStore(resolveStateDir(baseDir));
+  const stateDir = resolveStateDir(baseDir);
+  const store = new DelegationRegistryStore(stateDir);
   await store.load();
 
   const spawnEntry = store.getByTarget(id) as SpawnEntryLike | null;
+  const enforceForDelegation = hasDelegationIntent(spawnEntry);
+
+  if (!enforceForInitiative && !enforceForDelegation) {
+    return;
+  }
+
   if (!spawnEntry) {
     if (!force) {
       die(buildMissingSpawnProvenanceMessage(id, initiativeId));
@@ -703,6 +764,65 @@ export async function enforceSpawnProvenanceForDone(
   }
 
   if (hasSpawnPickupEvidence(spawnEntry)) {
+    if (!hasSpawnBriefAttestation(spawnEntry)) {
+      if (!force) {
+        die(buildMissingSpawnBriefAttestationMessage(id, initiativeId));
+      }
+
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2301: brief attestation override accepted for ${id} (${initiativeId}) via --force`,
+      );
+      await recordSpawnProvenanceOverride(id, doc, baseDir);
+      return;
+    }
+
+    const attestedPromptHash = spawnEntry.briefAttestation?.promptHash;
+    if (!attestedPromptHash) {
+      if (!force) {
+        die(buildMissingSpawnBriefAttestationMessage(id, initiativeId));
+      }
+
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2301: missing prompt hash override accepted for ${id} (${initiativeId}) via --force`,
+      );
+      await recordSpawnProvenanceOverride(id, doc, baseDir);
+      return;
+    }
+
+    let hashMatchesEvidence = false;
+    try {
+      hashMatchesEvidence = await hasMatchingWuBriefEvidenceHash(stateDir, id, attestedPromptHash);
+    } catch (error) {
+      if (!force) {
+        die(
+          `Could not verify spawn brief attestation for ${id}.\n\n` +
+            `State path: ${stateDir}\n` +
+            `Error: ${getErrorMessage(error)}\n\n` +
+            `Fix options:\n` +
+            `  1. Repair/restore state store, then rerun wu:done\n` +
+            `  2. Use --force for audited override when recovery is not possible`,
+        );
+      }
+
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2301: attestation verification failure override accepted for ${id} (${initiativeId}) via --force`,
+      );
+      await recordSpawnProvenanceOverride(id, doc, baseDir);
+      return;
+    }
+
+    if (hashMatchesEvidence) {
+      return;
+    }
+
+    if (!force) {
+      die(buildSpawnBriefAttestationMismatchMessage(id, initiativeId));
+    }
+
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2301: attestation mismatch override accepted for ${id} (${initiativeId}) via --force`,
+    );
+    await recordSpawnProvenanceOverride(id, doc, baseDir);
     return;
   }
 

@@ -23,6 +23,7 @@ import {
   generateDelegationId,
   DelegationStatus,
   type DelegationEvent,
+  type DelegationBriefAttestation,
   type DelegationIntentValue,
 } from './delegation-registry-schema.js';
 import { createError, ErrorCodes } from './error-handler.js';
@@ -215,6 +216,7 @@ export class DelegationRegistryStore {
     targetWuId: string,
     lane: string,
     intent?: DelegationIntentValue,
+    briefAttestation?: DelegationBriefAttestation,
   ): Promise<string> {
     const id = generateDelegationId(parentWuId, targetWuId);
 
@@ -227,6 +229,7 @@ export class DelegationRegistryStore {
       delegatedAt: new Date().toISOString(),
       status: DelegationStatus.PENDING,
       completedAt: null,
+      ...(briefAttestation ? { briefAttestation } : {}),
     };
 
     await this._appendEvent(event);

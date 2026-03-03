@@ -30,13 +30,27 @@ export interface WuBriefEvidence {
   wuId: string;
   timestamp: string;
   note: string;
+  nextSteps?: string;
 }
+
+const WU_BRIEF_HASH_CAPTURE_REGEX = /(?:^|[;\s])hash=([a-f0-9]{64})(?=$|[;\s])/;
 
 /**
  * Returns true when a checkpoint note represents wu:brief evidence.
  */
 export function isWuBriefEvidenceNote(note: unknown): note is string {
   return typeof note === 'string' && note.startsWith(WU_BRIEF_EVIDENCE_NOTE_PREFIX);
+}
+
+/**
+ * Extract attested brief hash from checkpoint nextSteps payload.
+ */
+export function extractWuBriefEvidenceHash(nextSteps: unknown): string | null {
+  if (typeof nextSteps !== 'string' || nextSteps.trim().length === 0) {
+    return null;
+  }
+  const match = nextSteps.match(WU_BRIEF_HASH_CAPTURE_REGEX);
+  return match?.[1] ?? null;
 }
 
 /**
@@ -153,11 +167,40 @@ export function findLatestWuBriefEvidence(
     }
 
     if (event.wuId === wuId && isWuBriefEvidenceNote(event.note)) {
-      return { wuId: event.wuId, timestamp: event.timestamp, note: event.note };
+      return {
+        wuId: event.wuId,
+        timestamp: event.timestamp,
+        note: event.note,
+        ...(typeof event.nextSteps === 'string' ? { nextSteps: event.nextSteps } : {}),
+      };
     }
   }
 
   return null;
+}
+
+/**
+ * Returns true when any wu:brief checkpoint for WU contains the expected hash.
+ */
+export function hasWuBriefEvidenceHash(
+  events: readonly WUEvent[],
+  wuId: string,
+  expectedHash: string,
+): boolean {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i];
+    if (!event || event.type !== 'checkpoint') {
+      continue;
+    }
+    if (event.wuId !== wuId || !isWuBriefEvidenceNote(event.note)) {
+      continue;
+    }
+    const hash = extractWuBriefEvidenceHash(event.nextSteps);
+    if (hash === expectedHash) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -174,6 +217,22 @@ export async function getLatestWuBriefEvidence(
   }
 
   return findLatestWuBriefEvidence(parseValidatedEvents(content), wuId);
+}
+
+/**
+ * Read wu-events and check whether any wu:brief checkpoint for WU contains expected hash.
+ */
+export async function hasMatchingWuBriefEvidenceHash(
+  baseDir: string,
+  wuId: string,
+  expectedHash: string,
+): Promise<boolean> {
+  const eventsFilePath = path.join(baseDir, WU_EVENTS_FILE_NAME);
+  const content = await readEventsFileSafely(eventsFilePath);
+  if (!content.trim()) {
+    return false;
+  }
+  return hasWuBriefEvidenceHash(parseValidatedEvents(content), wuId, expectedHash);
 }
 
 /**

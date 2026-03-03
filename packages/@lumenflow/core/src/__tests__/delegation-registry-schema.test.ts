@@ -26,6 +26,16 @@ function buildValidDelegationEvent() {
   };
 }
 
+function buildValidBriefAttestation() {
+  return {
+    algorithm: 'sha256' as const,
+    promptHash: 'a'.repeat(64),
+    promptLength: 1024,
+    generatedAt: VALID_TIMESTAMP,
+    clientName: 'codex-cli',
+  };
+}
+
 describe('delegation-registry-schema', () => {
   it('exports delegation status and intent sets', () => {
     expect(DELEGATION_STATUSES).toContain(DelegationStatus.PENDING);
@@ -43,10 +53,29 @@ describe('delegation-registry-schema', () => {
     expect(validation.success).toBe(true);
   });
 
+  it('accepts valid delegation events with brief attestation', () => {
+    const validation = validateDelegationEvent({
+      ...buildValidDelegationEvent(),
+      briefAttestation: buildValidBriefAttestation(),
+    });
+    expect(validation.success).toBe(true);
+  });
+
   it('rejects legacy spawn-prefixed IDs', () => {
     const validation = validateDelegationEvent({
       ...buildValidDelegationEvent(),
       id: 'spawn-a1b2',
+    });
+    expect(validation.success).toBe(false);
+  });
+
+  it('rejects invalid brief attestation prompt hash', () => {
+    const validation = validateDelegationEvent({
+      ...buildValidDelegationEvent(),
+      briefAttestation: {
+        ...buildValidBriefAttestation(),
+        promptHash: 'deadbeef',
+      },
     });
     expect(validation.success).toBe(false);
   });
