@@ -4,7 +4,7 @@ _Last updated: 2026-03-03_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml)
 
 ## Completed
 

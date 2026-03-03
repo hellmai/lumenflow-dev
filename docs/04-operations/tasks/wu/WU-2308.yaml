@@ -2,14 +2,15 @@ id: WU-2308
 title: Fix normalizeSteps silent drop of string steps in routine:create
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-03
 code_paths:
   - packages/@lumenflow/packs/sidekick/**
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -25,8 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: normalizeSteps() silently drops string entries, producing misleading INVALID_INPUT error. Should coerce strings to {tool, input:{}} or fail with indexed validation errors.
+description: normalizeSteps() silently drops string entries, producing misleading INVALID_INPUT
+  error. Should coerce strings to {tool, input:{}} or fail with indexed validation errors.
 acceptance:
   - 'String step entries are coerced to {tool: str, input: {}}'
   - Invalid entries produce indexed validation errors instead of silent drop
   - Tests cover all-string, mixed, and empty-after-normalization cases
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2308
+claimed_at: 2026-03-03T20:20:12.627Z
+baseline_main_sha: 71385918cf05c6c2b921351880320e8b33e6ebe8
+session_id: bae52be9-9ac5-4ce4-9d15-be481e70ea3e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-03T20:20:12.632Z
