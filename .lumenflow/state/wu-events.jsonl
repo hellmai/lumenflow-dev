@@ -2759,3 +2759,4 @@
 {"type":"claim","wuId":"WU-2308","timestamp":"2026-03-03T20:20:12.650Z","lane":"Framework: Core Lifecycle","title":"Fix normalizeSteps silent drop of string steps in routine:create"}
 {"type":"checkpoint","wuId":"WU-2308","timestamp":"2026-03-03T20:20:23.358Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2308","timestamp":"2026-03-03T20:23:08.858Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2308.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"checkpoint","wuId":"WU-2308","timestamp":"2026-03-03T20:24:49.171Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2308.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
