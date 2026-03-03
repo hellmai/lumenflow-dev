@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
+import { getChannelTransport } from './channel-transports.js';
 import { getStoragePort, type ChannelMessageRecord, type ChannelRecord } from './storage.js';
 import {
   asInteger,
@@ -28,6 +29,26 @@ const TOOL_NAMES = {
 
 const OUTBOX_CAP = 100;
 const DEFAULT_CHANNEL_NAME = 'default';
+
+function asOptionalRecord(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+  return value as Record<string, unknown>;
+}
+
+function withTransportMetadata<T extends Record<string, unknown>>(
+  data: T,
+  metadata: Record<string, unknown> | undefined,
+): T & Record<string, unknown> {
+  if (!metadata) {
+    return data;
+  }
+  return {
+    ...data,
+    metadata,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // channel:configure
@@ -99,6 +120,77 @@ async function channelConfigureTool(
 // channel:send
 // ---------------------------------------------------------------------------
 
+async function channelSendViaTransport(
+  input: Record<string, unknown>,
+  context: ToolContextLike | undefined,
+  provider: string,
+  channel: string,
+  content: string,
+): Promise<ToolOutput> {
+  const workspaceId = asNonEmptyString(context?.workspace_id);
+  if (!workspaceId) {
+    return failure(
+      'WORKSPACE_CONTEXT_REQUIRED',
+      'workspace_id is required when provider is specified.',
+    );
+  }
+
+  const transport = getChannelTransport(provider);
+  if (!transport) {
+    return failure(
+      'INTEGRATION_PROVIDER_NOT_REGISTERED',
+      `No channel transport registered for provider: ${provider}`,
+    );
+  }
+
+  if (isDryRun(input)) {
+    return success({
+      dry_run: true,
+      provider,
+      capability: 'send',
+      channel,
+      content,
+    });
+  }
+
+  const transportResult = await transport.send({
+    workspaceId,
+    provider,
+    channel,
+    content,
+    metadata: asOptionalRecord(input.metadata),
+  });
+
+  const outputData = withTransportMetadata(
+    {
+      provider,
+      capability: 'send',
+      channel,
+      ...(transportResult.externalMessageId !== undefined
+        ? { externalMessageId: transportResult.externalMessageId }
+        : {}),
+      ...(transportResult.failureClass ? { failureClass: transportResult.failureClass } : {}),
+      ...(transportResult.retryAfterSeconds !== undefined
+        ? { retryAfterSeconds: transportResult.retryAfterSeconds }
+        : {}),
+    },
+    transportResult.metadata,
+  );
+
+  if (!transportResult.success) {
+    return {
+      success: false,
+      error: {
+        code: 'INTEGRATION_PROVIDER_SEND_FAILED',
+        message: transportResult.error ?? `Provider send failed for provider: ${provider}`,
+      },
+      data: outputData,
+    };
+  }
+
+  return success(outputData);
+}
+
 async function channelSendTool(input: unknown, context?: ToolContextLike): Promise<ToolOutput> {
   const parsed = toRecord(input);
   const content = asNonEmptyString(parsed.content);
@@ -108,6 +200,12 @@ async function channelSendTool(input: unknown, context?: ToolContextLike): Promi
   }
 
   const channelName = asNonEmptyString(parsed.channel) ?? DEFAULT_CHANNEL_NAME;
+  const provider = asNonEmptyString(parsed.provider);
+
+  if (provider) {
+    return channelSendViaTransport(parsed, context, provider, channelName, content);
+  }
+
   const sender = asNonEmptyString(parsed.sender) ?? 'assistant';
   const now = nowIso();
 
@@ -175,10 +273,84 @@ async function channelSendTool(input: unknown, context?: ToolContextLike): Promi
 // channel:receive
 // ---------------------------------------------------------------------------
 
+async function channelReceiveViaTransport(
+  input: Record<string, unknown>,
+  context: ToolContextLike | undefined,
+  provider: string,
+  channel: string,
+  limit: number | null,
+): Promise<ToolOutput> {
+  const workspaceId = asNonEmptyString(context?.workspace_id);
+  if (!workspaceId) {
+    return failure(
+      'WORKSPACE_CONTEXT_REQUIRED',
+      'workspace_id is required when provider is specified.',
+    );
+  }
+
+  const transport = getChannelTransport(provider);
+  if (!transport) {
+    return failure(
+      'INTEGRATION_PROVIDER_NOT_REGISTERED',
+      `No channel transport registered for provider: ${provider}`,
+    );
+  }
+
+  const cursor = asNonEmptyString(input.cursor) ?? undefined;
+
+  const transportResult = await transport.receive({
+    workspaceId,
+    provider,
+    channel,
+    cursor,
+    limit: limit && limit > 0 ? limit : undefined,
+    metadata: asOptionalRecord(input.metadata),
+  });
+
+  const outputData = withTransportMetadata(
+    {
+      provider,
+      capability: 'read',
+      channel,
+      ...(transportResult.records !== undefined ? { records: transportResult.records } : {}),
+      ...(transportResult.nextCursor !== undefined ? { nextCursor: transportResult.nextCursor } : {}),
+      ...(transportResult.failureClass ? { failureClass: transportResult.failureClass } : {}),
+      ...(transportResult.retryAfterSeconds !== undefined
+        ? { retryAfterSeconds: transportResult.retryAfterSeconds }
+        : {}),
+    },
+    transportResult.metadata,
+  );
+
+  if (!transportResult.success) {
+    return {
+      success: false,
+      error: {
+        code: 'INTEGRATION_PROVIDER_RECEIVE_FAILED',
+        message: transportResult.error ?? `Provider receive failed for provider: ${provider}`,
+      },
+      data: outputData,
+    };
+  }
+
+  return success(outputData);
+}
+
 async function channelReceiveTool(input: unknown, _context?: ToolContextLike): Promise<ToolOutput> {
   const parsed = toRecord(input);
   const channelName = asNonEmptyString(parsed.channel);
   const limit = asInteger(parsed.limit);
+  const provider = asNonEmptyString(parsed.provider);
+
+  if (provider) {
+    return channelReceiveViaTransport(
+      parsed,
+      _context,
+      provider,
+      channelName ?? DEFAULT_CHANNEL_NAME,
+      limit,
+    );
+  }
 
   const storage = getStoragePort();
   const messages = await storage.readStore('messages');

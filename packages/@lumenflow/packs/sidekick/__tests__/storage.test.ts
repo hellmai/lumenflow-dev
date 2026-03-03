@@ -6,6 +6,12 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
+  clearChannelTransports,
+  getChannelTransport,
+  registerChannelTransport,
+  type ChannelTransport,
+} from '../tool-impl/channel-transports.js';
+import {
   type AuditEvent,
   type StoragePort,
   FsStoragePort,
@@ -27,6 +33,18 @@ function makeAuditEvent(overrides: Partial<AuditEvent> = {}): AuditEvent {
     tool: 'test-tool',
     op: 'create',
     ...overrides,
+  };
+}
+
+function makeChannelTransport(provider: string): ChannelTransport {
+  return {
+    provider,
+    async send() {
+      return { success: true };
+    },
+    async receive() {
+      return { success: true, records: [] };
+    },
   };
 }
 
@@ -320,5 +338,34 @@ describe('Injection helpers', () => {
 
       expect(getStoragePort()).toBe(outerPort);
     });
+  });
+
+  it('channel transport registry is scoped to runWithStoragePort context', async () => {
+    const scopedPort = makeTestPort();
+    const transport = makeChannelTransport('slack');
+
+    expect(getChannelTransport('slack')).toBeUndefined();
+
+    await runWithStoragePort(scopedPort, async () => {
+      registerChannelTransport(transport);
+      expect(getChannelTransport('slack')).toBe(transport);
+    });
+
+    expect(getChannelTransport('slack')).toBeUndefined();
+  });
+
+  it('clearChannelTransports resets registry within active context', async () => {
+    await runWithStoragePort(makeTestPort(), async () => {
+      registerChannelTransport(makeChannelTransport('discord'));
+      expect(getChannelTransport('discord')).toBeDefined();
+      clearChannelTransports();
+      expect(getChannelTransport('discord')).toBeUndefined();
+    });
+  });
+
+  it('registerChannelTransport rejects usage outside runtime context', () => {
+    expect(() => registerChannelTransport(makeChannelTransport('telegram'))).toThrow(
+      'channel transport registry is unavailable outside sidekick runtime context.',
+    );
   });
 });

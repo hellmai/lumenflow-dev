@@ -51,6 +51,7 @@ describe('sidekick manifest contract', () => {
     };
 
     const expectedExports: Record<string, string> = {
+      './tool-impl/channel-transports': './dist/tool-impl/channel-transports.js',
       './tool-impl/channel-tools': './dist/tool-impl/channel-tools.js',
       './tool-impl/memory-tools': './dist/tool-impl/memory-tools.js',
       './tool-impl/routine-tools': './dist/tool-impl/routine-tools.js',

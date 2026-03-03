@@ -182,9 +182,11 @@ const TOOL_INPUT_SCHEMAS: Record<SidekickToolName, Record<string, unknown>> = {
   'channel:send': {
     type: 'object',
     properties: {
+      provider: { type: 'string' },
       channel: { type: 'string' },
       content: { type: 'string', minLength: 1 },
       sender: { type: 'string' },
+      metadata: { type: 'object', additionalProperties: true },
       dry_run: { type: 'boolean' },
     },
     required: ['content'],
@@ -193,9 +195,12 @@ const TOOL_INPUT_SCHEMAS: Record<SidekickToolName, Record<string, unknown>> = {
   'channel:receive': {
     type: 'object',
     properties: {
+      provider: { type: 'string' },
       channel: { type: 'string' },
+      cursor: { type: 'string' },
       limit: { type: 'integer', minimum: 1 },
       since: { type: 'string' },
+      metadata: { type: 'object', additionalProperties: true },
     },
     additionalProperties: false,
   },

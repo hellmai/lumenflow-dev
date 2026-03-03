@@ -7,6 +7,7 @@ import type { AuditEvent } from './storage.js';
 export interface ToolContextLike {
   tool_name?: string;
   receipt_id?: string;
+  workspace_id?: string;
 }
 
 export interface ToolOutput {

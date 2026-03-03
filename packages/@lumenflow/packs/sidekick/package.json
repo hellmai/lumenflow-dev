@@ -27,6 +27,7 @@
     "./storage": "./dist/tool-impl/storage.js",
     "./tools": "./dist/tools/index.js",
     "./tool-impl": "./dist/tool-impl/index.js",
+    "./tool-impl/channel-transports": "./dist/tool-impl/channel-transports.js",
     "./tool-impl/channel-tools": "./dist/tool-impl/channel-tools.js",
     "./tool-impl/memory-tools": "./dist/tool-impl/memory-tools.js",
     "./tool-impl/routine-tools": "./dist/tool-impl/routine-tools.js",

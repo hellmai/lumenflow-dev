@@ -235,6 +235,8 @@ tools:
     input_schema:
       type: object
       properties:
+        provider:
+          type: string
         channel:
           type: string
         content:
@@ -242,6 +244,9 @@ tools:
           minLength: 1
         sender:
           type: string
+        metadata:
+          type: object
+          additionalProperties: true
         dry_run:
           type: boolean
       required: [content]
@@ -259,13 +264,20 @@ tools:
     input_schema:
       type: object
       properties:
+        provider:
+          type: string
         channel:
+          type: string
+        cursor:
           type: string
         limit:
           type: integer
           minimum: 1
         since:
           type: string
+        metadata:
+          type: object
+          additionalProperties: true
       additionalProperties: false
     output_schema:
       type: object

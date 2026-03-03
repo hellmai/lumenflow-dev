@@ -1,10 +1,10 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { AsyncLocalStorage } from 'node:async_hooks';
 import { randomBytes } from 'node:crypto';
 import { appendFile, mkdir, open, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { getSidekickRuntimeContext, runWithSidekickRuntimeContext } from './runtime-context.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -299,7 +299,6 @@ export class FsStoragePort implements StoragePort {
 // Injection helpers (AsyncLocalStorage-based)
 // ---------------------------------------------------------------------------
 
-const storageContext = new AsyncLocalStorage<StoragePort>();
 let defaultStoragePort: StoragePort = new FsStoragePort();
 
 export function setDefaultStoragePort(port: StoragePort): void {
@@ -307,9 +306,16 @@ export function setDefaultStoragePort(port: StoragePort): void {
 }
 
 export function getStoragePort(): StoragePort {
-  return storageContext.getStore() ?? defaultStoragePort;
+  return getSidekickRuntimeContext()?.storagePort ?? defaultStoragePort;
 }
 
 export async function runWithStoragePort<T>(port: StoragePort, fn: () => Promise<T>): Promise<T> {
-  return storageContext.run(port, fn);
+  const existingContext = getSidekickRuntimeContext();
+  return runWithSidekickRuntimeContext(
+    {
+      storagePort: port,
+      channelTransports: existingContext?.channelTransports ?? new Map(),
+    },
+    fn,
+  );
 }

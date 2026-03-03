@@ -20,3 +20,10 @@ export {
   runWithStoragePort,
   setDefaultStoragePort,
 } from './storage.js';
+
+export {
+  type ChannelTransport,
+  clearChannelTransports,
+  getChannelTransport,
+  registerChannelTransport,
+} from './channel-transports.js';

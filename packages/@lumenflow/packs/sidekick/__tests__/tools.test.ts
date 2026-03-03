@@ -5,6 +5,11 @@ import path from 'node:path';
 import { rm } from 'node:fs/promises';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import {
+  clearChannelTransports,
+  registerChannelTransport,
+  type ChannelTransport,
+} from '../tool-impl/channel-transports.js';
 import { FsStoragePort, runWithStoragePort, type StoragePort } from '../tool-impl/storage.js';
 
 // ---------------------------------------------------------------------------
@@ -32,8 +37,12 @@ function makePort(): FsStoragePort {
   return new FsStoragePort(TEST_ROOT);
 }
 
-function ctx(toolName: string) {
-  return { tool_name: toolName, receipt_id: 'test-receipt' };
+function ctx(toolName: string, workspaceId?: string) {
+  return {
+    tool_name: toolName,
+    receipt_id: 'test-receipt',
+    ...(workspaceId ? { workspace_id: workspaceId } : {}),
+  };
 }
 
 async function withPort<T>(port: StoragePort, fn: () => Promise<T>): Promise<T> {
@@ -709,6 +718,113 @@ describe('channel:send', () => {
     expect(result.success).toBe(false);
     expect(result.error?.code).toBe('INVALID_INPUT');
   });
+
+  it('requires workspace context when provider is specified', async () => {
+    const result = await withPort(port, () =>
+      channelTools({ provider: 'slack', content: 'hello', channel: 'alerts' }, ctx('channel:send')),
+    );
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('WORKSPACE_CONTEXT_REQUIRED');
+  });
+
+  it('returns deterministic error when provider is unregistered', async () => {
+    const result = await withPort(port, () =>
+      channelTools(
+        { provider: 'slack', content: 'hello', channel: 'alerts' },
+        ctx('channel:send', 'ws-test'),
+      ),
+    );
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('INTEGRATION_PROVIDER_NOT_REGISTERED');
+    expect(result.error?.message).toBe('No channel transport registered for provider: slack');
+  });
+
+  it('routes provider send through registered transport and preserves metadata', async () => {
+    const transport: ChannelTransport = {
+      provider: 'slack',
+      async send(req) {
+        expect(req).toEqual({
+          workspaceId: 'ws-test',
+          provider: 'slack',
+          channel: 'alerts',
+          content: 'hello provider',
+          metadata: { thread: '123' },
+        });
+        return {
+          success: true,
+          externalMessageId: 'ext-42',
+          metadata: { adapter: 'slack' },
+        };
+      },
+      async receive() {
+        return { success: true, records: [] };
+      },
+    };
+
+    const result = await withPort(port, async () => {
+      clearChannelTransports();
+      registerChannelTransport(transport);
+      return channelTools(
+        {
+          provider: 'slack',
+          channel: 'alerts',
+          content: 'hello provider',
+          metadata: { thread: '123' },
+        },
+        ctx('channel:send', 'ws-test'),
+      );
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      provider: 'slack',
+      capability: 'send',
+      channel: 'alerts',
+      externalMessageId: 'ext-42',
+      metadata: { adapter: 'slack' },
+    });
+
+    const messages = await port.readStore('messages');
+    expect(messages).toHaveLength(0);
+  });
+
+  it('preserves transport retryability fields on provider send failure', async () => {
+    const transport: ChannelTransport = {
+      provider: 'discord',
+      async send() {
+        return {
+          success: false,
+          error: 'rate limited',
+          failureClass: 'retryable',
+          retryAfterSeconds: 30,
+          metadata: { upstream: 'discord-api' },
+        };
+      },
+      async receive() {
+        return { success: true, records: [] };
+      },
+    };
+
+    const result = await withPort(port, async () => {
+      clearChannelTransports();
+      registerChannelTransport(transport);
+      return channelTools(
+        { provider: 'discord', channel: 'alerts', content: 'hello' },
+        ctx('channel:send', 'ws-test'),
+      );
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('INTEGRATION_PROVIDER_SEND_FAILED');
+    expect(result.data).toMatchObject({
+      provider: 'discord',
+      capability: 'send',
+      channel: 'alerts',
+      failureClass: 'retryable',
+      retryAfterSeconds: 30,
+      metadata: { upstream: 'discord-api' },
+    });
+  });
 });
 
 describe('channel:receive', () => {
@@ -757,6 +873,117 @@ describe('channel:receive', () => {
     await withPort(port, () => channelTools({ content: 'B' }, ctx('channel:send')));
     const result = await withPort(port, () => channelTools({ limit: 1 }, ctx('channel:receive')));
     expect((result.data as Record<string, unknown>).count).toBe(1);
+  });
+
+  it('requires workspace context when provider is specified', async () => {
+    const result = await withPort(port, () =>
+      channelTools(
+        { provider: 'slack', channel: 'alerts', limit: 10 },
+        ctx('channel:receive'),
+      ),
+    );
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('WORKSPACE_CONTEXT_REQUIRED');
+  });
+
+  it('returns deterministic error when receive provider is unregistered', async () => {
+    const result = await withPort(port, () =>
+      channelTools(
+        { provider: 'slack', channel: 'alerts', limit: 10 },
+        ctx('channel:receive', 'ws-test'),
+      ),
+    );
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('INTEGRATION_PROVIDER_NOT_REGISTERED');
+    expect(result.error?.message).toBe('No channel transport registered for provider: slack');
+  });
+
+  it('routes provider receive through registered transport and preserves payload', async () => {
+    const transport: ChannelTransport = {
+      provider: 'telegram',
+      async send() {
+        return { success: true };
+      },
+      async receive(req) {
+        expect(req).toEqual({
+          workspaceId: 'ws-test',
+          provider: 'telegram',
+          channel: 'alerts',
+          cursor: 'cursor-1',
+          limit: 5,
+          metadata: { room: 'ops' },
+        });
+        return {
+          success: true,
+          records: [{ id: 'rec-1', text: 'hello' }],
+          nextCursor: 'cursor-2',
+          metadata: { adapter: 'telegram' },
+        };
+      },
+    };
+
+    const result = await withPort(port, async () => {
+      clearChannelTransports();
+      registerChannelTransport(transport);
+      return channelTools(
+        {
+          provider: 'telegram',
+          channel: 'alerts',
+          cursor: 'cursor-1',
+          limit: 5,
+          metadata: { room: 'ops' },
+        },
+        ctx('channel:receive', 'ws-test'),
+      );
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      provider: 'telegram',
+      capability: 'read',
+      channel: 'alerts',
+      records: [{ id: 'rec-1', text: 'hello' }],
+      nextCursor: 'cursor-2',
+      metadata: { adapter: 'telegram' },
+    });
+  });
+
+  it('preserves transport retryability fields on provider receive failure', async () => {
+    const transport: ChannelTransport = {
+      provider: 'slack',
+      async send() {
+        return { success: true };
+      },
+      async receive() {
+        return {
+          success: false,
+          error: 'temporary outage',
+          failureClass: 'retryable',
+          retryAfterSeconds: 15,
+          metadata: { upstream: 'slack-api' },
+        };
+      },
+    };
+
+    const result = await withPort(port, async () => {
+      clearChannelTransports();
+      registerChannelTransport(transport);
+      return channelTools(
+        { provider: 'slack', channel: 'alerts' },
+        ctx('channel:receive', 'ws-test'),
+      );
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('INTEGRATION_PROVIDER_RECEIVE_FAILED');
+    expect(result.data).toMatchObject({
+      provider: 'slack',
+      capability: 'read',
+      channel: 'alerts',
+      failureClass: 'retryable',
+      retryAfterSeconds: 15,
+      metadata: { upstream: 'slack-api' },
+    });
   });
 });
 
