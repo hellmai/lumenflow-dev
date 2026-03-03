@@ -877,10 +877,7 @@ describe('channel:receive', () => {
 
   it('requires workspace context when provider is specified', async () => {
     const result = await withPort(port, () =>
-      channelTools(
-        { provider: 'slack', channel: 'alerts', limit: 10 },
-        ctx('channel:receive'),
-      ),
+      channelTools({ provider: 'slack', channel: 'alerts', limit: 10 }, ctx('channel:receive')),
     );
     expect(result.success).toBe(false);
     expect(result.error?.code).toBe('WORKSPACE_CONTEXT_REQUIRED');

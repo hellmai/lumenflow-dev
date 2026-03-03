@@ -313,7 +313,9 @@ async function channelReceiveViaTransport(
       capability: 'read',
       channel,
       ...(transportResult.records !== undefined ? { records: transportResult.records } : {}),
-      ...(transportResult.nextCursor !== undefined ? { nextCursor: transportResult.nextCursor } : {}),
+      ...(transportResult.nextCursor !== undefined
+        ? { nextCursor: transportResult.nextCursor }
+        : {}),
       ...(transportResult.failureClass ? { failureClass: transportResult.failureClass } : {}),
       ...(transportResult.retryAfterSeconds !== undefined
         ? { retryAfterSeconds: transportResult.retryAfterSeconds }
