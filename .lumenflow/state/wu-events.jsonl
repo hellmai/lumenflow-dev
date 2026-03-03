@@ -2751,3 +2751,4 @@
 {"type":"claim","wuId":"WU-2306","timestamp":"2026-03-03T19:26:55.642Z","lane":"Framework: CLI WU Commands","title":"Align wu:claim guidance with wu:prep -> wu:done workflow"}
 {"type":"checkpoint","wuId":"WU-2306","timestamp":"2026-03-03T19:26:56.036Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2306","timestamp":"2026-03-03T19:29:54.990Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2306.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"complete","wuId":"WU-2306","timestamp":"2026-03-03T19:31:48.878Z"}

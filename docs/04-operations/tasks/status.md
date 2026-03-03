@@ -1226,3 +1226,4 @@ _Last updated: 2026-03-03_
 - [WU-2303 — Fix release workflow failures for tag-driven publish/docs](wu/WU-2303.yaml) — 2026-03-03
 - [WU-2304 — Use turbo package-only build in publish workflow](wu/WU-2304.yaml) — 2026-03-03
 - [WU-2305 — Move channel provider routing into Sidekick pack](wu/WU-2305.yaml) — 2026-03-03
+- [WU-2306 — Align wu:claim guidance with wu:prep -> wu:done workflow](wu/WU-2306.yaml) — 2026-03-03

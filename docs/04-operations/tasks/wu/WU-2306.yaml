@@ -2,7 +2,7 @@ id: WU-2306
 title: Align wu:claim guidance with wu:prep -> wu:done workflow
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-03
 code_paths:
@@ -56,3 +56,6 @@ acceptance:
     references
   - Automated tests fail if wu:claim output regresses to direct wu:done guidance
   - No behavioral change to merge/stamp execution logic beyond messaging and guidance
+locked: true
+completed_at: 2026-03-03T19:31:44.469Z
+completed: 2026-03-03

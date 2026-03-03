@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2306 — Align wu:claim guidance with wu:prep -> wu:done workflow](wu/WU-2306.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
@@ -1253,6 +1252,7 @@ sections:
 - [WU-2303 — Fix release workflow failures for tag-driven publish/docs](wu/WU-2303.yaml)
 - [WU-2304 — Use turbo package-only build in publish workflow](wu/WU-2304.yaml)
 - [WU-2305 — Move channel provider routing into Sidekick pack](wu/WU-2305.yaml)
+- [WU-2306 — Align wu:claim guidance with wu:prep -> wu:done workflow](wu/WU-2306.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
