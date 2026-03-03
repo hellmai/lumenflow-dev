@@ -1,0 +1,31 @@
+id: WU-2304
+title: Use turbo package-only build in publish workflow
+lane: 'Operations: Tooling'
+type: bug
+status: ready
+priority: P0
+created: 2026-03-03
+code_paths:
+  - .github/workflows/publish.yml
+tests:
+  manual:
+    - Push release tag and verify Publish workflow build stage passes and reaches publish/create-release steps
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2304.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Publish workflow for v3.9.4 failed because full monorepo build includes docs requiring D2 on runner. Use turbo package-only build filter so publish validates package artifacts without docs/web dependencies.
+acceptance:
+  - publish.yml build stage excludes docs/web tasks and succeeds on clean runner
+  - Publish workflow proceeds to publish step for release tag
