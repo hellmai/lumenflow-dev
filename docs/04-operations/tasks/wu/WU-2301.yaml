@@ -1,0 +1,41 @@
+id: WU-2301
+title: Enforce wu:brief prompt hash attestation for delegated WUs
+lane: 'Operations: Tooling'
+type: feature
+status: ready
+priority: P1
+created: 2026-03-03
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn-strategy-resolver.ts
+  - packages/@lumenflow/cli/src/wu-done-policies.ts
+  - packages/@lumenflow/core/src/delegation-registry-schema.ts
+  - packages/@lumenflow/core/src/delegation-registry-store.ts
+tests:
+  manual:
+    - Run wu:delegate then wu:done on delegated WU and confirm attestation mismatch blocks completion
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/core/src/__tests__/delegation-registry-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2301.done
+dependencies: []
+plan: lumenflow://plans/WU-2301-plan.md
+spec_refs:
+  - lumenflow://plans/WU-2301-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:done only validates wu:brief evidence presence, not prompt fidelity. Problem: delegated WUs can pass lifecycle checks even when condensed/manual prompts ignore full wu:brief output. Solution: persist prompt attestation metadata and enforce hash match between generated brief and delegation lineage at wu:done.'
+acceptance:
+  - wu:delegate stores attestation proving generated brief payload for target WU
+  - wu:done blocks initiative/delegated completion when required attestation is missing or mismatched unless --force
+  - tests cover valid attestation path and mismatch/missing failure paths
