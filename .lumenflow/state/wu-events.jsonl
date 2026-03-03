@@ -2734,3 +2734,5 @@
 {"type":"checkpoint","wuId":"WU-2301","timestamp":"2026-03-03T12:50:04.137Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"complete","wuId":"WU-2301","timestamp":"2026-03-03T13:08:00.625Z"}
 {"type":"claim","wuId":"WU-2302","timestamp":"2026-03-03T14:49:37.809Z","lane":"Operations: Tooling","title":"Split release publish/docs workflows and gate GitHub release on publish success"}
+{"type":"checkpoint","wuId":"WU-2302","timestamp":"2026-03-03T14:59:57.833Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2302","timestamp":"2026-03-03T15:00:35.013Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
