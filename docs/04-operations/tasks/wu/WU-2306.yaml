@@ -1,0 +1,40 @@
+id: WU-2306
+title: Align wu:claim guidance with wu:prep -> wu:done workflow
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-03-03
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim-worktree.ts
+  - packages/@lumenflow/cli/src/wu-claim-branch.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-claim-worktree.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+tests:
+  manual:
+    - Run wu:claim in worktree mode and verify next-step guidance explicitly says wu:prep then copy-paste wu:done from main
+    - Run wu:claim --cloud and verify guidance does not contradict wu:prep semantics
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim-worktree.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2306.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: LumenFlow docs and constraints require two-step completion (wu:prep from worktree, then wu:done from main), but wu:claim messaging still teaches a direct gates -> wu:done path in some flows. Problem: agents follow tool-emitted guidance first, causing wrong-location errors, skipped prep semantics, and avoidable recovery thrash. Solution: update wu:claim guidance surfaces (worktree and branch-pr flows) to consistently direct wu:prep first, then explicit copy-paste wu:done from prep output, and add regression tests so this contract cannot drift.'
+acceptance:
+  - Worktree-mode wu:claim output instructs wu:prep before wu:done and no longer suggests direct gates -> wu:done completion
+  - Branch-pr-mode wu:claim output reflects the correct completion sequence for that mode without contradicting wu:prep semantics
+  - Guidance text is internally consistent with wu:prep/wu:done CLI help and troubleshooting docs references
+  - Automated tests fail if wu:claim output regresses to direct wu:done guidance
+  - No behavioral change to merge/stamp execution logic beyond messaging and guidance
