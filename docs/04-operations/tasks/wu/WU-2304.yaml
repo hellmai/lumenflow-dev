@@ -17,7 +17,8 @@ artifacts:
   - .lumenflow/stamps/WU-2304.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'tdd-exception: CI workflow-only change. Validation is via GitHub Actions run evidence and
+  local command reproduction (turbo package-only build).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
