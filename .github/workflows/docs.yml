@@ -1,0 +1,61 @@
+name: Docs
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  starlight:
+    name: Build Starlight docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install D2
+        run: |
+          curl -fsSL https://d2lang.com/install.sh | sh -s -- --prefix "$HOME/.local"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          d2 --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Starlight docs
+        run: pnpm --filter @lumenflow/docs build
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: starlight-dist-${{ github.ref_name }}
+          path: apps/docs/dist
+          if-no-files-found: error
+
+      - name: Deploy docs to Vercel
+        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          pnpm dlx vercel pull --yes --environment=production --cwd apps/docs --token "$VERCEL_TOKEN"
+          pnpm dlx vercel build --prod --cwd apps/docs --token "$VERCEL_TOKEN"
+          pnpm dlx vercel deploy --prebuilt --prod --cwd apps/docs --token "$VERCEL_TOKEN"
+
+      - name: Skip Vercel deploy (missing secrets)
+        if: ${{ secrets.VERCEL_TOKEN == '' || secrets.VERCEL_ORG_ID == '' || secrets.VERCEL_PROJECT_ID == '' }}
+        run: echo "Skipping deploy because Vercel secrets are not fully configured."

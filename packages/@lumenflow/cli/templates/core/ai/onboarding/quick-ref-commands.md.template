@@ -133,7 +133,7 @@ files, no manual git, no WU ceremony. Only actual **code changes** need WUs.
 | `pnpm wu:brief --id WU-XXX --client <client>`   | Generate handoff prompt + record evidence (claimed workspace/branch)  |
 | `pnpm wu:brief --id WU-XXX --evidence-only`     | Record wu:brief evidence only (self-implementation, no prompt output) |
 | `pnpm wu:brief --id WU-XXX --no-context`        | Generate prompt without memory context injection                      |
-| `pnpm wu:delegate --id WU-XXX --parent-wu <P>`  | Generate prompt and record delegation lineage                         |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>`  | Generate prompt, record lineage, and store brief hash attestation     |
 | `pnpm wu:sandbox --id WU-XXX -- <cmd>`          | Run command through hardened WU sandbox backend                       |
 
 ### WU Maintenance

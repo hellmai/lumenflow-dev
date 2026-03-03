@@ -106,7 +106,16 @@ This is useful when:
 
 `wu:delegate` records **delegation intent**: that a brief was generated for a target WU with explicit parent lineage.
 
+It also stores **brief attestation metadata** (SHA-256 prompt hash, client, timestamp, prompt length) for the generated handoff payload.
+
 It does **not** by itself prove pickup or execution. Pickup/execution confirmation comes from lifecycle evidence (claim/completion events, checkpoints, signals, and final `wu:done`).
+
+`wu:done` now enforces, for initiative-governed and explicitly delegated WUs:
+
+- Delegation lineage exists
+- Claim-time pickup evidence exists
+- Delegation brief attestation exists
+- Attested prompt hash matches recorded `wu:brief` evidence for the target WU
 
 ---
 

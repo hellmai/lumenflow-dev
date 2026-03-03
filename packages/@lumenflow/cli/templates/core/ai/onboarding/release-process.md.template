@@ -10,20 +10,20 @@ This document covers the complete release process for LumenFlow, including versi
 
 LumenFlow has several components that need to stay in sync:
 
-| Component      | Location                    | Deployment                          |
-| -------------- | --------------------------- | ----------------------------------- |
-| npm packages   | `packages/@lumenflow/*`     | Auto via GitHub Actions on tag push |
-| Starlight docs | `apps/docs/`                | Manual via Vercel CLI               |
-| Pack registry  | `apps/web/` + pack tarballs | Manual deploy + curl publish        |
+| Component      | Location                    | Deployment                                          |
+| -------------- | --------------------------- | --------------------------------------------------- |
+| npm packages   | `packages/@lumenflow/*`     | Auto via GitHub Actions on tag push (`publish.yml`) |
+| Starlight docs | `apps/docs/`                | Separate GitHub Actions workflow (`docs.yml`)       |
+| Pack registry  | `apps/web/` + pack tarballs | Manual deploy + curl publish                        |
 
 ---
 
 ## Release Command
 
-The `pnpm release` command automates the entire release process:
+The `pnpm release` command automates version bump + tagging, and optionally npm publish:
 
 ```bash
-pnpm release --release-version 1.3.0
+pnpm release --release-version 1.3.0 --skip-publish
 ```
 
 ### What It Does
@@ -34,7 +34,7 @@ pnpm release --release-version 1.3.0
 4. Bumps all `@lumenflow/*` package versions using micro-worktree isolation
 5. Builds all packages
 6. Creates and pushes git tag `vX.Y.Z`
-7. Publishes to npm
+7. Optionally publishes to npm (unless `--skip-publish`)
 
 ### Options
 
@@ -50,19 +50,16 @@ pnpm release --release-version 1.3.0
 ### Examples
 
 ```bash
-# Full release
-pnpm release --release-version 1.3.0
-
-# Preview what would happen
-pnpm release --release-version 1.3.0 --dry-run
-
 # Version bump and tag only (CI will publish)
 pnpm release --release-version 1.3.0 --skip-publish
+
+# Preview what would happen
+pnpm release --release-version 1.3.0 --skip-publish --dry-run
 ```
 
 ### Authentication
 
-For npm publish, set one of these environment variables:
+For direct CLI npm publish (without `--skip-publish`), set one of these environment variables:
 
 ```bash
 export NPM_TOKEN=<your-npm-token>
@@ -179,8 +176,11 @@ The `.github/workflows/publish.yml` workflow:
 
 1. Checks out the tagged commit
 2. Installs dependencies
-3. Builds all packages
-4. Publishes to npm with `pnpm -r publish --access public`
+3. Builds publishable workspace packages only (`./packages/**`)
+4. Publishes to npm with `pnpm -r --filter "./packages/**" publish --access public --no-git-checks`
+5. Creates the GitHub release object (`gh release create ... --generate-notes`)
+
+`publish.yml` intentionally does **not** build `apps/docs` or `apps/web`, so docs/tooling dependencies cannot block npm publishing.
 
 ### Required Secrets
 
@@ -226,9 +226,25 @@ The public docs at <https://lumenflow.dev> are built from `apps/docs/`.
 
 **Automatic Generation:** CLI and config reference docs are automatically generated from code. See [Automatic Docs Generation](./docs-generation.md) for details on the single-source-of-truth pattern.
 
+### Build Workflow
+
+Starlight docs build in a separate workflow: `.github/workflows/docs.yml`.
+
+Trigger:
+
+- Tag push (`v*`)
+- Manual run (`workflow_dispatch`)
+
+The workflow:
+
+1. Installs D2 (`astro-d2` prerequisite)
+2. Builds docs with `pnpm --filter @lumenflow/docs build`
+3. Uploads `apps/docs/dist` as a workflow artifact
+4. Deploys to Vercel when `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets are configured
+
 ### Deployment
 
-Starlight docs are deployed **manually** via Vercel CLI:
+Production deploy is still manual via Vercel CLI:
 
 ```bash
 cd apps/docs
@@ -368,17 +384,17 @@ The `@lumenflow/docs` package requires `d2` (diagramming tool) which is not avai
 
 ### Release Steps (Automated)
 
-Use the release command for the standard workflow:
+Use this as the standard workflow:
 
 ```bash
 # Preview first
-pnpm release --release-version 1.3.0 --dry-run
+pnpm release --release-version 1.3.0 --skip-publish --dry-run
 
-# Execute release
-pnpm release --release-version 1.3.0
+# Execute (version bump + tag, publish delegated to GitHub Actions)
+pnpm release --release-version 1.3.0 --skip-publish
 ```
 
-This handles version bump, build, tag, and npm publish automatically.
+This handles version bump and tag locally; GitHub Actions handles npm publish, docs build, and GitHub release creation.
 
 ### Release Steps (Manual)
 
@@ -398,21 +414,22 @@ If you need more control:
    git push origin v1.3.0
    ```
 
-3. **Verify npm publish**
+3. **Verify npm publish + GitHub release**
 
    ```bash
    gh run list --workflow=publish.yml --limit 1
    # Wait for completion, then verify
    npm view @lumenflow/cli version
+   gh release view v1.3.0
    ```
 
-4. **Create GitHub release**
+4. **Verify docs workflow** (if docs changed)
 
    ```bash
-   gh release create v1.3.0 --title "v1.3.0 - Title" --notes "Release notes..."
+   gh run list --workflow=docs.yml --limit 1
    ```
 
-5. **Deploy Starlight docs** (if content changed)
+5. **Deploy Starlight docs** (if content changed and you are deploying manually)
 
    ```bash
    cd apps/docs && pnpm build && vercel --prod
@@ -428,13 +445,13 @@ If you need more control:
 
 ## Keeping Components in Sync
 
-| Change Type      | npm           | Docs   | Packs   |
-| ---------------- | ------------- | ------ | ------- |
-| Bug fix in CLI   | Tag + publish | Auto\* | No      |
-| New CLI command  | Tag + publish | Auto\* | No      |
-| Pack changes     | Tag + publish | No     | Publish |
-| Docs-only update | No            | Deploy | No      |
-| Full release     | Tag + publish | Deploy | Publish |
+| Change Type      | npm           | Docs                    | Packs   |
+| ---------------- | ------------- | ----------------------- | ------- |
+| Bug fix in CLI   | Tag + publish | Auto\*                  | No      |
+| New CLI command  | Tag + publish | Auto\*                  | No      |
+| Pack changes     | Tag + publish | No                      | Publish |
+| Docs-only update | No            | Build workflow + deploy | No      |
+| Full release     | Tag + publish | Build workflow + deploy | Publish |
 
 \* CLI/config reference docs regenerate automatically during `wu:done` when trigger files change. See [Automatic Docs Generation](./docs-generation.md).
 

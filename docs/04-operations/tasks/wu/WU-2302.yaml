@@ -22,7 +22,7 @@ artifacts:
   - .lumenflow/stamps/WU-2302.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Decouple tag publish from docs build failures by restricting publish workflow scope to packages and introducing a dedicated docs workflow that installs D2.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
