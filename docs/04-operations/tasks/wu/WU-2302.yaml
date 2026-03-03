@@ -1,0 +1,39 @@
+id: WU-2302
+title: Split release publish/docs workflows and gate GitHub release on publish success
+lane: 'Operations: Tooling'
+type: bug
+status: ready
+priority: P1
+created: 2026-03-03
+code_paths:
+  - .github/workflows/publish.yml
+  - .github/workflows/docs.yml
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/release-process.md.template
+tests:
+  manual:
+    - Create annotated vX.Y.Z tag in dry-run repo and verify publish job runs without docs build.
+    - Confirm docs workflow runs separately and installs D2 before docs build.
+    - Confirm GitHub release object appears only after successful publish job.
+  unit:
+    - packages/@lumenflow/cli/src/release.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2302.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Tag-based Publish workflow repeatedly fails due to docs build requiring D2 in CI, while release publish already succeeds locally. Problem: release automation is noisy/unreliable and does not enforce single CI publishing path. Solution: separate npm publish from docs deployment, add D2-aware docs workflow, and create GitHub release only after successful publish.'
+acceptance:
+  - Tag workflow publishes npm packages without building apps/docs or apps/web.
+  - GitHub release is created automatically only when tag publish job succeeds.
+  - Starlight docs build/deploy runs in separate workflow with D2 installed and does not block npm publish.
+  - Release process docs recommend using pnpm release --skip-publish for CI-owned publishing.
