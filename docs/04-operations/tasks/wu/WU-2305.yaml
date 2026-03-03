@@ -2,7 +2,7 @@ id: WU-2305
 title: Move channel provider routing into Sidekick pack
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: ready
 priority: P1
 created: 2026-03-03
 code_paths:
@@ -24,7 +24,11 @@ artifacts:
   - .lumenflow/stamps/WU-2305.done
 dependencies: []
 risks: []
-notes: ''
+notes: Implement runtime-scoped Sidekick channel transport registry and provider-aware routing for
+  channel:send/channel:receive. Preserve local .sidekick behavior when provider is absent; require
+  trusted context.workspace_id for provider path; return deterministic WORKSPACE_CONTEXT_REQUIRED
+  and INTEGRATION_PROVIDER_NOT_REGISTERED errors; keep adapter retry metadata passthrough unchanged
+  for cloud audit compatibility.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -42,11 +46,3 @@ acceptance:
   - provider present without workspace_id returns WORKSPACE_CONTEXT_REQUIRED
   - provider present without registered transport returns INTEGRATION_PROVIDER_NOT_REGISTERED
   - runtime-scoped registry prevents cross-test global state leakage
-claimed_mode: worktree
-worktree_path: worktrees/framework-core-lifecycle-wu-2305
-claimed_at: 2026-03-03T17:24:26.645Z
-baseline_main_sha: 3e5fce52a466cece3fb269d32a1dcf89c0f13ac4
-session_id: a179b86b-f210-4000-bf22-76ac58eecf73
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-03T17:24:26.649Z
