@@ -1,0 +1,41 @@
+id: WU-2305
+title: Move channel provider routing into Sidekick pack
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-03-03
+code_paths:
+  - packages/@lumenflow/packs/sidekick/tool-impl/**
+  - packages/@lumenflow/packs/sidekick/manifest.ts
+  - packages/@lumenflow/packs/sidekick/manifest.yaml
+  - packages/@lumenflow/packs/sidekick/package.json
+  - packages/@lumenflow/packs/sidekick/__tests__/**
+tests:
+  manual:
+    - Run provider path with registered transport and verify deterministic unregistered-provider error contract
+  unit:
+    - packages/@lumenflow/packs/sidekick/__tests__/tools.test.ts
+    - packages/@lumenflow/packs/sidekick/__tests__/storage.test.ts
+    - packages/@lumenflow/packs/sidekick/__tests__/manifest.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2305.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Move provider-aware routing for channel:send/channel:receive into Sidekick pack so cloud no longer intercepts for provider dispatch. Pack keeps local storage behavior when provider is absent and delegates to registered transport when provider is present.
+acceptance:
+  - channel:send/channel:receive route via registered transport when provider is present
+  - channel:send/channel:receive preserve existing local .sidekick behavior when provider is absent
+  - provider present without workspace_id returns WORKSPACE_CONTEXT_REQUIRED
+  - provider present without registered transport returns INTEGRATION_PROVIDER_NOT_REGISTERED
+  - runtime-scoped registry prevents cross-test global state leakage
