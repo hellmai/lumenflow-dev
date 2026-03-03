@@ -2,7 +2,7 @@ id: WU-2301
 title: Enforce wu:brief prompt hash attestation for delegated WUs
 lane: 'Operations: Tooling'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-03
 code_paths:
@@ -34,8 +34,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done only validates wu:brief evidence presence, not prompt fidelity. Problem: delegated WUs can pass lifecycle checks even when condensed/manual prompts ignore full wu:brief output. Solution: persist prompt attestation metadata and enforce hash match between generated brief and delegation lineage at wu:done.'
+description: 'Context: wu:done only validates wu:brief evidence presence, not prompt fidelity.
+  Problem: delegated WUs can pass lifecycle checks even when condensed/manual prompts ignore full
+  wu:brief output. Solution: persist prompt attestation metadata and enforce hash match between
+  generated brief and delegation lineage at wu:done.'
 acceptance:
   - wu:delegate stores attestation proving generated brief payload for target WU
-  - wu:done blocks initiative/delegated completion when required attestation is missing or mismatched unless --force
+  - wu:done blocks initiative/delegated completion when required attestation is missing or
+    mismatched unless --force
   - tests cover valid attestation path and mismatch/missing failure paths
+claimed_mode: worktree
+worktree_path: worktrees/operations-tooling-wu-2301
+claimed_at: 2026-03-03T12:49:53.502Z
+baseline_main_sha: 57a166f419ea494326978fef28e858263be89168
+session_id: 36cdd692-cf17-4f41-a519-c481953c5a7b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-03T12:49:53.507Z

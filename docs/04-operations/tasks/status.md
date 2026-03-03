@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-03-02_
+_Last updated: 2026-03-03_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2301 — Enforce wu:brief prompt hash attestation for delegated WUs](wu/WU-2301.yaml)
 
 ## Completed
 
