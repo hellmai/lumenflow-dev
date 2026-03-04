@@ -5,8 +5,13 @@
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { getWuDir } from './../.husky/hooks/workspace-config.mjs';
 
-const WU_DIR = 'docs/04-operations/tasks/wu';
+const WU_DIR = getWuDir();
+if (!WU_DIR) {
+  console.error('Cannot resolve wuDir from workspace.yaml. Is @lumenflow/core built?');
+  process.exit(1);
+}
 const TYPES_REQUIRING_CONTEXT = ['feature', 'bug', 'refactor'];
 
 function parseYAMLSimple(content) {

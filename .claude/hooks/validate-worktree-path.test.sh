@@ -124,6 +124,12 @@ echo "--- WU-1501 AC1: Fail-closed when no worktrees exist ---"
 # Create a temp directory to simulate a repo with no worktrees
 TEMP_REPO=$(mktemp -d)
 mkdir -p "$TEMP_REPO/.lumenflow"
+# WU-2310: Create workspace.yaml so wuDir allowlist resolves from config (not hardcoded)
+cat > "$TEMP_REPO/workspace.yaml" << 'WSEOF'
+software_delivery:
+  directories:
+    wuDir: docs/04-operations/tasks/wu
+WSEOF
 # Deliberately do NOT create $TEMP_REPO/worktrees
 
 # Write to a code file path (non-allowlisted) should be blocked

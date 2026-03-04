@@ -20,6 +20,7 @@ import { existsSync, readFileSync, appendFileSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolveProjectRoot } from './project-root.mjs';
+import { getWuDir } from './workspace-config.mjs';
 
 /**
  * WU-1357: Educational message constants for main branch protection
@@ -204,9 +205,11 @@ function logForceBypass(hookName, projectRoot) {
 
 export function filterStagedWUYamlFiles(paths) {
   if (!Array.isArray(paths)) return [];
+  const wuDir = getWuDir(resolveProjectRoot());
+  if (!wuDir) return []; // CLI helper not built — skip WU YAML filtering
+  const wuDirPrefix = wuDir + '/';
   return paths.filter(
-    (p) =>
-      typeof p === 'string' && p.startsWith('docs/04-operations/tasks/wu/') && p.endsWith('.yaml'),
+    (p) => typeof p === 'string' && p.startsWith(wuDirPrefix) && p.endsWith('.yaml'),
   );
 }
 
@@ -420,9 +423,12 @@ export async function main() {
       const isMainWorktree = gitDir === '.git';
 
       if (isMainWorktree) {
-        const wuPath = join(projectRoot, 'docs/04-operations/tasks/wu', `${wuId}.yaml`);
+        const wuDirResolved = getWuDir(projectRoot);
+        const wuPath = wuDirResolved
+          ? join(projectRoot, wuDirResolved, `${wuId}.yaml`)
+          : null;
 
-        if (existsSync(wuPath)) {
+        if (wuPath && existsSync(wuPath)) {
           try {
             const content = readFileSync(wuPath, 'utf8');
             const modeMatch = content.match(/^claimed_mode:\s*(.+)$/m);

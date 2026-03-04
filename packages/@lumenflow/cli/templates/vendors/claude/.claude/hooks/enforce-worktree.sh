@@ -13,7 +13,7 @@
 #   2 = Block operation (stderr shown to Claude as guidance)
 #
 # Security: Fail-closed on main when LumenFlow is configured
-#   - Allowlist: docs/04-operations/tasks/wu/, .lumenflow/, .claude/, plan/
+#   - Allowlist: wuDir (from CLI helper), .lumenflow/, .claude/, plan/
 #   - Branch-PR claimed_mode permits writes from main checkout
 #   - Graceful degradation only when LumenFlow is NOT configured
 #
@@ -127,13 +127,53 @@ if [[ -n "$RESOLVED_PATH" && "$RESOLVED_PATH" == "${WORKTREES_DIR}/"* ]]; then
   exit 0
 fi
 
+# WU-2310: Check allowlist BEFORE worktree block so .claude/plans/, WU specs, etc.
+# are never blocked regardless of worktree state
+if [[ -n "$RESOLVED_PATH" ]]; then
+  RELATIVE_PATH="${RESOLVED_PATH#${MAIN_REPO_PATH}/}"
+
+  # Resolve wuDir from CLI helper (uses getConfig — single source of truth)
+  GET_WU_DIR_CLI=""
+  for candidate in \
+    "${MAIN_REPO_PATH}/node_modules/@lumenflow/core/dist/cli/get-wu-dir.js" \
+    "${MAIN_REPO_PATH}/packages/@lumenflow/core/dist/cli/get-wu-dir.js"; do
+    if [[ -f "$candidate" ]]; then
+      GET_WU_DIR_CLI="$candidate"
+      break
+    fi
+  done
+
+  WU_DIR_PREFIX=""
+  if [[ -n "$GET_WU_DIR_CLI" ]]; then
+    WU_DIR_PREFIX=$(node "$GET_WU_DIR_CLI" "$MAIN_REPO_PATH" 2>/dev/null || echo "")
+  fi
+
+  # Fallback: read wuDir directly from workspace.yaml when CLI helper isn't built
+  if [[ -z "$WU_DIR_PREFIX" && -f "${MAIN_REPO_PATH}/workspace.yaml" ]]; then
+    WU_DIR_PREFIX=$(python3 -c "
+import yaml
+with open('${MAIN_REPO_PATH}/workspace.yaml') as f:
+    print(yaml.safe_load(f).get('software_delivery',{}).get('directories',{}).get('wuDir',''))
+" 2>/dev/null || echo "")
+  fi
+
+  # Allowlist: WU specs (config-driven), .lumenflow state, .claude config, plan/spec scaffolds
+  # wuDir only checked if CLI helper resolved it — no hardcoded fallback
+  if [[ -n "$WU_DIR_PREFIX" && "$RELATIVE_PATH" == "${WU_DIR_PREFIX}/"* ]] || \
+     [[ "$RELATIVE_PATH" == ".lumenflow/"* ]] || \
+     [[ "$RELATIVE_PATH" == ".claude/"* ]] || \
+     [[ "$RELATIVE_PATH" == "plan/"* ]]; then
+    exit 0
+  fi
+fi
+
 # Check if any active worktrees exist
 WORKTREE_COUNT=0
 if [[ -d "$WORKTREES_DIR" ]]; then
   WORKTREE_COUNT=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
 fi
 
-# If worktrees exist, block writes to main repo (original behavior)
+# If worktrees exist, block writes to main repo (non-allowlisted paths)
 if [[ "$WORKTREE_COUNT" -gt 0 ]]; then
   echo "" >&2
   echo "=== LumenFlow Worktree Enforcement ===" >&2
@@ -149,19 +189,6 @@ if [[ "$WORKTREE_COUNT" -gt 0 ]]; then
   echo "See: LUMENFLOW.md for complete workflow documentation" >&2
   echo "========================================" >&2
   exit 2
-fi
-
-# WU-1501: Fail-closed on main when no worktrees exist
-# Check allowlist: paths that are always safe to write on main
-if [[ -n "$RESOLVED_PATH" ]]; then
-  RELATIVE_PATH="${RESOLVED_PATH#${MAIN_REPO_PATH}/}"
-
-  case "$RELATIVE_PATH" in
-    docs/04-operations/tasks/wu/*)  exit 0 ;;  # WU YAML specs
-    .lumenflow/*)                   exit 0 ;;  # LumenFlow state/config
-    .claude/*)                      exit 0 ;;  # Claude Code config
-    plan/*)                         exit 0 ;;  # Plan/spec scaffolds
-  esac
 fi
 
 # Check for branch-pr claimed_mode (allows main writes without worktree)

@@ -214,13 +214,52 @@ if [[ "$RESOLVED_PATH" == "${WORKTREES_DIR}/"* ]]; then
   exit 0
 fi
 
+# WU-2310: Check allowlist BEFORE worktree block so .claude/plans/, WU specs, etc.
+# are never blocked regardless of worktree state
+RELATIVE_PATH="${RESOLVED_PATH#${MAIN_REPO_PATH}/}"
+
+# Resolve wuDir from CLI helper (uses getConfig — single source of truth)
+# Same lookup pattern as IS_AGENT_BRANCH_CLI above
+GET_WU_DIR_CLI=""
+for candidate in \
+  "${MAIN_REPO_PATH}/node_modules/@lumenflow/core/dist/cli/get-wu-dir.js" \
+  "${MAIN_REPO_PATH}/packages/@lumenflow/core/dist/cli/get-wu-dir.js"; do
+  if [[ -f "$candidate" ]]; then
+    GET_WU_DIR_CLI="$candidate"
+    break
+  fi
+done
+
+WU_DIR_PREFIX=""
+if [[ -n "$GET_WU_DIR_CLI" ]]; then
+  WU_DIR_PREFIX=$(node "$GET_WU_DIR_CLI" "$MAIN_REPO_PATH" 2>/dev/null || echo "")
+fi
+
+# Fallback: read wuDir directly from workspace.yaml when CLI helper isn't built
+if [[ -z "$WU_DIR_PREFIX" && -f "${MAIN_REPO_PATH}/workspace.yaml" ]]; then
+  WU_DIR_PREFIX=$(python3 -c "
+import yaml
+with open('${MAIN_REPO_PATH}/workspace.yaml') as f:
+    print(yaml.safe_load(f).get('software_delivery',{}).get('directories',{}).get('wuDir',''))
+" 2>/dev/null || echo "")
+fi
+
+# Allowlist: WU specs (config-driven), .lumenflow state, .claude config, plan/spec scaffolds
+# wuDir only checked if CLI helper resolved it — no hardcoded fallback
+if [[ -n "$WU_DIR_PREFIX" && "$RELATIVE_PATH" == "${WU_DIR_PREFIX}/"* ]] || \
+   [[ "$RELATIVE_PATH" == ".lumenflow/"* ]] || \
+   [[ "$RELATIVE_PATH" == ".claude/"* ]] || \
+   [[ "$RELATIVE_PATH" == "plan/"* ]]; then
+  exit 0
+fi
+
 # Check if any active worktrees exist
 WORKTREE_COUNT=0
 if [[ -d "$WORKTREES_DIR" ]]; then
   WORKTREE_COUNT=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
 fi
 
-# If worktrees exist, block writes to main repo (original behavior)
+# If worktrees exist, block writes to main repo (non-allowlisted paths)
 if [[ "$WORKTREE_COUNT" -gt 0 ]]; then
   ACTIVE_WORKTREES=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | head -5 | tr '\n' ', ' | sed 's/,$//')
 
@@ -232,18 +271,6 @@ USE INSTEAD:
   1. cd to your worktree: cd worktrees/<lane>-wu-<id>/
   2. Make your edits in the worktree"
 fi
-
-# WU-1501: Fail-closed on main when no active worktrees exist
-# Check allowlist: paths that are always safe to write on main
-RELATIVE_PATH="${RESOLVED_PATH#${MAIN_REPO_PATH}/}"
-
-# Allowlist: WU specs, .lumenflow state, .claude config, plan/spec scaffolds
-case "$RELATIVE_PATH" in
-  docs/04-operations/tasks/wu/*)  exit 0 ;;  # WU YAML specs
-  .lumenflow/*)                   exit 0 ;;  # LumenFlow state/config
-  .claude/*)                      exit 0 ;;  # Claude Code config
-  plan/*)                         exit 0 ;;  # Plan/spec scaffolds
-esac
 
 # Check for branch-pr claimed_mode (allows main writes without worktree)
 STATE_FILE="${MAIN_REPO_PATH}/.lumenflow/state/wu-events.jsonl"

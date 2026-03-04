@@ -2762,8 +2762,9 @@
 {"type":"checkpoint","wuId":"WU-2308","timestamp":"2026-03-03T20:24:49.171Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2308.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2308","timestamp":"2026-03-03T20:25:15.527Z"}
 {"type":"claim","wuId":"WU-2309","timestamp":"2026-03-04T10:31:28.018Z","lane":"Framework: Core Validation","title":"Make wu:brief testing guidance profile-aware and move domain guidance to config/templates"}
+{"type":"claim","wuId":"WU-2310","timestamp":"2026-03-04T10:38:18.091Z","lane":"Framework: CLI Enforcement","title":"Fix hardcoded paths in shell hooks and pre-commit, fix allowlist ordering bug"}
+{"type":"checkpoint","wuId":"WU-2310","timestamp":"2026-03-04T10:54:10.612Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2309","timestamp":"2026-03-04T10:31:38.624Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2309","timestamp":"2026-03-04T10:36:01.506Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
-{"type":"claim","wuId":"WU-2310","timestamp":"2026-03-04T10:38:18.091Z","lane":"Framework: CLI Enforcement","title":"Fix hardcoded paths in shell hooks and pre-commit, fix allowlist ordering bug"}
 {"type":"checkpoint","wuId":"WU-2309","timestamp":"2026-03-04T10:41:09.561Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2309","timestamp":"2026-03-04T10:53:30.492Z"}
