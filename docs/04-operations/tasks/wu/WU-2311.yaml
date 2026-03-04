@@ -2,7 +2,7 @@ id: WU-2311
 title: Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-04
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - .husky/hooks/__tests__/
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -29,8 +30,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Test files are exempted from the AST path-literal-guard via __tests__/ in ALWAYS_ALLOWED_PATH_SEGMENTS. This allows hardcoded path literals like docs/04-operations/tasks/wu to creep into tests unchecked. Fix all ~136 occurrences across ~50 test files to use DIRECTORIES constants from wu-paths-constants.ts, then remove the __tests__/ exemption so the guard covers tests permanently.
+description: Test files are exempted from the AST path-literal-guard via __tests__/ in
+  ALWAYS_ALLOWED_PATH_SEGMENTS. This allows hardcoded path literals like docs/04-operations/tasks/wu
+  to creep into tests unchecked. Fix all ~136 occurrences across ~50 test files to use DIRECTORIES
+  constants from wu-paths-constants.ts, then remove the __tests__/ exemption so the guard covers
+  tests permanently.
 acceptance:
   - All test files use DIRECTORIES/LUMENFLOW_PATHS constants instead of hardcoded path strings
   - The __tests__/ entry is removed from ALWAYS_ALLOWED_PATH_SEGMENTS in path-literal-guard.test.ts
   - pnpm gates passes with the guard now covering test files
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-validation-wu-2311
+claimed_at: 2026-03-04T11:03:25.838Z
+baseline_main_sha: 1f82765a8545c194db3b81efcf0806303486e800
+session_id: a9b168c7-a479-41bc-8920-2c218b0fccde
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-04T11:03:25.844Z

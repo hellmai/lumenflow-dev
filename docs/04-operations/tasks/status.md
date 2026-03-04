@@ -4,7 +4,7 @@ _Last updated: 2026-03-04_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2311 — Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests](wu/WU-2311.yaml)
 
 ## Completed
 
