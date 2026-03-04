@@ -2,7 +2,7 @@ id: WU-2309
 title: Fix wu:brief --evidence-only false 'Recorded' message when evidence is skipped
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-03
 code_paths:
@@ -21,7 +21,8 @@ artifacts:
   - .lumenflow/stamps/WU-2309.done
 dependencies: []
 risks: []
-notes: 'Implement explicit evidence outcome handling for wu:brief --evidence-only so skipped writes do not log as recorded; cover recorded/skipped outcomes in resolver tests.'
+notes: Implement explicit evidence outcome handling for wu:brief --evidence-only so skipped writes
+  do not log as recorded; cover recorded/skipped outcomes in resolver tests.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -48,3 +49,6 @@ session_id: 60896ac4-5fb3-40c9-9b80-bf814be89fed
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-04T00:01:03.622Z
+locked: true
+completed_at: 2026-03-04T00:06:59.293Z
+completed: 2026-03-04
