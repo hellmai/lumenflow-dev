@@ -2,7 +2,7 @@ id: WU-2314
 title: Restore release-blocking test suites to green on main
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-04
 code_paths:
@@ -26,7 +26,9 @@ artifacts:
   - .lumenflow/stamps/WU-2314.done
 dependencies: []
 risks: []
-notes: Align drifted assertions with current path-resolved behavior, retain strict parity truth gates with explicit expected gaps, and preserve release readiness by keeping targeted regression suites green.
+notes: Align drifted assertions with current path-resolved behavior, retain strict parity truth
+  gates with explicit expected gaps, and preserve release readiness by keeping targeted regression
+  suites green.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -50,3 +52,6 @@ session_id: 04b1f19a-1f31-4900-9175-a706be0392c1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-04T13:27:44.256Z
+locked: true
+completed_at: 2026-03-04T13:52:18.061Z
+completed: 2026-03-04
