@@ -11,10 +11,7 @@ import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[lumenflow:pre-commit-check]';
 const UPGRADE_MARKER_FILENAME = `lumenflow-upgrade-marker${FILE_EXTENSIONS.JSON}`;
-const UPGRADE_MARKER_RELATIVE_PATH = posix.join(
-  LUMENFLOW_PATHS.STATE_DIR,
-  UPGRADE_MARKER_FILENAME,
-);
+const UPGRADE_MARKER_RELATIVE_PATH = posix.join(LUMENFLOW_PATHS.STATE_DIR, UPGRADE_MARKER_FILENAME);
 const WU_EVENTS_RELATIVE_PATH = LUMENFLOW_PATHS.WU_EVENTS;
 
 const LUMENFLOW_VERSION_PATTERN = /@lumenflow\/(agent|cli|core|initiatives|memory|metrics|shims)/;
