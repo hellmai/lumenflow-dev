@@ -19,12 +19,20 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-2313-plan.md
 risks: []
-notes: ''
+notes: 'TDD: RED tests added first asserting __tests__/ not in allowlist, then GREEN by removing the
+  segments. No new production code needed - purely test guard configuration change.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-04T12:43:23.794Z
+worktree_path: worktrees/framework-core-validation-wu-2313
+session_id: c735347d-9c32-44e6-853e-95e5029b9dc7
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-04T12:43:23.799Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +42,3 @@ acceptance:
   - ALWAYS_ALLOWED_PATH_SEGMENTS no longer contains __tests__/ for path-literal guard
   - Other guards (file-extension, env-var, status-literal) still correctly skip test directories
   - All existing tests pass
-claimed_mode: worktree
-worktree_path: worktrees/framework-core-validation-wu-2313
-claimed_at: 2026-03-04T12:43:23.794Z
-baseline_main_sha: 69f3711af5cfddbb5f01433de96fc5dc7e62b055
-session_id: c735347d-9c32-44e6-853e-95e5029b9dc7
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-04T12:43:23.799Z
