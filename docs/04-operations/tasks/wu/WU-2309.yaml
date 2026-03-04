@@ -21,7 +21,7 @@ artifacts:
   - .lumenflow/stamps/WU-2309.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Implement explicit evidence outcome handling for wu:brief --evidence-only so skipped writes do not log as recorded; cover recorded/skipped outcomes in resolver tests.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

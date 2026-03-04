@@ -31,7 +31,7 @@ describe('recordWuBriefEvidence', () => {
 
   describe('AC1: skips writing when not in a worktree context', () => {
     it('does not call checkpoint when workspaceRoot is a main checkout path', async () => {
-      await recordWuBriefEvidence(
+      const result = await recordWuBriefEvidence(
         {
           wuId: 'WU-9999',
           workspaceRoot: '/home/user/project',
@@ -43,6 +43,7 @@ describe('recordWuBriefEvidence', () => {
         },
       );
 
+      expect(result).toBe('skipped');
       expect(mockCreateStore).not.toHaveBeenCalled();
       expect(checkpointCalls).toHaveLength(0);
     });
@@ -62,15 +63,14 @@ describe('recordWuBriefEvidence', () => {
         },
       );
 
-      // Should return undefined (void) without any writes
-      expect(result).toBeUndefined();
+      expect(result).toBe('skipped');
       expect(mockCreateStore).not.toHaveBeenCalled();
     });
   });
 
   describe('AC3: worktree still records evidence as before', () => {
     it('calls checkpoint when in a worktree context', async () => {
-      await recordWuBriefEvidence(
+      const result = await recordWuBriefEvidence(
         {
           wuId: 'WU-5678',
           workspaceRoot: '/home/user/project/worktrees/framework-cli-wu-5678',
@@ -82,6 +82,7 @@ describe('recordWuBriefEvidence', () => {
         },
       );
 
+      expect(result).toBe('recorded');
       expect(mockCreateStore).toHaveBeenCalledTimes(1);
       expect(checkpointCalls).toHaveLength(1);
       expect(checkpointCalls[0].wuId).toBe('WU-5678');
@@ -107,6 +108,26 @@ describe('recordWuBriefEvidence', () => {
       expect(opts.progress).toBe('wu:brief executed');
       expect(opts.nextSteps).toContain('codex-cli');
     });
+
+    it('records when forceRecord is true outside worktree context', async () => {
+      const result = await recordWuBriefEvidence(
+        {
+          wuId: 'WU-8888',
+          workspaceRoot: '/home/user/project',
+          clientName: 'codex-cli',
+          forceRecord: true,
+        },
+        {
+          createStore: mockCreateStore,
+          isInWorktree: () => false,
+        },
+      );
+
+      expect(result).toBe('recorded');
+      expect(mockCreateStore).toHaveBeenCalledTimes(1);
+      expect(checkpointCalls).toHaveLength(1);
+      expect(checkpointCalls[0].wuId).toBe('WU-8888');
+    });
   });
 
   describe('default worktree detection', () => {
@@ -114,7 +135,7 @@ describe('recordWuBriefEvidence', () => {
       // When no isInWorktree override is provided, the function should use the real
       // isInWorktree from @lumenflow/core/core/worktree-guard.
       // Since test runner is likely not in a worktree path, this should skip writing.
-      await recordWuBriefEvidence(
+      const result = await recordWuBriefEvidence(
         {
           wuId: 'WU-0001',
           workspaceRoot: '/tmp/not-a-worktree',
@@ -127,6 +148,7 @@ describe('recordWuBriefEvidence', () => {
       );
 
       // /tmp/not-a-worktree does not match worktree path pattern, so no write
+      expect(result).toBe('skipped');
       expect(mockCreateStore).not.toHaveBeenCalled();
     });
   });

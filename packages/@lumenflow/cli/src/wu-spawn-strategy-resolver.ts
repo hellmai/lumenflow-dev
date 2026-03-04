@@ -349,6 +349,8 @@ interface RecordWuBriefEvidenceOptions {
   claimedBranch?: string;
 }
 
+export type WuBriefEvidenceOutcome = 'recorded' | 'skipped';
+
 interface BriefEvidenceStore {
   checkpoint: (
     wuId: string,
@@ -375,7 +377,7 @@ interface RecordWuBriefEvidenceDependencies {
 export async function recordWuBriefEvidence(
   options: RecordWuBriefEvidenceOptions,
   dependencies: RecordWuBriefEvidenceDependencies = {},
-): Promise<void> {
+): Promise<WuBriefEvidenceOutcome> {
   const { wuId, workspaceRoot, clientName, promptHash, forceRecord, claimedMode, claimedBranch } =
     options;
 
@@ -416,7 +418,7 @@ export async function recordWuBriefEvidence(
   // - worktree mode: record only from worktree context
   // - branch-pr/branch-only mode: record from claimed branch context
   if (!shouldRecordEvidence) {
-    return;
+    return 'skipped';
   }
 
   const stateDir = resolveStateDir(workspaceRoot);
@@ -429,6 +431,8 @@ export async function recordWuBriefEvidence(
     progress: BRIEF_EVIDENCE_PROGRESS,
     nextSteps,
   });
+
+  return 'recorded';
 }
 
 /**
@@ -601,9 +605,9 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
 
   const recordEvidenceOrFail = async (
     options: { promptHash?: string; forceRecord?: boolean } = {},
-  ) => {
+  ): Promise<WuBriefEvidenceOutcome> => {
     try {
-      await recordWuBriefEvidence({
+      return await recordWuBriefEvidence({
         wuId: id,
         workspaceRoot: baseDir,
         clientName,
@@ -623,10 +627,16 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   };
 
   if (args.evidenceOnly) {
-    await recordEvidenceOrFail();
-    console.log(
-      `${effectiveLogPrefix} Recorded wu:brief evidence for ${id} (evidence-only mode; no handoff prompt generated).`,
-    );
+    const evidenceOutcome = await recordEvidenceOrFail();
+    if (evidenceOutcome === 'recorded') {
+      console.log(
+        `${effectiveLogPrefix} Recorded wu:brief evidence for ${id} (evidence-only mode; no handoff prompt generated).`,
+      );
+    } else {
+      console.log(
+        `${effectiveLogPrefix} Skipped wu:brief evidence for ${id} (evidence-only mode; not in claimed worktree/branch context).`,
+      );
+    }
     console.log(`${effectiveLogPrefix} Continue implementing ${id} in the current session.`);
     return;
   }
