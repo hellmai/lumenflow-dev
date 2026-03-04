@@ -17,6 +17,7 @@ import {
   convertToTemplate,
   checkTemplateDrift,
 } from '../sync-templates.js';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 // Constants for frequently used path segments (sonarjs/no-duplicate-string)
 const PACKAGES_DIR = 'packages';
@@ -27,6 +28,10 @@ const CORE_DIR = 'core';
 const LUMENFLOW_DOT_DIR = '.lumenflow';
 const CONSTRAINTS_FILE = 'constraints.md';
 const CONSTRAINTS_TEMPLATE = 'constraints.md.template';
+
+function getOnboardingDir(projectRoot: string): string {
+  return path.join(projectRoot, createWuPaths({ projectRoot }).ONBOARDING_DIR());
+}
 
 describe('templates-sync', () => {
   let tempDir: string;
@@ -160,19 +165,11 @@ This document contains the 7 non-negotiable constraints.
   });
 
   describe('syncOnboardingDocs', () => {
-    const ONBOARDING_SUBPATH = [
-      'docs',
-      '04-operations',
-      '_frameworks',
-      'lumenflow',
-      'agent',
-      'onboarding',
-    ];
     const FIRST_WU_MISTAKES_FILE = 'first-wu-mistakes.md';
 
     beforeEach(() => {
       // Set up onboarding source directory
-      const onboardingDir = path.join(tempDir, ...ONBOARDING_SUBPATH);
+      const onboardingDir = getOnboardingDir(tempDir);
       fs.mkdirSync(onboardingDir, { recursive: true });
 
       // Create first-wu-mistakes.md with v1.1 content (11 mistakes)
@@ -338,13 +335,7 @@ pnpm wu:prep --id WU-123
       fs.writeFileSync(path.join(tempDir, 'LUMENFLOW.md'), 'content');
 
       const onboardingDir = path.join(
-        tempDir,
-        'docs',
-        '04-operations',
-        '_frameworks',
-        'lumenflow',
-        'agent',
-        'onboarding',
+        getOnboardingDir(tempDir),
       );
       fs.mkdirSync(onboardingDir, { recursive: true });
       fs.writeFileSync(path.join(onboardingDir, 'first-wu-mistakes.md'), 'content');

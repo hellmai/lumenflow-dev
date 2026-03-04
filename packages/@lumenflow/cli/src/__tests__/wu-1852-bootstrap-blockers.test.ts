@@ -118,10 +118,10 @@ describe('AC1: scaffoldProject injects cos:gates stub (WU-1852)', () => {
 // ============================================================================
 describe('AC2: wu:done error message does not reference --skip-cos-gates (WU-1852)', () => {
   it('COS gates failure error message does not suggest --skip-cos-gates flag', async () => {
-    // Read the wu-done.ts source and check that console.error output lines
+    // Read the COS gate execution source and check that console.error output lines
     // do not reference the non-existent --skip-cos-gates flag.
     // Code comments explaining the fix are acceptable.
-    const wuDoneSrc = fs.readFileSync(path.join(__dirname, '..', 'wu-done.ts'), 'utf-8');
+    const wuDoneSrc = fs.readFileSync(path.join(__dirname, '..', 'wu-done-gates.ts'), 'utf-8');
 
     // Extract all console.error lines (user-facing output)
     const consoleErrorLines = wuDoneSrc
@@ -135,7 +135,7 @@ describe('AC2: wu:done error message does not reference --skip-cos-gates (WU-185
   });
 
   it('COS gates failure suggests --skip-gates (the real flag) instead', async () => {
-    const wuDoneSrc = fs.readFileSync(path.join(__dirname, '..', 'wu-done.ts'), 'utf-8');
+    const wuDoneSrc = fs.readFileSync(path.join(__dirname, '..', 'wu-done-gates.ts'), 'utf-8');
 
     // The COS gates error section should reference --skip-gates in its console.error output.
     // The string may span multiple source lines (template literal), so check a window
@@ -358,7 +358,7 @@ describe('WU-1978: bootstrap-all default path', () => {
     expect(result.skipped).toBe(true);
   });
 
-  it('runInitBootstrap rejects when required pack installation is missing integrity-backed pin', async () => {
+  it('runInitBootstrap returns a warning when required pack installation is missing integrity-backed pin', async () => {
     const { runInitBootstrap } = await importInitWithMockedOnboard(async () => ({
       success: true,
       errors: [],
@@ -366,15 +366,19 @@ describe('WU-1978: bootstrap-all default path', () => {
       packInstalled: false,
     }));
 
-    await expect(
-      runInitBootstrap({
-        targetDir: tempDir,
-        force: false,
-        bootstrapDomain: PACK_ID_SOFTWARE_DELIVERY,
-        skipBootstrap: false,
-        skipBootstrapPackInstall: false,
-      }),
-    ).rejects.toThrow(/integrity metadata/i);
+    const result = await runInitBootstrap({
+      targetDir: tempDir,
+      force: false,
+      bootstrapDomain: PACK_ID_SOFTWARE_DELIVERY,
+      skipBootstrap: false,
+      skipBootstrapPackInstall: false,
+    });
+
+    expect(result.skipped).toBe(false);
+    expect(result.workspaceGenerated).toBe(true);
+    expect(result.packInstalled).toBe(false);
+    expect(result.warning).toMatch(/integrity metadata/i);
+    expect(result.warning).toContain('Continuing without pack');
   });
 
   it('runInitBootstrap allows custom domain without pack installation', async () => {

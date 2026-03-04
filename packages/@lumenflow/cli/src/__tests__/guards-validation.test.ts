@@ -19,6 +19,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { existsSync, readFileSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 // Test utilities
 function createTempDir(): string {
@@ -384,10 +385,16 @@ describe('validate-agent-sync', () => {
 // ============================================================================
 describe('validate-backlog-sync', () => {
   let tmpDir: string;
+  let wuDir: string;
+  let backlogPath: string;
 
   beforeEach(() => {
     tmpDir = createTempDir();
-    mkdirSync(path.join(tmpDir, 'docs', '04-operations', 'tasks', 'wu'), { recursive: true });
+    const wuPaths = createWuPaths({ projectRoot: tmpDir });
+    wuDir = path.join(tmpDir, wuPaths.WU_DIR());
+    backlogPath = path.join(tmpDir, wuPaths.BACKLOG());
+    mkdirSync(wuDir, { recursive: true });
+    mkdirSync(path.dirname(backlogPath), { recursive: true });
   });
 
   afterEach(() => {
@@ -400,11 +407,11 @@ describe('validate-backlog-sync', () => {
 
       // Create WU files
       writeFileSync(
-        path.join(tmpDir, 'docs', '04-operations', 'tasks', 'wu', 'WU-001.yaml'),
+        path.join(wuDir, 'WU-001.yaml'),
         'id: WU-001\ntitle: First WU\nstatus: ready',
       );
       writeFileSync(
-        path.join(tmpDir, 'docs', '04-operations', 'tasks', 'wu', 'WU-002.yaml'),
+        path.join(wuDir, 'WU-002.yaml'),
         'id: WU-002\ntitle: Second WU\nstatus: done',
       );
 
@@ -417,10 +424,7 @@ describe('validate-backlog-sync', () => {
 ## Done
 - WU-002: Second WU
 `;
-      writeFileSync(
-        path.join(tmpDir, 'docs', '04-operations', 'tasks', 'backlog.md'),
-        backlogContent,
-      );
+      writeFileSync(backlogPath, backlogContent);
 
       const result = await validateBacklogSync({ cwd: tmpDir });
       expect(result.valid).toBe(true);
@@ -431,7 +435,7 @@ describe('validate-backlog-sync', () => {
 
       // Create WU file
       writeFileSync(
-        path.join(tmpDir, 'docs', '04-operations', 'tasks', 'wu', 'WU-001.yaml'),
+        path.join(wuDir, 'WU-001.yaml'),
         'id: WU-001\ntitle: Missing WU\nstatus: ready',
       );
 
@@ -441,10 +445,7 @@ describe('validate-backlog-sync', () => {
 ## Ready
 (empty)
 `;
-      writeFileSync(
-        path.join(tmpDir, 'docs', '04-operations', 'tasks', 'backlog.md'),
-        backlogContent,
-      );
+      writeFileSync(backlogPath, backlogContent);
 
       const result = await validateBacklogSync({ cwd: tmpDir });
       expect(result.valid).toBe(false);

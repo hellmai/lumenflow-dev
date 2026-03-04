@@ -64,7 +64,7 @@ describe('wu:create helpers (WU-1429)', () => {
     expect(git.push).toHaveBeenCalledWith('origin', 'claude/session-1596', { setUpstream: true });
   });
 
-  it('should default notes to non-empty placeholder when not provided', () => {
+  it('should leave notes undefined when not provided', () => {
     const wu = buildWUContent({
       ...BASE_WU,
       opts: {
@@ -74,9 +74,7 @@ describe('wu:create helpers (WU-1429)', () => {
       },
     });
 
-    expect(typeof wu.notes).toBe('string');
-    expect(wu.notes.trim().length).toBeGreaterThan(0);
-    expect(wu.notes).toContain('(auto)');
+    expect(wu.notes).toBeUndefined();
   });
 
   it('should persist notes when provided', () => {

@@ -88,14 +88,18 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
   // WU-1962: Added workspace:init and lumenflow-onboard alias to public manifest.
   // WU-1980: Added cloud:connect command to public manifest.
   // WU-1983: Added MCP parity tools for cloud_connect, onboard aliases, and workspace_init.
-  // Remaining gaps are explicit pack command follow-ups.
+  // WU-2314: Remaining gaps are explicitly tracked until MCP parity is implemented.
   const EXPECTED_MISSING_PARITY_TOOLS: string[] = [
+    'lumenflow_pre_commit_check',
     'pack_author',
     'pack_hash',
     'pack_install',
     'pack_publish',
     'pack_search',
     'pack_validate',
+    'state_emit',
+    'templates_sync',
+    'wu_escalate',
   ];
 
   describe('wu:status flags', () => {

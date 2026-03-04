@@ -31,6 +31,26 @@ const TEST_INIT_SLUG = 'test-initiative';
 const TEST_INIT_TITLE = 'Test Initiative';
 const TEST_INIT_STATUS = 'open';
 const TEST_DATE = '2026-01-25';
+const VALID_DESCRIPTION =
+  'Remove stale initiative linkage while preserving schema validity for write-back operations.';
+const VALID_ACCEPTANCE = ['initiative field removed from WU YAML when linkage matches target'];
+
+function createWritableWUDoc(
+  overrides: Partial<Record<string, unknown>> = {},
+): Record<string, unknown> {
+  return {
+    id: TEST_WU_ID,
+    title: 'Test WU',
+    lane: TEST_LANE,
+    type: 'bug',
+    status: 'in_progress',
+    priority: 'P1',
+    created: TEST_DATE,
+    description: VALID_DESCRIPTION,
+    acceptance: VALID_ACCEPTANCE,
+    ...overrides,
+  };
+}
 
 // Pre-import the module to ensure coverage tracking includes the module itself
 beforeAll(async () => {
@@ -235,13 +255,7 @@ describe('initiative:remove-wu command', () => {
       const wuDir = join(tempDir, WU_REL_PATH);
       mkdirSync(wuDir, { recursive: true });
       const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
-      const wuDoc = {
-        id: TEST_WU_ID,
-        title: 'Test WU',
-        lane: TEST_LANE,
-        status: 'in_progress',
-        initiative: TEST_INIT_ID,
-      };
+      const wuDoc = createWritableWUDoc({ initiative: TEST_INIT_ID });
       writeFileSync(wuPath, stringifyYAML(wuDoc));
 
       // Update WU

@@ -26,7 +26,7 @@ artifacts:
   - .lumenflow/stamps/WU-2314.done
 dependencies: []
 risks: []
-notes: ''
+notes: Align drifted assertions with current path-resolved behavior, retain strict parity truth gates with explicit expected gaps, and preserve release readiness by keeping targeted regression suites green.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

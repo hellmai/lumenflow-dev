@@ -14,12 +14,17 @@ import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 // Pre-import the module to ensure coverage tracking includes the module itself
 let initPlanModule: typeof import('../initiative-plan.js');
 beforeAll(async () => {
   initPlanModule = await import('../initiative-plan.js');
 });
+
+function resolvePlansDir(projectRoot: string): string {
+  return join(projectRoot, createWuPaths({ projectRoot }).PLANS_DIR());
+}
 
 // Mock modules before importing the module under test
 const mockGit = {
@@ -306,7 +311,7 @@ describe('init:plan command', () => {
     it('should create a plan template file', async () => {
       const { createPlanTemplate } = await import('../initiative-plan.js');
 
-      const plansDir = join(tempDir, 'docs', '04-operations', 'plans');
+      const plansDir = resolvePlansDir(tempDir);
       mkdirSync(plansDir, { recursive: true });
 
       const planPath = createPlanTemplate(tempDir, 'INIT-001', 'Test Initiative');
@@ -322,7 +327,7 @@ describe('init:plan command', () => {
     it('should not overwrite existing plan file', async () => {
       const { createPlanTemplate } = await import('../initiative-plan.js');
 
-      const plansDir = join(tempDir, 'docs', '04-operations', 'plans');
+      const plansDir = resolvePlansDir(tempDir);
       mkdirSync(plansDir, { recursive: true });
 
       // Create existing file
@@ -441,7 +446,7 @@ describe('createPlanTemplate edge cases', () => {
     const planPath = createPlanTemplate(tempDir, 'INIT-001', 'Test Initiative');
 
     expect(existsSync(planPath)).toBe(true);
-    expect(planPath).toContain('docs/04-operations/plans');
+    expect(planPath.startsWith(resolvePlansDir(tempDir))).toBe(true);
   });
 
   it('should truncate long titles in filename', async () => {
