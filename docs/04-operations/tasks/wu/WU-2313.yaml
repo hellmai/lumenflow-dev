@@ -2,7 +2,7 @@ id: WU-2313
 title: Remove __tests__ exemption from path-literal production scan
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-04
 code_paths:
@@ -28,8 +28,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Split ALWAYS_ALLOWED_PATH_SEGMENTS so path-literal guard no longer exempts __tests__/ directories. Other guards (file-extension, env-var, status-literal) keep their own allowlists.
+description: Split ALWAYS_ALLOWED_PATH_SEGMENTS so path-literal guard no longer exempts __tests__/
+  directories. Other guards (file-extension, env-var, status-literal) keep their own allowlists.
 acceptance:
   - ALWAYS_ALLOWED_PATH_SEGMENTS no longer contains __tests__/ for path-literal guard
   - Other guards (file-extension, env-var, status-literal) still correctly skip test directories
   - All existing tests pass
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-validation-wu-2313
+claimed_at: 2026-03-04T12:43:23.794Z
+baseline_main_sha: 69f3711af5cfddbb5f01433de96fc5dc7e62b055
+session_id: c735347d-9c32-44e6-853e-95e5029b9dc7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-04T12:43:23.799Z

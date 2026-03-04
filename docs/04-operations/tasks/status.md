@@ -5,6 +5,7 @@ _Last updated: 2026-03-04_
 ## In Progress
 
 - [WU-2312 — Fix pre-existing path-literal zero-tolerance and status-literal-guard test failures](wu/WU-2312.yaml)
+- [WU-2313 — Remove \_\_tests\_\_ exemption from path-literal production scan](wu/WU-2313.yaml)
 
 ## Completed
 
