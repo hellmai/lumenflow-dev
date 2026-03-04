@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2315 — Fix skip-gates CFR bug and emit DORA telemetry to cloud sync pipeline](wu/WU-2315.yaml) — Framework: Metrics
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1261,6 +1261,7 @@ sections:
 - [WU-2313 — Remove \_\_tests\_\_ exemption from path-literal production scan](wu/WU-2313.yaml)
 - [WU-2312 — Fix pre-existing path-literal zero-tolerance and status-literal-guard test failures](wu/WU-2312.yaml)
 - [WU-2314 — Restore release-blocking test suites to green on main](wu/WU-2314.yaml)
+- [WU-2315 — Fix skip-gates CFR bug and emit DORA telemetry to cloud sync pipeline](wu/WU-2315.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

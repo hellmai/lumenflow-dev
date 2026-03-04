@@ -2,7 +2,7 @@ id: WU-2315
 title: Fix skip-gates CFR bug and emit DORA telemetry to cloud sync pipeline
 lane: 'Framework: Metrics'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-04
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - CFR calculation correctly counts skip-gates entries
   - metrics:snapshot emits dora.* telemetry records to NDJSON
   - Existing syncNdjsonTelemetryToCloud picks up DORA records
+locked: true
+completed_at: 2026-03-04T15:55:29.489Z
+completed: 2026-03-04
