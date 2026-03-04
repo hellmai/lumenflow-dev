@@ -2778,3 +2778,5 @@
 {"type":"complete","wuId":"WU-2311","timestamp":"2026-03-04T12:33:28.992Z"}
 {"type":"claim","wuId":"WU-2312","timestamp":"2026-03-04T12:41:23.271Z","lane":"Framework: Core Validation","title":"Fix pre-existing path-literal zero-tolerance and status-literal-guard test failures"}
 {"type":"claim","wuId":"WU-2313","timestamp":"2026-03-04T12:43:23.816Z","lane":"Framework: Core Validation","title":"Remove __tests__ exemption from path-literal production scan"}
+{"type":"checkpoint","wuId":"WU-2313","timestamp":"2026-03-04T12:43:34.048Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2313","timestamp":"2026-03-04T12:47:00.772Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
