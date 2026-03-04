@@ -18,8 +18,13 @@ artifacts:
   - .lumenflow/stamps/WU-2312.done
 dependencies: []
 risks: []
-notes: Resolved pre-existing runtime guard failures by replacing banned path literals, status
-  literals, and bare .yaml checks with shared constants across core/cli/agent.
+notes: >-
+  Resolved pre-existing runtime guard failures by replacing banned path literals, status literals,
+  and bare .yaml checks with shared constants across core/cli/agent.
+
+
+  tdd-exception: this WU resolves pre-existing guard literal violations only; automated test file
+  changes are tracked separately in WU-2313.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

@@ -2780,6 +2780,7 @@
 {"type":"checkpoint","wuId":"WU-2312","timestamp":"2026-03-04T12:41:33.639Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2312","timestamp":"2026-03-04T12:41:39.301Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"checkpoint","wuId":"WU-2312","timestamp":"2026-03-04T12:49:23.071Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2312.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"checkpoint","wuId":"WU-2312","timestamp":"2026-03-04T12:49:44.206Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2312.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2313","timestamp":"2026-03-04T12:43:23.816Z","lane":"Framework: Core Validation","title":"Remove __tests__ exemption from path-literal production scan"}
 {"type":"checkpoint","wuId":"WU-2313","timestamp":"2026-03-04T12:43:34.048Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2313","timestamp":"2026-03-04T12:47:00.772Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
