@@ -329,6 +329,31 @@ condition: "type !== 'documentation'"
 - [ ] E2E test for happy path
 ```
 
+### Scenario 2b: Structured Content Profiles (YAML/JSON/Markdown)
+
+For prompt/config/content work, prefer validation and evaluation evidence instead of forcing TDD steps:
+
+```markdown
+---
+id: lane-guidance-intelligence
+name: Intelligence Lane Guidance
+required: false
+order: 400
+condition: "laneParent === 'Intelligence'"
+---
+
+## Intelligence Lane Guidelines
+
+- Run the project-specific prompt/classification evaluation command configured by your team
+- Validate YAML/JSON schema compatibility for changed content files
+- Record evaluator outputs in notes or evidence artifacts
+```
+
+<Aside type="note">
+  Keep project commands (for example `pnpm prompts:eval`) in local templates, not in core framework
+  code. This keeps LumenFlow generic while still enabling strict domain workflows.
+</Aside>
+
 ### Scenario 3: Lane-Specific Guidance
 
 Create guidance for specific lanes:
@@ -364,6 +389,9 @@ When working on Platform infrastructure:
 - Schedule changes during low-traffic windows
 - Have rollback plan documented
 ```
+
+Lane guidance templates are selected by `laneParent` conditions and automatically included when the
+template `id` starts with `lane-guidance-`.
 
 ### Scenario 4: Security-Focused Projects
 

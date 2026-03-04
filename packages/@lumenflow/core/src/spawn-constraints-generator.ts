@@ -138,15 +138,24 @@ ${SPAWN_END_SENTINEL}`;
  * @returns {string} Codex constraints section
  */
 export function generateCodexConstraints(id: string, options?: ConstraintsOptions): string {
+  const includeTdd = options?.includeTddCheckpoint !== false;
   const worktreesDirSegment = normalizeWorktreesDirSegment(options?.worktreesDirSegment);
+  const tddLine = includeTdd
+    ? '1. **TDD checkpoint**: tests BEFORE implementation; never skip RED'
+    : '';
+  const stopNum = includeTdd ? 2 : 1;
+  const verifyNum = includeTdd ? 3 : 2;
+  const fabricateNum = includeTdd ? 4 : 3;
+  const gitNum = includeTdd ? 5 : 4;
+  const scopeNum = includeTdd ? 6 : 5;
+  const worktreeNum = includeTdd ? 7 : 6;
 
   return `## Constraints (Critical)
 
-1. **TDD checkpoint**: tests BEFORE implementation; never skip RED
-2. **Stop on errors**: if UnsafeAny command fails, report BLOCKED (never DONE) with the error
-3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/verification ${id}\` (from the shared checkout)
-4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
-5. **Git workflow**: avoid merge commits; use \`wu:prep\` from worktree, then \`wu:done\` from main
-6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
-7. **Worktree discipline (WU-1282)**: BEFORE UnsafeAny Write/Edit, verify \`pwd\` shows \`${worktreesDirSegment}/\`; hooks do not propagate to sub-agents`;
+${tddLine}${tddLine ? '\n' : ''}${stopNum}. **Stop on errors**: if UnsafeAny command fails, report BLOCKED (never DONE) with the error
+${verifyNum}. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/verification ${id}\` (from the shared checkout)
+${fabricateNum}. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
+${gitNum}. **Git workflow**: avoid merge commits; use \`wu:prep\` from worktree, then \`wu:done\` from main
+${scopeNum}. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
+${worktreeNum}. **Worktree discipline (WU-1282)**: BEFORE UnsafeAny Write/Edit, verify \`pwd\` shows \`${worktreesDirSegment}/\`; hooks do not propagate to sub-agents`;
 }

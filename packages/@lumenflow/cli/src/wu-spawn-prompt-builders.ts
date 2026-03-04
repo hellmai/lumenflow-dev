@@ -66,7 +66,7 @@ import {
 } from '@lumenflow/core/wu-spawn';
 
 // WU-1900: Import work classifier for domain-aware prompt generation
-import { classifyWork } from '@lumenflow/core/work-classifier';
+import { classifyWork, TEST_METHODOLOGY_HINTS } from '@lumenflow/core/work-classifier';
 
 // WU-1288: Import resolvePolicy for methodology policy resolution
 import { resolvePolicy } from '@lumenflow/core/resolve-policy';
@@ -111,6 +111,7 @@ const SPAWN_PROMPT_BUILDERS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_TEMPLATE_BASE_DIR = findProjectRoot(SPAWN_PROMPT_BUILDERS_DIR);
 const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
 const PRIMARY_MAIN_REF = `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`;
+const LANE_GUIDANCE_TEMPLATE_ID_PREFIX = 'lane-guidance-';
 
 function normalizeDirectorySegment(value: string, fallback: string): string {
   const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
@@ -147,6 +148,29 @@ function resolveClaimWorktreePathHint(
     .replace(/[:\s]+/g, '-')
     .replace(/-+/g, '-');
   return `${resolveWorktreesDirSegment(config)}/${laneSlug}-${id.toLowerCase()}`;
+}
+
+function usesNonTddHint(testMethodologyHint: string | undefined): boolean {
+  return (
+    testMethodologyHint === TEST_METHODOLOGY_HINTS.SMOKE_TEST ||
+    testMethodologyHint === TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT
+  );
+}
+
+function resolveLaneGuidanceSection(
+  templates: Map<string, string>,
+  lane: string | undefined,
+): string {
+  const templateSections = Array.from(templates.entries())
+    .filter(([id]) => id.startsWith(LANE_GUIDANCE_TEMPLATE_ID_PREFIX))
+    .map(([, content]) => content.trim())
+    .filter((content) => content.length > 0);
+
+  if (templateSections.length > 0) {
+    return templateSections.join('\n\n---\n\n');
+  }
+
+  return generateLaneGuidance(lane);
 }
 
 // ─── Mandatory Agent Detection ───
@@ -601,16 +625,29 @@ ${skipGatesNum}. SKIP-GATES AUTONOMY (WU-1142)
 </constraints>`;
 }
 
-export function generateCodexConstraints(id: string): string {
+export function generateCodexConstraints(
+  id: string,
+  options?: { includeTddCheckpoint?: boolean },
+): string {
+  const includeTdd = options?.includeTddCheckpoint !== false;
+  const tddLine = includeTdd
+    ? '1. **TDD checkpoint**: tests BEFORE implementation; never skip RED'
+    : '';
+  const stopNum = includeTdd ? 2 : 1;
+  const verifyNum = includeTdd ? 3 : 2;
+  const fabricateNum = includeTdd ? 4 : 3;
+  const gitNum = includeTdd ? 5 : 4;
+  const scopeNum = includeTdd ? 6 : 5;
+  const skipGatesNum = includeTdd ? 7 : 6;
+
   return `## Constraints (Critical)
 
-1. **TDD checkpoint**: tests BEFORE implementation; never skip RED
-2. **Stop on errors**: if UnsafeAny command fails, report BLOCKED (never DONE) with the error
-3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\` (from the shared checkout)
-4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
-5. **Git workflow**: avoid merge commits; let \`pnpm wu:done\` handle completion
-6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
-7. **Skip-gates for pre-existing**: if gates fail due to pre-existing issue on main, use \`--skip-gates --reason "pre-existing" --fix-wu WU-XXX\``;
+${tddLine}${tddLine ? '\n' : ''}${stopNum}. **Stop on errors**: if UnsafeAny command fails, report BLOCKED (never DONE) with the error
+${verifyNum}. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\` (from the shared checkout)
+${fabricateNum}. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
+${gitNum}. **Git workflow**: avoid merge commits; let \`pnpm wu:done\` handle completion
+${scopeNum}. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
+${skipGatesNum}. **Skip-gates for pre-existing**: if gates fail due to pre-existing issue on main, use \`--skip-gates --reason "pre-existing" --fix-wu WU-XXX\``;
 }
 
 // ─── Section Generators ───
@@ -978,8 +1015,8 @@ export function generateLaneGuidance(lane: string | undefined): string {
 - Update tool documentation in tools/README.md or relevant docs if adding new CLI commands`,
     Intelligence: `## Lane-Specific: Intelligence
 
-- All prompt changes require golden dataset evaluation (pnpm prompts:eval)
-- Follow prompt versioning guidelines in ai/prompts/README.md`,
+- For prompt/classification work, run the project-specific evaluation command defined by your local templates/config
+- Follow prompt versioning guidelines documented for this project`,
     Experience: `## Lane-Specific: Experience
 
 - Follow design system tokens defined in the project
@@ -1213,12 +1250,12 @@ export function generateTaskInvocation(
   const skillsSection = skillsBaseContent + skillsGuidanceSuffix;
   const clientBlocks = generateClientBlocksSection(clientContext);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
-  const laneGuidance = generateLaneGuidance(doc.lane);
   // WU-1253: Try template for bug-discovery
   const bugDiscoverySection = templates.get('bug-discovery') || generateBugDiscoverySection(id);
   // WU-1253: Try template for constraints
   // WU-1900: Generate constraints with conditional TDD CHECKPOINT
-  const shouldIncludeTddCheckpoint = classification.domain !== 'ui' && policy.testing !== 'none';
+  const shouldIncludeTddCheckpoint =
+    !usesNonTddHint(classification.testMethodologyHint) && policy.testing !== 'none';
   const constraints =
     templates.get('constraints') ||
     generateConstraints(id, {
@@ -1263,6 +1300,7 @@ export function generateTaskInvocation(
   const worktreeBlockRecovery =
     templates.get('worktree-recovery') ||
     generateWorktreeBlockRecoverySection(worktreePathHint, config);
+  const laneGuidance = resolveLaneGuidanceSection(templates, doc.lane);
 
   // WU-1240: Memory context section
   // Include if explicitly enabled and not disabled via noContext
@@ -1450,10 +1488,13 @@ export function generateCodexPrompt(
   const mandatoryStandards = generateMandatoryStandards(policy);
   const enforcementSummary = generateEnforcementSummary(policy);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
-  const laneGuidance = generateLaneGuidance(doc.lane);
   const implementationContext = generateImplementationContext(doc);
   const action = generateActionSection(doc, id, config);
-  const constraints = generateCodexConstraints(id);
+  const shouldIncludeTddCheckpoint =
+    !usesNonTddHint(classification.testMethodologyHint) && policy.testing !== 'none';
+  const constraints = generateCodexConstraints(id, {
+    includeTddCheckpoint: shouldIncludeTddCheckpoint,
+  });
   const worktreePathHint = resolveWorktreePathHint(doc, id, config);
   const designContextSection = generateDesignContextSection(classification);
 
@@ -1476,6 +1517,7 @@ export function generateCodexPrompt(
   const skillsSection =
     skillsBaseContent + (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
   const clientBlocks = generateClientBlocksSection(clientContext);
+  const laneGuidance = resolveLaneGuidanceSection(templates, doc.lane);
 
   const executionModeSection = generateExecutionModeSection(options);
   const thinkToolGuidance = generateThinkToolGuidance(options);

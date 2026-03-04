@@ -20,7 +20,7 @@
 import { getConfig } from './lumenflow-config.js';
 import type { LumenFlowConfig } from './lumenflow-config-schema.js';
 import { resolvePolicy } from './resolve-policy.js';
-import { classifyWork } from './work-classifier.js';
+import { classifyWork, TEST_METHODOLOGY_HINTS } from './work-classifier.js';
 import type { SpawnStrategy } from './spawn-strategy.js';
 import { DIRECTORIES } from './wu-constants.js';
 import { generateExecutionModeSection, generateThinkToolGuidance } from './wu-spawn-helpers.js';
@@ -185,7 +185,10 @@ export function generateTaskInvocation(
   const selfReviewDirective = generateSelfReviewDirective(id);
 
   // WU-1900: Generate constraints with conditional TDD CHECKPOINT
-  const shouldIncludeTddCheckpoint = classification.domain !== 'ui' && policy.testing !== 'none';
+  const shouldIncludeTddCheckpoint =
+    classification.testMethodologyHint !== TEST_METHODOLOGY_HINTS.SMOKE_TEST &&
+    classification.testMethodologyHint !== TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT &&
+    policy.testing !== 'none';
   const constraints = generateConstraints(id, {
     includeTddCheckpoint: shouldIncludeTddCheckpoint,
     mainRef,
@@ -393,11 +396,17 @@ export function generateCodexPrompt(
     },
     classificationConfig,
   );
+  const policy = resolvePolicy(config);
   const worktreesDirSegment = resolveWorktreesDirSegment(config);
   const worktreePathHint = resolveWorktreePathHint(doc, id, config);
   const mainRef = `${config.git.defaultRemote}/${config.git.mainBranch}`;
   const action = generateActionSection(doc, id, config);
+  const shouldIncludeTddCheckpoint =
+    classification.testMethodologyHint !== TEST_METHODOLOGY_HINTS.SMOKE_TEST &&
+    classification.testMethodologyHint !== TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT &&
+    policy.testing !== 'none';
   const constraints = generateCodexConstraints(id, {
+    includeTddCheckpoint: shouldIncludeTddCheckpoint,
     mainRef,
     worktreesDirSegment,
   });
@@ -407,8 +416,7 @@ export function generateCodexPrompt(
     (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
   const clientBlocks = generateClientBlocksSection(clientContext);
 
-  // WU-1290: Resolve policy and use policy-based test guidance
-  const policy = resolvePolicy(config);
+  // WU-1290: Use policy-based test guidance
   const testGuidance = generatePolicyBasedTestGuidance(doc.type || 'feature', policy, {
     testMethodologyHint: classification.testMethodologyHint,
   });

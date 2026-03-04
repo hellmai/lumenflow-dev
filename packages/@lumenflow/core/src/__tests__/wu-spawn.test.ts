@@ -962,6 +962,16 @@ describe('WU-1900: Wire work classifier into wu:brief generation', () => {
 
       expect(result).toContain('Testing Optional');
     });
+
+    it('returns structured content guidance when hint is structured-content', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const result = generatePolicyBasedTestGuidance('bug', policy, {
+        testMethodologyHint: 'structured-content',
+      });
+
+      expect(result).toContain('Structured Content');
+      expect(result).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+    });
   });
 
   describe('AC4: generateDesignContextSection for UI-classified work', () => {
@@ -1149,6 +1159,24 @@ describe('WU-1900: Wire work classifier into wu:brief generation', () => {
       };
       const output = generateTaskInvocation(doc, 'WU-TEST', strategy, { config });
 
+      expect(output).not.toContain('TDD CHECKPOINT');
+    });
+
+    it('omits TDD CHECKPOINT for structured-content-only work', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const config = parseConfig({ methodology: { testing: 'tdd' } });
+      const doc = {
+        title: 'Fix prompt yaml',
+        lane: TEST_LANE,
+        type: 'bug',
+        status: 'ready',
+        description: 'Fix prompt yaml formatting and schema alignment',
+        code_paths: ['ai/prompts/beacon-flow.yaml'],
+        acceptance: ['AC1'],
+      };
+      const output = generateTaskInvocation(doc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('Structured Content');
       expect(output).not.toContain('TDD CHECKPOINT');
     });
   });

@@ -532,3 +532,60 @@ describe('WU-2292: spawn prompt template overrides for new sections', () => {
     expect(taskPrompt).toContain('## Self-Review Before Completion');
   });
 });
+
+describe('WU-2309: profile-aware guidance and lane guidance customization', () => {
+  const id = 'WU-2309';
+  const strategy: SpawnStrategy = {
+    getPreamble: () => 'Load context preamble',
+    getSkillLoadingInstruction: () => 'Load skills instruction',
+  };
+
+  const intelligenceDoc = {
+    title: 'Prompt validation',
+    lane: 'Intelligence: Prompt Lab',
+    type: 'bug',
+    status: 'ready',
+    code_paths: ['ai/prompts/beacon-rule.yaml'],
+    acceptance: ['AC1'],
+    description: 'Adjust prompt yaml for evaluator compatibility',
+  };
+
+  const config = LumenFlowConfigSchema.parse({
+    directories: {
+      skillsDir: '.claude/skills',
+      agentsDir: '.claude/agents',
+    },
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('does not hardcode prompts:eval in fallback Intelligence lane guidance', async () => {
+    const { generateLaneGuidance } = await import('../wu-spawn-prompt-builders.js');
+    const guidance = generateLaneGuidance('Intelligence: Prompt Lab');
+
+    expect(guidance).toContain('Lane-Specific: Intelligence');
+    expect(guidance).not.toContain('pnpm prompts:eval');
+  });
+
+  it('uses lane-guidance templates when present', async () => {
+    const templateLoader = await import('@lumenflow/core/template-loader');
+    const mockLoad = templateLoader.loadTemplatesWithOverrides as ReturnType<typeof vi.fn>;
+    const templates = new Map<string, LoadedTemplate>();
+    templates.set(
+      'lane-guidance-intelligence',
+      makeTemplate(
+        'lane-guidance-intelligence',
+        "laneParent === 'Intelligence'",
+        'CUSTOM LANE GUIDANCE: use project prompt eval command from local config',
+      ),
+    );
+    mockLoad.mockReturnValue(templates);
+
+    const { generateTaskInvocation } = await import('../wu-spawn-prompt-builders.js');
+    const taskPrompt = generateTaskInvocation(intelligenceDoc, id, strategy, { config });
+
+    expect(taskPrompt).toContain('CUSTOM LANE GUIDANCE');
+  });
+});

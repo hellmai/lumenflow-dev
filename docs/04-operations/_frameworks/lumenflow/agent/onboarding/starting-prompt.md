@@ -490,6 +490,20 @@ pnpm wu:delegate --id WU-XXXX --parent-wu WU-YYYY --client <client-type>
 
 **IMPORTANT:** The `--client` flag identifies your IDE/tool environment, NOT the underlying AI model. Use `--client windsurf` even if Windsurf is running a Claude agent.
 
+### Guidance Profiles (WU-2309)
+
+`wu:brief` testing guidance is profile-aware:
+
+- Behavior/logic changes: follow project policy (`methodology.testing`: `tdd`, `test-after`, or `none`).
+- Structured-content-only changes (`.yaml/.yml/.json/.md/.mdx`): use parse/schema/lint/eval evidence; TDD checkpoint is omitted.
+- UI presentation hints: use smoke/manual verification guidance.
+
+Domain-specific commands must come from local configuration, not core framework code:
+
+- Template path: `.lumenflow/templates/spawn-prompt/lane-guidance/*.md`
+- Template manifest: `.lumenflow/templates/manifest.yaml`
+- Client config: `workspace.yaml` under `software_delivery.agents.clients.*`
+
 ### Sub-Agent Coordination
 
 - Sub-agents work in isolated micro-worktrees

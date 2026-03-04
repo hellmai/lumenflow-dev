@@ -381,6 +381,25 @@ describe('classifyWork', () => {
       // Even if domain ended up as something, the UI confidence would be at most 0.2
       expect(result.testMethodologyHint).toBeUndefined();
     });
+
+    it('returns structured-content hint when all code paths are yaml/json/markdown', () => {
+      const doc: MinimalWuDoc = {
+        code_paths: ['ai/prompts/beacon-intent.yaml', 'ai/prompts/schema.json'],
+      };
+      const result = classifyWork(doc);
+
+      expect(result.domain).toBe(WORK_DOMAINS.BACKEND);
+      expect(result.testMethodologyHint).toBe('structured-content');
+    });
+
+    it('does not return structured-content hint when non-content code paths are included', () => {
+      const doc: MinimalWuDoc = {
+        code_paths: ['ai/prompts/beacon-intent.yaml', 'packages/@lumenflow/core/src/index.ts'],
+      };
+      const result = classifyWork(doc);
+
+      expect(result.testMethodologyHint).toBeUndefined();
+    });
   });
 
   describe('config overrides', () => {

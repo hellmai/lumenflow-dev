@@ -33,6 +33,17 @@ export const WORK_DOMAINS = {
 export type WorkDomain = (typeof WORK_DOMAINS)[keyof typeof WORK_DOMAINS];
 
 /**
+ * Classifier-produced methodology hints consumed by prompt guidance builders.
+ */
+export const TEST_METHODOLOGY_HINTS = {
+  SMOKE_TEST: 'smoke-test',
+  STRUCTURED_CONTENT: 'structured-content',
+} as const;
+
+export type TestMethodologyHint =
+  (typeof TEST_METHODOLOGY_HINTS)[keyof typeof TEST_METHODOLOGY_HINTS];
+
+/**
  * Signal weights for each source type.
  * Confidence = max(matched_signal_weights), not sum.
  */
@@ -53,6 +64,21 @@ const CONFIDENCE_THRESHOLD = 0.3;
  * UI confidence >= this value.
  */
 const SMOKE_TEST_THRESHOLD = 0.5;
+
+/**
+ * Structured-content patterns used to detect non-code work.
+ *
+ * When all code_paths match these patterns, classifier emits
+ * testMethodologyHint: 'structured-content' to avoid forcing TDD
+ * for content/config-only changes.
+ */
+const STRUCTURED_CONTENT_CODE_PATH_PATTERNS: readonly string[] = Object.freeze([
+  '**/*.yaml',
+  '**/*.yml',
+  '**/*.json',
+  '**/*.md',
+  '**/*.mdx',
+]);
 
 // ─── Default Patterns ────────────────────────────────────────────────
 
@@ -216,8 +242,8 @@ export interface WorkClassification {
   signals: WorkSignal[];
   /** Abstract capability tags (NOT client skill names) */
   capabilities: string[];
-  /** Test methodology hint, e.g. 'smoke-test' for UI work */
-  testMethodologyHint?: string;
+  /** Test methodology hint, e.g. smoke-test (UI) or structured-content (non-code content) */
+  testMethodologyHint?: TestMethodologyHint;
 }
 
 /**
@@ -267,6 +293,20 @@ function matchCodePaths(codePaths: string[], patterns: readonly string[]): strin
     }
   }
   return undefined;
+}
+
+/**
+ * Check whether all code_paths are structured content (yaml/json/markdown).
+ */
+function isStructuredContentOnly(codePaths: string[]): boolean {
+  return (
+    codePaths.length > 0 &&
+    codePaths.every((path) =>
+      STRUCTURED_CONTENT_CODE_PATH_PATTERNS.some((pattern) =>
+        minimatch(path, pattern, { nocase: true }),
+      ),
+    )
+  );
 }
 
 /**
@@ -352,6 +392,7 @@ export function classifyWork(
   const lane = doc.lane ?? '';
   const type = doc.type ?? '';
   const description = doc.description ?? '';
+  const structuredContentOnly = isStructuredContentOnly(codePaths);
 
   // Merge config patterns with defaults (config extends, not replaces)
   const uiCodePathPatterns = [
@@ -506,7 +547,9 @@ export function classifyWork(
       confidence: 0,
       signals: [],
       capabilities: [],
-      testMethodologyHint: undefined,
+      testMethodologyHint: structuredContentOnly
+        ? TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT
+        : undefined,
     };
   }
 
@@ -516,8 +559,10 @@ export function classifyWork(
 
   const testMethodologyHint =
     winner.domain === WORK_DOMAINS.UI && winner.maxWeight >= SMOKE_TEST_THRESHOLD
-      ? 'smoke-test'
-      : undefined;
+      ? TEST_METHODOLOGY_HINTS.SMOKE_TEST
+      : structuredContentOnly
+        ? TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT
+        : undefined;
 
   return {
     domain: winner.domain,

@@ -22,6 +22,7 @@
 import { DIRECTORIES } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
 import type { ResolvedPolicy } from './resolve-policy.js';
+import { TEST_METHODOLOGY_HINTS, type TestMethodologyHint } from './work-classifier.js';
 
 const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
 
@@ -157,8 +158,25 @@ function generateRefactorGuidance(): string {
  * WU-1900: Options for classifier-aware test guidance
  */
 export interface TestGuidanceOptions {
-  /** Test methodology hint from work classifier (e.g., 'smoke-test' for UI work) */
-  testMethodologyHint?: string;
+  /** Test methodology hint from work classifier (e.g., 'smoke-test' or 'structured-content') */
+  testMethodologyHint?: TestMethodologyHint;
+}
+
+/**
+ * WU-2309: Generate structured-content guidance for non-code YAML/JSON/Markdown work.
+ */
+function generateStructuredContentGuidance(): string {
+  return `## Structured Content Testing
+
+**Content/config validation over TDD** - Structured content changes should be verified with parsing, linting, and domain evaluation.
+
+### Requirements
+
+1. Validate file parseability and schema compatibility (where schema exists)
+2. Run relevant lint/format checks for content/config files
+3. Run project/domain evaluators for prompt or policy content when available
+4. Execute at least one manual/automated smoke check for changed content path
+5. Document evidence/results in completion notes`;
 }
 
 /** WU-2292: Generate concrete code craft guidance with examples. */
@@ -347,9 +365,14 @@ export function generatePolicyBasedTestGuidance(
     return generateSmokeTestGuidance();
   }
 
+  // WU-2309: Classifier-driven structured-content guidance for non-code work
+  if (options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT) {
+    return generateStructuredContentGuidance();
+  }
+
   // WU-1900: Classifier-driven smoke-test for bug WUs with UI code_paths
   // This makes SMOKE_TEST_TYPES reachable through classifier signals
-  if (type === 'bug' && options?.testMethodologyHint === 'smoke-test') {
+  if (type === 'bug' && options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.SMOKE_TEST) {
     return generateSmokeTestGuidance();
   }
 

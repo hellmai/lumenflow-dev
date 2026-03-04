@@ -8,14 +8,13 @@ created: 2026-03-04
 code_paths:
   - packages/@lumenflow/core/src/spawn-guidance-generators.ts
   - packages/@lumenflow/core/src/work-classifier.ts
-  - packages/@lumenflow/core/src/resolve-policy.ts
+  - packages/@lumenflow/core/src/spawn-task-builder.ts
+  - packages/@lumenflow/core/src/spawn-constraints-generator.ts
+  - packages/@lumenflow/core/src/spawn-agent-guidance.ts
+  - packages/@lumenflow/core/src/__tests__/work-classifier.test.ts
   - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
   - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
-  - .lumenflow/templates/manifest.yaml
-  - .lumenflow/templates/spawn-prompt/lane-guidance/operations.md
-  - .lumenflow/templates/spawn-prompt/lane-guidance/framework.md
-  - .lumenflow/templates/spawn-prompt/lane-guidance/content.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
   - apps/docs/src/content/docs/guides/customizing-spawn-prompts.mdx
   - apps/docs/src/content/docs/packs/software-delivery/advanced/customizing-spawn-prompts.mdx
@@ -26,6 +25,7 @@ tests:
     - Run pnpm wu:brief --id <WU-ID> --client claude-code for an Intelligence lane WU and verify no
       hardcoded prompts:eval directive appears unless configured by templates.
   unit:
+    - packages/@lumenflow/core/src/__tests__/work-classifier.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
   e2e: []
@@ -33,7 +33,14 @@ artifacts:
   - .lumenflow/stamps/WU-2309.done
 dependencies: []
 risks: []
-notes: ''
+notes: >
+  Implementation notes:
+  1) Added structured-content work classification for yaml/json/markdown-only scopes so policy
+  guidance does not force TDD for non-runtime content changes.
+  2) Removed hardcoded Intelligence lane prompt-eval guidance from core and CLI prompt builders,
+  with template-driven lane guidance as the project customization point.
+  3) Updated internal onboarding and Starlight docs to document profile behavior and configuration
+  model for domain-specific guidance.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

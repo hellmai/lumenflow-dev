@@ -417,8 +417,8 @@ export function generateLaneGuidance(lane: string | undefined): string {
 - Update tool documentation in tools/README.md or relevant docs if adding new CLI commands`,
     Intelligence: `## Lane-Specific: Intelligence
 
-- All prompt changes require golden dataset evaluation (pnpm prompts:eval)
-- Follow prompt versioning guidelines in ai/prompts/README.md`,
+- For prompt/classification work, run the project-specific evaluation command defined by your local templates/config
+- Follow prompt versioning guidelines documented for this project`,
     Experience: `## Lane-Specific: Experience
 
 - Follow design system tokens defined in the project
