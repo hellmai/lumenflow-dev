@@ -2,7 +2,7 @@ id: WU-2312
 title: Fix pre-existing path-literal zero-tolerance and status-literal-guard test failures
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-04
 code_paths:
@@ -46,3 +46,6 @@ description: Fix 8 path-literal zero-tolerance violations in production source a
 acceptance:
   - path-literal zero-tolerance guard passes with 0 violations
   - status-literal-guard passes
+locked: true
+completed_at: 2026-03-04T13:02:08.590Z
+completed: 2026-03-04
