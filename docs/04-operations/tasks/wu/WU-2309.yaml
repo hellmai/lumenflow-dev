@@ -2,7 +2,7 @@ id: WU-2309
 title: Make wu:brief testing guidance profile-aware and move domain guidance to config/templates
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-04
 code_paths:
@@ -21,8 +21,10 @@ code_paths:
   - apps/docs/src/content/docs/packs/software-delivery/advanced/customizing-spawn-prompts.mdx
 tests:
   manual:
-    - Run pnpm wu:brief --id <WU-ID> --client codex-cli and verify non-code WU guidance avoids forced TDD language while preserving policy output.
-    - Run pnpm wu:brief --id <WU-ID> --client claude-code for an Intelligence lane WU and verify no hardcoded prompts:eval directive appears unless configured by templates.
+    - Run pnpm wu:brief --id <WU-ID> --client codex-cli and verify non-code WU guidance avoids
+      forced TDD language while preserving policy output.
+    - Run pnpm wu:brief --id <WU-ID> --client claude-code for an Intelligence lane WU and verify no
+      hardcoded prompts:eval directive appears unless configured by templates.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
@@ -40,10 +42,28 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:brief guidance currently forces TDD in cases like prompt/content YAML and some UI presentation work, and lane-specific Intelligence guidance hardcodes PatientPath-style prompt eval commands. Problem: this couples core policy to domain specifics and causes inappropriate test directives for non-code changes. Solution: introduce profile-aware non-code handling in policy-based test guidance, keep core generic, move domain-specific guidance to template/config surfaces, and document the configuration model for internal and Starlight docs.'
+description: 'Context: wu:brief guidance currently forces TDD in cases like prompt/content YAML and
+  some UI presentation work, and lane-specific Intelligence guidance hardcodes PatientPath-style
+  prompt eval commands. Problem: this couples core policy to domain specifics and causes
+  inappropriate test directives for non-code changes. Solution: introduce profile-aware non-code
+  handling in policy-based test guidance, keep core generic, move domain-specific guidance to
+  template/config surfaces, and document the configuration model for internal and Starlight docs.'
 acceptance:
-  - Policy-based test guidance supports non-code structured content flows (YAML/JSON/Markdown) without forcing TDD when no runtime logic is implied.
-  - Hardcoded Intelligence lane prompt-eval guidance is removed from code paths that generate wu:brief output; domain-specific guidance is configurable via templates/config.
-  - wu:brief output remains generic by default while allowing project-specific overrides through template conditions and client/lane config.
-  - Automated tests cover new profile-aware guidance behavior and prevent regression for existing TDD/test-after/none modes.
-  - Internal docs and Starlight docs are updated to describe the generic core model plus project-level domain customization points.
+  - Policy-based test guidance supports non-code structured content flows (YAML/JSON/Markdown)
+    without forcing TDD when no runtime logic is implied.
+  - Hardcoded Intelligence lane prompt-eval guidance is removed from code paths that generate
+    wu:brief output; domain-specific guidance is configurable via templates/config.
+  - wu:brief output remains generic by default while allowing project-specific overrides through
+    template conditions and client/lane config.
+  - Automated tests cover new profile-aware guidance behavior and prevent regression for existing
+    TDD/test-after/none modes.
+  - Internal docs and Starlight docs are updated to describe the generic core model plus
+    project-level domain customization points.
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-validation-wu-2309
+claimed_at: 2026-03-04T10:31:27.991Z
+baseline_main_sha: 7fe8443a295e1c61c29d704d96e5fafac8a2963d
+session_id: 82cc8efd-7983-4e2b-962a-f26e590076ef
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-04T10:31:27.997Z

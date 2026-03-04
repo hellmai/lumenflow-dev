@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-03-03_
+_Last updated: 2026-03-04_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2309 — Make wu:brief testing guidance profile-aware and move domain guidance to config/templates](wu/WU-2309.yaml)
 
 ## Completed
 
