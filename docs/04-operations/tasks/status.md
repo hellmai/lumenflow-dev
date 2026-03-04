@@ -4,7 +4,7 @@ _Last updated: 2026-03-04_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2312 — Fix pre-existing path-literal zero-tolerance and status-literal-guard test failures](wu/WU-2312.yaml)
 
 ## Completed
 
