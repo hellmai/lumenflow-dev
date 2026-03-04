@@ -4,13 +4,18 @@
 
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, posix } from 'node:path';
 import { createWUParser } from '@lumenflow/core';
+import { FILE_EXTENSIONS, GIT_REFS, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[lumenflow:pre-commit-check]';
-const UPGRADE_MARKER_RELATIVE_PATH = '.lumenflow/state/lumenflow-upgrade-marker.json';
-const WU_EVENTS_RELATIVE_PATH = '.lumenflow/state/wu-events.jsonl';
+const UPGRADE_MARKER_FILENAME = `lumenflow-upgrade-marker${FILE_EXTENSIONS.JSON}`;
+const UPGRADE_MARKER_RELATIVE_PATH = posix.join(
+  LUMENFLOW_PATHS.STATE_DIR,
+  UPGRADE_MARKER_FILENAME,
+);
+const WU_EVENTS_RELATIVE_PATH = LUMENFLOW_PATHS.WU_EVENTS;
 
 const LUMENFLOW_VERSION_PATTERN = /@lumenflow\/(agent|cli|core|initiatives|memory|metrics|shims)/;
 const WU_YAML_PATH_PATTERN = /^docs\/04-operations\/tasks\/wu\/WU-\d+\.ya?ml$/i;
@@ -83,7 +88,7 @@ function resolveCiBase(base: string | undefined, head: string): string {
   if (base) return base;
 
   try {
-    return runGit(`git merge-base origin/main ${head}`);
+    return runGit(`git merge-base ${GIT_REFS.ORIGIN_MAIN} ${head}`);
   } catch {
     return 'HEAD~1';
   }

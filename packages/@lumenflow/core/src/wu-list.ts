@@ -25,7 +25,7 @@ import { parse as parseYaml } from 'yaml';
 import { readFile } from 'node:fs/promises';
 import { WUStateStore, type WUStateEntry } from './wu-state-store.js';
 import { getConfig } from './lumenflow-config.js';
-import { WU_STATUS } from './wu-constants.js';
+import { FILE_EXTENSIONS, WU_STATUS } from './wu-constants.js';
 
 /**
  * WU list entry returned by listWUs.
@@ -235,7 +235,7 @@ async function readWUYamlFiles(wuDir: string): Promise<Array<Record<string, unkn
 
     for (const file of files) {
       // Only process WU-*.yaml files
-      if (!file.startsWith('WU-') || !file.endsWith('.yaml')) {
+      if (!file.startsWith('WU-') || !file.endsWith(FILE_EXTENSIONS.YAML)) {
         continue;
       }
 

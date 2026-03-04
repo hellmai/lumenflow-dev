@@ -30,6 +30,7 @@ import {
   MICRO_WORKTREE_OPERATIONS,
   LOG_PREFIX,
   COMMIT_FORMATS,
+  WU_STATUS,
   getLaneBranch,
 } from '@lumenflow/core/wu-constants';
 // WU-2227: Import worktree detection and validation helpers
@@ -141,7 +142,7 @@ export function showEscalationStatus(wu: Record<string, unknown>): void {
  * Returns null to fall back to micro-worktree mode.
  */
 function resolveWorktreeMode(wu: Record<string, unknown>, rootDir?: string): string | null {
-  if (wu.status !== 'in_progress') return null;
+  if (wu.status !== WU_STATUS.IN_PROGRESS) return null;
   if (!wu.worktree_path) return null;
 
   // Use defaultWorktreeFrom to get a canonical worktree path

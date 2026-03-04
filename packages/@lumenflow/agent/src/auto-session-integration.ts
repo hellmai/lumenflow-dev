@@ -19,11 +19,11 @@ import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { startSession as startMemorySession } from '@lumenflow/memory/start';
-import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { CONFIG_FILES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
 
 const SESSION_FILENAME = 'current.json';
-const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+const WORKSPACE_CONFIG_FILE = CONFIG_FILES.WORKSPACE_CONFIG;
 const CONTROL_PLANE_REGISTER_PATH = '/api/v1/sessions/register';
 const CONTROL_PLANE_DEREGISTER_PATH = '/api/v1/sessions/deregister';
 

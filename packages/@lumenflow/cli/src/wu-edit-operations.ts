@@ -24,6 +24,7 @@ import {
   SCRIPTS,
   PRETTIER_FLAGS,
   READINESS_UI,
+  LUMENFLOW_PATHS,
 } from '@lumenflow/core/wu-constants';
 import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 // WU-1442: Import date normalization to fix date corruption from js-yaml
@@ -187,14 +188,14 @@ export async function appendWuEditStampEvent(
   wuId: string,
   wuRelativePath: string,
 ): Promise<string> {
-  const stateDir = join(worktreePath, '.lumenflow', 'state');
+  const stateDir = join(worktreePath, LUMENFLOW_PATHS.STATE_DIR);
   const store = new WUStateStore(stateDir);
   await store.load();
   await store.checkpoint(wuId, buildWuEditStampNote(wuRelativePath), {
     progress: 'wu:edit stamp',
     nextSteps: 'pre-commit enforcement',
   });
-  return '.lumenflow/state/wu-events.jsonl';
+  return LUMENFLOW_PATHS.WU_EVENTS;
 }
 
 /**

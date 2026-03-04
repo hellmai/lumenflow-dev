@@ -34,6 +34,8 @@ import {
   PKG_FLAGS,
   DEFAULTS,
   BRANCHES,
+  FILE_EXTENSIONS,
+  LUMENFLOW_PATHS,
 } from '@lumenflow/core/wu-constants';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
@@ -57,7 +59,11 @@ const ARG_DRY_RUN = '--dry-run';
 const ARG_DRY_RUN_SHORT = '-n';
 const ARG_NO_BOOTSTRAP = '--no-bootstrap';
 const PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
-export const UPGRADE_MARKER_RELATIVE_PATH = '.lumenflow/state/lumenflow-upgrade-marker.json';
+const UPGRADE_MARKER_FILENAME = `lumenflow-upgrade-marker${FILE_EXTENSIONS.JSON}`;
+export const UPGRADE_MARKER_RELATIVE_PATH = path.posix.join(
+  LUMENFLOW_PATHS.STATE_DIR,
+  UPGRADE_MARKER_FILENAME,
+);
 
 /**
  * All @lumenflow/* packages that should be upgraded together
