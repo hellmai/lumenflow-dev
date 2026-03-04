@@ -4,7 +4,7 @@ _Last updated: 2026-03-04_
 
 ## In Progress
 
-- [WU-2311 — Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests](wu/WU-2311.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1231,3 +1231,4 @@ _Last updated: 2026-03-04_
 - [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml) — 2026-03-03
 - [WU-2309 — Make wu:brief testing guidance profile-aware and move domain guidance to config/templates](wu/WU-2309.yaml) — 2026-03-04
 - [WU-2310 — Fix hardcoded paths in shell hooks and pre-commit, fix allowlist ordering bug](wu/WU-2310.yaml) — 2026-03-04
+- [WU-2311 — Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests](wu/WU-2311.yaml) — 2026-03-04

@@ -24,10 +24,11 @@ sections:
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
+- [WU-2312 — Fix pre-existing path-literal zero-tolerance and status-literal-guard test failures](wu/WU-2312.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-- [WU-2311 — Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests](wu/WU-2311.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1258,6 +1259,7 @@ sections:
 - [WU-2308 — Fix normalizeSteps silent drop of string steps in routine:create](wu/WU-2308.yaml)
 - [WU-2309 — Make wu:brief testing guidance profile-aware and move domain guidance to config/templates](wu/WU-2309.yaml)
 - [WU-2310 — Fix hardcoded paths in shell hooks and pre-commit, fix allowlist ordering bug](wu/WU-2310.yaml)
+- [WU-2311 — Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests](wu/WU-2311.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

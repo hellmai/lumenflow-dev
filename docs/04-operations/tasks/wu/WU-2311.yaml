@@ -2,7 +2,7 @@ id: WU-2311
 title: Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-04
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - All test files use DIRECTORIES/LUMENFLOW_PATHS constants instead of hardcoded path strings
   - The __tests__/ entry is removed from ALWAYS_ALLOWED_PATH_SEGMENTS in path-literal-guard.test.ts
   - pnpm gates passes with the guard now covering test files
+locked: true
+completed_at: 2026-03-04T12:33:24.752Z
+completed: 2026-03-04

@@ -2775,3 +2775,4 @@
 {"type":"claim","wuId":"WU-2311","timestamp":"2026-03-04T11:03:25.862Z","lane":"Framework: Core Validation","title":"Remove test file exemption from path-literal-guard and fix all hardcoded paths in tests"}
 {"type":"checkpoint","wuId":"WU-2311","timestamp":"2026-03-04T11:03:36.567Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2311","timestamp":"2026-03-04T12:21:48.694Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2311.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"complete","wuId":"WU-2311","timestamp":"2026-03-04T12:33:28.992Z"}
