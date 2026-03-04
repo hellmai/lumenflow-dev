@@ -143,7 +143,11 @@ describe('WU-2127: path-utils sub-module', () => {
 
     it('should allow paths matching allowlist prefix', () => {
       expect(
-        isAllowlistedPath(`/test/project/${LUMENFLOW_PATHS.STATE_DIR}/events.jsonl`, MAIN_REPO, PREFIXES),
+        isAllowlistedPath(
+          `/test/project/${LUMENFLOW_PATHS.STATE_DIR}/events.jsonl`,
+          MAIN_REPO,
+          PREFIXES,
+        ),
       ).toBe(true);
     });
 

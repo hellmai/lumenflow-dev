@@ -500,7 +500,11 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should record spawn events', async () => {
         // Arrange
         process.chdir(tempDir);
-        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(
+          tempDir,
+          LUMENFLOW_PATHS.STATE_DIR,
+          DELEGATION_REGISTRY_FILE_NAME,
+        );
 
         // Act - Record spawn event directly
         const spawnEvent = {
@@ -524,7 +528,11 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should track multiple spawn events', async () => {
         // Arrange
         process.chdir(tempDir);
-        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(
+          tempDir,
+          LUMENFLOW_PATHS.STATE_DIR,
+          DELEGATION_REGISTRY_FILE_NAME,
+        );
 
         // Act - Record multiple spawn events
         const events = [
@@ -601,7 +609,11 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should enforce pickup evidence when spawn entry is intent-only', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(
+          tempDir,
+          LUMENFLOW_PATHS.STATE_DIR,
+          DELEGATION_REGISTRY_FILE_NAME,
+        );
         writeFileSync(
           registryPath,
           JSON.stringify({
@@ -628,7 +640,11 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should pass when spawn registry entry includes pickup evidence for initiative-governed WU', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(
+          tempDir,
+          LUMENFLOW_PATHS.STATE_DIR,
+          DELEGATION_REGISTRY_FILE_NAME,
+        );
         const promptHash = 'a'.repeat(64);
         writeFileSync(
           registryPath,
@@ -676,7 +692,11 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should block when attested hash does not match wu:brief evidence', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(
+          tempDir,
+          LUMENFLOW_PATHS.STATE_DIR,
+          DELEGATION_REGISTRY_FILE_NAME,
+        );
         writeFileSync(
           registryPath,
           JSON.stringify({
@@ -780,7 +800,10 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
           },
         );
 
-        const evidence = await getLatestWuBriefEvidence(join(tempDir, LUMENFLOW_PATHS.STATE_DIR), wuId);
+        const evidence = await getLatestWuBriefEvidence(
+          join(tempDir, LUMENFLOW_PATHS.STATE_DIR),
+          wuId,
+        );
         expect(evidence).toBeDefined();
         expect(evidence?.wuId).toBe(wuId);
       });
@@ -803,7 +826,10 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
           },
         );
 
-        const evidence = await getLatestWuBriefEvidence(join(tempDir, LUMENFLOW_PATHS.STATE_DIR), wuId);
+        const evidence = await getLatestWuBriefEvidence(
+          join(tempDir, LUMENFLOW_PATHS.STATE_DIR),
+          wuId,
+        );
         expect(evidence).toBeNull();
       });
     });
@@ -834,7 +860,11 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         expect(invocation).toContain('antml:invoke');
 
         // Step 2: Record spawn event
-        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(
+          tempDir,
+          LUMENFLOW_PATHS.STATE_DIR,
+          DELEGATION_REGISTRY_FILE_NAME,
+        );
         const spawnEvent = {
           id: 'dlg-d001',
           parentWuId: 'WU-1363',

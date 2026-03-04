@@ -59,10 +59,7 @@ describe('wu:create helpers (WU-1429)', () => {
       targetBranch: 'claude/session-1596',
     });
 
-    expect(git.add).toHaveBeenCalledWith([
-      `${WU_DIR}/WU-1596.yaml`,
-      BACKLOG_PATH,
-    ]);
+    expect(git.add).toHaveBeenCalledWith([`${WU_DIR}/WU-1596.yaml`, BACKLOG_PATH]);
     expect(git.commit).toHaveBeenCalledWith('docs: create wu-1596 for cloud fixes');
     expect(git.push).toHaveBeenCalledWith('origin', 'claude/session-1596', { setUpstream: true });
   });

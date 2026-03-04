@@ -214,11 +214,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         createInitiative(tempDir, TEST_INIT_ID, { status: 'open' });
 
         // Act
-        const initPath = join(
-          tempDir,
-          INITIATIVES_DIR,
-          `${TEST_INIT_ID}.yaml`,
-        );
+        const initPath = join(tempDir, INITIATIVES_DIR, `${TEST_INIT_ID}.yaml`);
         const doc = parseYAML(readFileSync(initPath, 'utf-8'));
 
         // Assert
@@ -239,11 +235,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         });
 
         // Update initiative with WU reference
-        const initPath = join(
-          tempDir,
-          INITIATIVES_DIR,
-          `${TEST_INIT_ID}.yaml`,
-        );
+        const initPath = join(tempDir, INITIATIVES_DIR, `${TEST_INIT_ID}.yaml`);
         const initDoc = parseYAML(readFileSync(initPath, 'utf-8'));
         initDoc.wus = [TEST_WU_ID_1];
         writeFileSync(initPath, stringifyYAML(initDoc));
@@ -268,11 +260,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         createWUForInitiative(tempDir, TEST_WU_ID_3, { initiative: TEST_INIT_ID, phase: 2 });
 
         // Update initiative
-        const initPath = join(
-          tempDir,
-          INITIATIVES_DIR,
-          `${TEST_INIT_ID}.yaml`,
-        );
+        const initPath = join(tempDir, INITIATIVES_DIR, `${TEST_INIT_ID}.yaml`);
         const initDoc = parseYAML(readFileSync(initPath, 'utf-8'));
         initDoc.wus = [TEST_WU_ID_1, TEST_WU_ID_2, TEST_WU_ID_3];
         writeFileSync(initPath, stringifyYAML(initDoc));

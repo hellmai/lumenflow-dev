@@ -178,9 +178,7 @@ describe('wu-edit mergeStringField', () => {
 
 describe('WU-1594: backlog sync artifacts for wu:edit', () => {
   it('includes backlog.md in commit files for lane/spec metadata sync', () => {
-    const files = getWuEditCommitFiles('WU-1594', [
-      `${INITIATIVES_DIR}/INIT-023.yaml`,
-    ]);
+    const files = getWuEditCommitFiles('WU-1594', [`${INITIATIVES_DIR}/INIT-023.yaml`]);
 
     expect(files).toContain(`${WU_DIR}/WU-1594.yaml`);
     expect(files).toContain(BACKLOG_PATH);

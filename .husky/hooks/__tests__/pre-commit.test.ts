@@ -25,10 +25,7 @@ describe('pre-commit hook (WU-1164)', () => {
         `${WU_DIR}/WU-1234.yml`,
       ]);
 
-      expect(result).toEqual([
-        `${WU_DIR}/WU-1164.yaml`,
-        `${WU_DIR}/WU-9999.yaml`,
-      ]);
+      expect(result).toEqual([`${WU_DIR}/WU-1164.yaml`, `${WU_DIR}/WU-9999.yaml`]);
     });
   });
 

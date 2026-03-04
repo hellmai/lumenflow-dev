@@ -27,12 +27,9 @@ describe('pre-commit-check helpers', () => {
 
   describe('WU edit stamps', () => {
     it('extracts stamped paths from added wu-events checkpoint notes', () => {
-      const diff =
-        `+{"type":"checkpoint","wuId":"WU-123","timestamp":"2026-02-28T12:00:00.000Z","note":"[wu:edit] path=${WU_DIR}/WU-123.yaml"}`;
+      const diff = `+{"type":"checkpoint","wuId":"WU-123","timestamp":"2026-02-28T12:00:00.000Z","note":"[wu:edit] path=${WU_DIR}/WU-123.yaml"}`;
 
-      expect(extractWuEditStampPathsFromDiff(diff)).toEqual([
-        `${WU_DIR}/WU-123.yaml`,
-      ]);
+      expect(extractWuEditStampPathsFromDiff(diff)).toEqual([`${WU_DIR}/WU-123.yaml`]);
     });
 
     it('verifies all changed WU YAML paths have matching stamps', () => {

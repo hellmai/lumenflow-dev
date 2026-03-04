@@ -125,10 +125,7 @@ description: Test WU for repair testing
 acceptance:
   - Test acceptance criteria
 `;
-    writeFileSync(
-      path.join(testProjectRoot, `${WU_DIR}/WU-9999.yaml`),
-      wuContent,
-    );
+    writeFileSync(path.join(testProjectRoot, `${WU_DIR}/WU-9999.yaml`), wuContent);
   });
 
   afterEach(() => {
@@ -285,9 +282,15 @@ acceptance: []
       expect(withMicroWorktree).not.toHaveBeenCalled();
 
       // Verify all stamps were created directly
-      expect(existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9999.done`))).toBe(true);
-      expect(existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9998.done`))).toBe(true);
-      expect(existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9997.done`))).toBe(true);
+      expect(
+        existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9999.done`)),
+      ).toBe(true);
+      expect(
+        existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9998.done`)),
+      ).toBe(true);
+      expect(
+        existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9997.done`)),
+      ).toBe(true);
     });
   });
 

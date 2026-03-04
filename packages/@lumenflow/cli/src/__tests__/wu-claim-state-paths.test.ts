@@ -93,10 +93,7 @@ describe('toRelativeClaimWorktreePathForStorage', () => {
 
 describe('WU-2259: claim path isolation for micro-worktree writes', () => {
   it('normalizes absolute source-root paths to repo-relative claim metadata paths', () => {
-    const normalized = normalizeClaimPathForWorktree(
-      `/repo/${WU_DIR}/WU-2259.yaml`,
-      '/repo',
-    );
+    const normalized = normalizeClaimPathForWorktree(`/repo/${WU_DIR}/WU-2259.yaml`, '/repo');
 
     expect(normalized).toBe(`${WU_DIR}/WU-2259.yaml`);
   });
@@ -113,11 +110,7 @@ describe('WU-2259: claim path isolation for micro-worktree writes', () => {
 
   it('keeps already-relative claim metadata paths stable', () => {
     const normalized = normalizeClaimPathForWorktree(BACKLOG_PATH, '/r');
-    const resolved = resolveClaimPathInWorktree(
-      LUMENFLOW_PATHS.WU_EVENTS,
-      '/tmp/micro',
-      '/r',
-    );
+    const resolved = resolveClaimPathInWorktree(LUMENFLOW_PATHS.WU_EVENTS, '/tmp/micro', '/r');
 
     expect(normalized).toBe(BACKLOG_PATH);
     expect(resolved).toBe(`/tmp/micro/${LUMENFLOW_PATHS.WU_EVENTS}`);

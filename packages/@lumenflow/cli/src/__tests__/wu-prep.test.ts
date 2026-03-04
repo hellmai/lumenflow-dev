@@ -455,8 +455,7 @@ describe('wu-prep dirty-main mutation guard (WU-1750)', () => {
     const result = evaluatePrepMainMutationGuard({
       mainCheckout: '/repo',
       isBranchPr: false,
-      mainStatus:
-        ` M packages/@lumenflow/cli/src/wu-prep.ts\n?? ${STATUS_PATH}\n`,
+      mainStatus: ` M packages/@lumenflow/cli/src/wu-prep.ts\n?? ${STATUS_PATH}\n`,
     });
 
     expect(result.blocked).toBe(true);
