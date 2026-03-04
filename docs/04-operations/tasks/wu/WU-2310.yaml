@@ -20,12 +20,22 @@ artifacts:
   - .lumenflow/stamps/WU-2310.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Fixed two bugs: (1) allowlist ordering - moved before worktree block so .claude/plans writes
+  work when worktrees exist, (2) hardcoded wuDir - replaced with CLI helper (get-wu-dir.ts) that
+  reads workspace.yaml via getConfig(). Shell hooks fall back to direct workspace.yaml read when CLI
+  not built.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-04T10:38:18.066Z
+worktree_path: worktrees/framework-cli-enforcement-wu-2310
+session_id: 82cc8efd-7983-4e2b-962a-f26e590076ef
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-04T10:38:18.072Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +49,3 @@ acceptance:
   - Allowlist check runs BEFORE worktree-exists block in both deployed and template hooks
   - Hooks read wuDir from workspace.yaml with fallback to LUMENFLOW_PATHS constants
   - All existing hook tests pass
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-enforcement-wu-2310
-claimed_at: 2026-03-04T10:38:18.066Z
-baseline_main_sha: c658b9085d52260ca9902a5b18e0035ae31725ff
-session_id: 82cc8efd-7983-4e2b-962a-f26e590076ef
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-04T10:38:18.072Z
