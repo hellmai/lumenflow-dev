@@ -1,0 +1,36 @@
+id: WU-2310
+title: Fix hardcoded paths in shell hooks and pre-commit, fix allowlist ordering bug
+lane: 'Framework: CLI Enforcement'
+type: bug
+status: ready
+priority: P2
+created: 2026-03-04
+code_paths:
+  - .claude/hooks/validate-worktree-path.sh
+  - packages/@lumenflow/cli/templates/vendors/claude/.claude/hooks/enforce-worktree.sh
+  - .husky/hooks/pre-commit.mjs
+  - tools/backfill-wu-specs.mjs
+tests:
+  manual:
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2310.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Shell hooks and pre-commit.mjs contain hardcoded docs/04-operations/tasks/wu paths that bypass the path-literal-guard (which only covers .ts files). Additionally, validate-worktree-path.sh and the template enforce-worktree.sh have an allowlist ordering bug where the allowlist check runs AFTER the worktree-exists block, making .claude/* writes impossible when worktrees exist.
+acceptance:
+  - No hardcoded docs/04-operations/tasks/wu paths in shell hooks or .mjs scripts
+  - Allowlist check runs BEFORE worktree-exists block in both deployed and template hooks
+  - Hooks read wuDir from workspace.yaml with fallback to LUMENFLOW_PATHS constants
+  - All existing hook tests pass
