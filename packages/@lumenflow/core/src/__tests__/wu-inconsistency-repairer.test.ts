@@ -20,6 +20,7 @@ import {
   repairWUInconsistency,
 } from '../wu-inconsistency-repairer.js';
 import { CONSISTENCY_TYPES } from '../wu-constants.js';
+import { DIRECTORIES } from '../wu-paths-constants.js';
 import type { ConsistencyError } from '../wu-consistency-detector.js';
 
 // Mock file repair functions
@@ -39,12 +40,16 @@ vi.mock('../micro-worktree.js', () => ({
 }));
 
 // Mock wu-paths
-vi.mock('../wu-paths.js', () => ({
-  WU_PATHS: {
-    STATUS: () => 'docs/04-operations/tasks/status.md',
-    BACKLOG: () => 'docs/04-operations/tasks/backlog.md',
-  },
-}));
+// Note: vi.mock is hoisted, so we must dynamic-import constants inside the factory
+vi.mock('../wu-paths.js', async () => {
+  const { DIRECTORIES: D } = await import('../wu-paths-constants.js');
+  return {
+    WU_PATHS: {
+      STATUS: () => D.STATUS_PATH,
+      BACKLOG: () => D.BACKLOG_PATH,
+    },
+  };
+});
 
 // Helper to create consistency errors
 function makeError(overrides: Partial<ConsistencyError>): ConsistencyError {

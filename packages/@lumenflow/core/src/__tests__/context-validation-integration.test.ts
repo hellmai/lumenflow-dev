@@ -11,6 +11,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { CONTEXT_VALIDATION, WU_STATUS } from '../wu-constants.js';
 import type { WuContext } from '../validation/types.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 const { LOCATION_TYPES, COMMANDS } = CONTEXT_VALIDATION;
 
@@ -72,7 +76,7 @@ describe('context-validation-integration (WU-1090)', () => {
       status: WU_STATUS.READY,
       lane: 'Operations',
       title: 'Test WU',
-      yamlPath: '/repo/docs/04-operations/tasks/wu/WU-100.yaml',
+      yamlPath: `/repo/${WU_DIR}/WU-100.yaml`,
       isConsistent: true,
       inconsistencyReason: null,
     },

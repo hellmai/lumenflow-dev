@@ -29,7 +29,6 @@ import ts from 'typescript';
 import {
   WU_STATUS,
   LUMENFLOW_PATHS,
-  DIRECTORIES,
   isWUStatus,
   resolveWUStatus,
   getWUStatusDisplay,

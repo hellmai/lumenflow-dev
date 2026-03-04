@@ -30,6 +30,9 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import { spawnSync } from 'node:child_process';
+import { DIRECTORIES, DOCS_LAYOUT_PRESETS, LUMENFLOW_PATHS } from '@lumenflow/core';
+
+const WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 
 // MCP worktree enforcement -- imported directly from source since
 // @lumenflow/mcp does not export it as a package subpath.
@@ -102,11 +105,11 @@ function createGitFixture(prefix: string): string {
   spawnSync('git', ['config', 'user.name', 'E2E Test'], { cwd: repoDir });
 
   // Create LumenFlow structure
-  fs.mkdirSync(path.join(repoDir, '.lumenflow', 'state'), { recursive: true });
-  fs.mkdirSync(path.join(repoDir, '.lumenflow', 'stamps'), { recursive: true });
-  fs.mkdirSync(path.join(repoDir, '.claude', 'hooks'), { recursive: true });
-  fs.mkdirSync(path.join(repoDir, 'worktrees'), { recursive: true });
-  fs.mkdirSync(path.join(repoDir, 'docs', '04-operations', 'tasks', 'wu'), { recursive: true });
+  fs.mkdirSync(path.join(repoDir, LUMENFLOW_PATHS.STATE_DIR), { recursive: true });
+  fs.mkdirSync(path.join(repoDir, LUMENFLOW_PATHS.STAMPS_DIR), { recursive: true });
+  fs.mkdirSync(path.join(repoDir, DIRECTORIES.CLAUDE_HOOKS), { recursive: true });
+  fs.mkdirSync(path.join(repoDir, DIRECTORIES.WORKTREES), { recursive: true });
+  fs.mkdirSync(path.join(repoDir, WU_DIR), { recursive: true });
   fs.mkdirSync(path.join(repoDir, 'plan'), { recursive: true });
   fs.mkdirSync(path.join(repoDir, 'src'), { recursive: true });
 
@@ -117,7 +120,7 @@ function createGitFixture(prefix: string): string {
       'software_delivery:',
       '  directories:',
       '    worktrees: worktrees',
-      '    wuDir: docs/04-operations/tasks/wu',
+      `    wuDir: ${WU_DIR}`,
       '  agents:',
       '    clients:',
       '      claude-code:',
@@ -130,7 +133,7 @@ function createGitFixture(prefix: string): string {
   );
 
   // Empty events file
-  fs.writeFileSync(path.join(repoDir, '.lumenflow', 'state', 'wu-events.jsonl'), '');
+  fs.writeFileSync(path.join(repoDir, LUMENFLOW_PATHS.WU_EVENTS), '');
 
   // A source file to serve as a "code" write target
   fs.writeFileSync(path.join(repoDir, 'src', 'app.ts'), '// app\n');
@@ -155,7 +158,7 @@ function addWorktreeDir(repoDir: string, name: string): string {
  * Write a branch-pr claim event to the state file.
  */
 function writeBranchPrClaim(repoDir: string): void {
-  const stateFile = path.join(repoDir, '.lumenflow', 'state', 'wu-events.jsonl');
+  const stateFile = path.join(repoDir, LUMENFLOW_PATHS.WU_EVENTS);
   const event = JSON.stringify({
     id: 'WU-9999',
     status: 'in_progress',
@@ -208,19 +211,19 @@ const FAIL_CLOSED_MATRIX: MatrixInput[] = [
   {
     label: 'allowlist: .lumenflow/ config write',
     toolName: 'Write',
-    relPath: '.lumenflow/config.yaml',
+    relPath: `${LUMENFLOW_PATHS.BASE}/config.yaml`,
     expectAllowed: true,
   },
   {
     label: 'allowlist: .claude/ settings write',
     toolName: 'Write',
-    relPath: '.claude/settings.json',
+    relPath: `${DIRECTORIES.CLAUDE}settings.json`,
     expectAllowed: true,
   },
   {
     label: 'allowlist: WU YAML spec write',
     toolName: 'Write',
-    relPath: 'docs/04-operations/tasks/wu/WU-100.yaml',
+    relPath: `${WU_DIR}/WU-100.yaml`,
     expectAllowed: true,
   },
   {
@@ -287,13 +290,13 @@ const WORKTREE_ACTIVE_MATRIX: MatrixInput[] = [
   {
     label: 'worktree: write inside worktree path is allowed',
     toolName: 'Write',
-    relPath: 'worktrees/lane-wu-42/src/app.ts',
+    relPath: `${DIRECTORIES.WORKTREES}lane-wu-42/src/app.ts`,
     expectAllowed: true,
   },
   {
     label: 'worktree: edit inside worktree path is allowed',
     toolName: 'Edit',
-    relPath: 'worktrees/lane-wu-42/src/app.ts',
+    relPath: `${DIRECTORIES.WORKTREES}lane-wu-42/src/app.ts`,
     expectAllowed: true,
   },
   {
@@ -305,7 +308,7 @@ const WORKTREE_ACTIVE_MATRIX: MatrixInput[] = [
   {
     label: 'worktree: .lumenflow/ write blocked when worktrees active',
     toolName: 'Write',
-    relPath: '.lumenflow/stamps/WU-42.done',
+    relPath: `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-42.done`,
     expectAllowed: false,
   },
 ];
@@ -845,7 +848,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('hook: path with spaces in allowlisted directory is allowed', () => {
-        const absPath = path.join(repoDir, '.lumenflow', 'my config.yaml');
+        const absPath = path.join(repoDir, LUMENFLOW_PATHS.BASE, 'my config.yaml');
         const stdinJson = buildHookInput('Write', absPath);
         const env = { CLAUDE_PROJECT_DIR: repoDir };
         const result = runShellHook(hookPath, stdinJson, env);
@@ -854,7 +857,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
 
       it('ts: path with spaces in allowlisted directory is allowed', async () => {
         const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
-        const absPath = path.join(repoDir, '.lumenflow', 'my config.yaml');
+        const absPath = path.join(repoDir, LUMENFLOW_PATHS.BASE, 'my config.yaml');
         const result = await checkWorktreeEnforcement(
           { file_path: absPath, tool_name: 'Write' },
           repoDir,
@@ -863,7 +866,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('mcp: path with spaces in allowlisted directory is allowed', () => {
-        const absPath = path.join(repoDir, '.lumenflow', 'my config.yaml');
+        const absPath = path.join(repoDir, LUMENFLOW_PATHS.BASE, 'my config.yaml');
         const result = mcpCheckWorktreeEnforcement({
           filePath: absPath,
           projectRoot: repoDir,
@@ -888,9 +891,9 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
         spawnSync('git', ['init', '-q', '-b', 'master'], { cwd: repoDir });
         spawnSync('git', ['config', 'user.email', 'test@e2e.local'], { cwd: repoDir });
         spawnSync('git', ['config', 'user.name', 'E2E Test'], { cwd: repoDir });
-        fs.mkdirSync(path.join(repoDir, '.lumenflow', 'state'), { recursive: true });
+        fs.mkdirSync(path.join(repoDir, LUMENFLOW_PATHS.STATE_DIR), { recursive: true });
         fs.mkdirSync(path.join(repoDir, 'src'), { recursive: true });
-        fs.writeFileSync(path.join(repoDir, '.lumenflow', 'state', 'wu-events.jsonl'), '');
+        fs.writeFileSync(path.join(repoDir, LUMENFLOW_PATHS.WU_EVENTS), '');
         fs.writeFileSync(path.join(repoDir, 'src', 'app.ts'), '// app\n');
         // MCP requires workspace.yaml with enforcement config to block
         fs.writeFileSync(
@@ -899,7 +902,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
             'software_delivery:',
             '  directories:',
             '    worktrees: worktrees',
-            '    wuDir: docs/04-operations/tasks/wu',
+            `    wuDir: ${WU_DIR}`,
             '  agents:',
             '    clients:',
             '      claude-code:',

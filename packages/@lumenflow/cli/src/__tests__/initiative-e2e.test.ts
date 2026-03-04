@@ -22,7 +22,11 @@ import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
 // Test constants
 const TEST_INIT_ID = 'INIT-901';
 const TEST_INIT_TITLE = 'Test Initiative';
@@ -36,11 +40,11 @@ const TEST_LANE = 'Framework: CLI';
  */
 function createInitiativeProject(baseDir: string): void {
   const dirs = [
-    'docs/04-operations/tasks/wu',
-    'docs/04-operations/tasks/initiatives',
-    '.lumenflow/state',
+    WU_DIR,
+    INITIATIVES_DIR,
+    LUMENFLOW_PATHS.STATE_DIR,
     '.lumenflow/memory',
-    '.lumenflow/stamps',
+    LUMENFLOW_PATHS.STAMPS_DIR,
     'packages/@lumenflow/cli/src',
   ];
 
@@ -91,7 +95,7 @@ function createInitiative(
     wus?: string[];
   } = {},
 ): string {
-  const initDir = join(baseDir, 'docs/04-operations/tasks/initiatives');
+  const initDir = join(baseDir, INITIATIVES_DIR);
   const initPath = join(initDir, `${id}.yaml`);
 
   const doc = {
@@ -126,7 +130,7 @@ function createWUForInitiative(
     dependencies?: string[];
   } = {},
 ): string {
-  const wuDir = join(baseDir, 'docs/04-operations/tasks/wu');
+  const wuDir = join(baseDir, WU_DIR);
   const wuPath = join(wuDir, `${id}.yaml`);
 
   const doc: Record<string, unknown> = {
@@ -212,7 +216,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         // Act
         const initPath = join(
           tempDir,
-          'docs/04-operations/tasks/initiatives',
+          INITIATIVES_DIR,
           `${TEST_INIT_ID}.yaml`,
         );
         const doc = parseYAML(readFileSync(initPath, 'utf-8'));
@@ -237,7 +241,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         // Update initiative with WU reference
         const initPath = join(
           tempDir,
-          'docs/04-operations/tasks/initiatives',
+          INITIATIVES_DIR,
           `${TEST_INIT_ID}.yaml`,
         );
         const initDoc = parseYAML(readFileSync(initPath, 'utf-8'));
@@ -266,7 +270,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         // Update initiative
         const initPath = join(
           tempDir,
-          'docs/04-operations/tasks/initiatives',
+          INITIATIVES_DIR,
           `${TEST_INIT_ID}.yaml`,
         );
         const initDoc = parseYAML(readFileSync(initPath, 'utf-8'));
@@ -302,7 +306,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
 
         // Act - Calculate progress
         const wuStatuses = [TEST_WU_ID_1, TEST_WU_ID_2, TEST_WU_ID_3].map((id) => {
-          const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${id}.yaml`);
+          const wuPath = join(tempDir, WU_DIR, `${id}.yaml`);
           const doc = parseYAML(readFileSync(wuPath, 'utf-8'));
           return doc.status;
         });
@@ -379,7 +383,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
 
         // Act - Identify parallel WUs
         const wus = [TEST_WU_ID_1, TEST_WU_ID_2, TEST_WU_ID_3].map((id) => {
-          const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${id}.yaml`);
+          const wuPath = join(tempDir, WU_DIR, `${id}.yaml`);
           return parseYAML(readFileSync(wuPath, 'utf-8'));
         });
 
@@ -416,7 +420,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
 
         // Act - Compute waves
         const wus = [TEST_WU_ID_1, TEST_WU_ID_2, TEST_WU_ID_3].map((id) => {
-          const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${id}.yaml`);
+          const wuPath = join(tempDir, WU_DIR, `${id}.yaml`);
           return parseYAML(readFileSync(wuPath, 'utf-8'));
         });
 
@@ -495,22 +499,22 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
 
         // Step 3: Execute Phase 1 WUs
         // Complete WU-1
-        const wu1Path = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID_1}.yaml`);
+        const wu1Path = join(tempDir, WU_DIR, `${TEST_WU_ID_1}.yaml`);
         const wu1 = parseYAML(readFileSync(wu1Path, 'utf-8'));
         wu1.status = WU_STATUS.DONE;
         writeFileSync(wu1Path, stringifyYAML(wu1));
 
         // Complete WU-2
-        const wu2Path = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID_2}.yaml`);
+        const wu2Path = join(tempDir, WU_DIR, `${TEST_WU_ID_2}.yaml`);
         const wu2 = parseYAML(readFileSync(wu2Path, 'utf-8'));
         wu2.status = WU_STATUS.DONE;
         writeFileSync(wu2Path, stringifyYAML(wu2));
 
         // Step 4: Check progress
         const wuPaths = [
-          join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID_1}.yaml`),
-          join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID_2}.yaml`),
-          join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID_3}.yaml`),
+          join(tempDir, WU_DIR, `${TEST_WU_ID_1}.yaml`),
+          join(tempDir, WU_DIR, `${TEST_WU_ID_2}.yaml`),
+          join(tempDir, WU_DIR, `${TEST_WU_ID_3}.yaml`),
         ];
         const statuses = wuPaths.map((p) => parseYAML(readFileSync(p, 'utf-8')).status);
         const doneCount = statuses.filter((s) => s === WU_STATUS.DONE).length;
@@ -524,7 +528,7 @@ describe('Initiative Orchestration E2E Tests (WU-1363)', () => {
         writeFileSync(initPath, stringifyYAML(initDoc));
 
         // Complete WU-3 (Phase 2)
-        const wu3Path = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID_3}.yaml`);
+        const wu3Path = join(tempDir, WU_DIR, `${TEST_WU_ID_3}.yaml`);
         const wu3 = parseYAML(readFileSync(wu3Path, 'utf-8'));
         wu3.status = WU_STATUS.DONE;
         writeFileSync(wu3Path, stringifyYAML(wu3));

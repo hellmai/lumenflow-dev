@@ -19,6 +19,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'fs'
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { parse as yamlParse } from 'yaml';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
 // Mock withMicroWorktree BEFORE importing the module under test
 // The mock captures the execute callback so we can verify YAML writes
@@ -106,7 +107,7 @@ vi.mock('@lumenflow/core/git-adapter', () => ({
 
 // Test constants
 const WU_ID = 'WU-14';
-const WU_DIR = 'docs/04-operations/tasks/wu';
+const WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 const RESOLVER_EMAIL = 'admin@example.com';
 const TEMP_PREFIX = 'wu-escalate-test-';
 const MKDIR_OPTS = { recursive: true } as const;

@@ -14,6 +14,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { join } from 'node:path';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
 /**
  * Mocked modules
@@ -46,6 +47,11 @@ import {
   extractInProgressWuRefs,
 } from '../state-doctor.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 /**
  * Constants for test paths
  */
@@ -53,10 +59,7 @@ const LUMENFLOW_DIR = '.lumenflow';
 const STATE_DIR = 'state';
 const STAMPS_DIR = 'stamps';
 const MEMORY_DIR = 'memory';
-const DOCS_TASKS_DIR = 'docs/04-operations/tasks';
-const BACKLOG_PATH = `${DOCS_TASKS_DIR}/backlog.md`;
-const STATUS_PATH = `${DOCS_TASKS_DIR}/status.md`;
-const INITIATIVES_DIR = `${DOCS_TASKS_DIR}/initiatives`;
+const DOCS_TASKS_DIR = WU_DIR.replace('/wu', '');
 const WORKSPACE_YAML_PATH = 'workspace.yaml';
 
 const MINIMAL_WORKSPACE_YAML = `id: test-workspace
@@ -79,10 +82,10 @@ security:
   deny_overlays: []
 software_delivery:
   directories:
-    wuDir: docs/04-operations/tasks/wu
-    initiativesDir: docs/04-operations/tasks/initiatives
-    backlogPath: docs/04-operations/tasks/backlog.md
-    statusPath: docs/04-operations/tasks/status.md
+    wuDir: ${WU_DIR}
+    initiativesDir: ${INITIATIVES_DIR}
+    backlogPath: ${BACKLOG_PATH}
+    statusPath: ${STATUS_PATH}
 memory_namespace: test-workspace
 event_namespace: test-workspace
 `;
@@ -163,7 +166,7 @@ describe('state-doctor CLI (WU-1230)', () => {
       const mockWithMicroWorktree = vi.mocked(withMicroWorktree);
       mockWithMicroWorktree.mockResolvedValue({
         commitMessage: 'fix: remove broken events',
-        files: ['.lumenflow/state/wu-events.jsonl'],
+        files: [LUMENFLOW_PATHS.WU_EVENTS],
         ref: 'main',
       });
 

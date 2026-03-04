@@ -14,6 +14,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
 // ---------------------------------------------------------------------------
 // Module under test
@@ -29,6 +30,8 @@ import {
   type ConfigKeyRoute,
 } from '../config-set.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 // ---------------------------------------------------------------------------
 // Test fixtures
 // ---------------------------------------------------------------------------
@@ -47,7 +50,7 @@ function createMinimalSoftwareDeliveryConfig(): Record<string, unknown> {
       minCoverage: 90,
     },
     directories: {
-      wuDir: 'docs/04-operations/tasks/wu',
+      wuDir: WU_DIR,
     },
   };
 }
@@ -983,7 +986,7 @@ describe('WU-2197: findStrippedKeys scoped to write target sub-tree', () => {
           legacy_unknown: true, // Pre-existing unknown key in gates
         },
         directories: {
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: WU_DIR,
         },
       },
       control_plane: {

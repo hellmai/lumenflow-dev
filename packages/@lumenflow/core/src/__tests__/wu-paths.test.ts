@@ -33,28 +33,42 @@ import {
   getAbsoluteWuPath,
   getAbsoluteStampPath,
 } from '../wu-paths.js';
+import { LUMENFLOW_PATHS } from '../wu-paths-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
 
 // Mock lumenflow-config to control config values
-vi.mock('../lumenflow-config.js', () => ({
-  getConfig: vi.fn((options?: { projectRoot?: string }) => ({
-    directories: {
-      wuDir: 'docs/04-operations/tasks/wu',
-      statusPath: 'docs/04-operations/tasks/status.md',
-      backlogPath: 'docs/04-operations/tasks/backlog.md',
-      initiativesDir: 'docs/04-operations/tasks/initiatives',
-      worktrees: 'worktrees',
-      plansDir: 'docs/04-operations/plans',
-      templatesDir: '.lumenflow/templates',
-      onboardingDir: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
-      sizingGuidePath: 'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md',
-    },
-    state: {
-      stampsDir: '.lumenflow/stamps',
-      stateDir: '.lumenflow/state',
-    },
-  })),
-  getProjectRoot: vi.fn(() => '/fake/project/root'),
-}));
+// Note: vi.mock is hoisted, so we must dynamic-import constants inside the factory
+vi.mock('../lumenflow-config.js', async () => {
+  const { DOCS_LAYOUT_PRESETS: DLP } = await import('../docs-layout-presets.js');
+  const { LUMENFLOW_PATHS: LP } = await import('../wu-paths-constants.js');
+  const arc42 = DLP.arc42;
+  return {
+    getConfig: vi.fn((options?: { projectRoot?: string }) => ({
+      directories: {
+        wuDir: `${arc42.tasks}/wu`,
+        statusPath: `${arc42.tasks}/status.md`,
+        backlogPath: `${arc42.tasks}/backlog.md`,
+        initiativesDir: `${arc42.tasks}/initiatives`,
+        worktrees: 'worktrees',
+        plansDir: 'docs/04-operations/plans',
+        templatesDir: LP.TEMPLATES_DIR,
+        onboardingDir: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+        sizingGuidePath: 'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md',
+      },
+      state: {
+        stampsDir: LP.STAMPS_DIR,
+        stateDir: LP.STATE_DIR,
+      },
+    })),
+    getProjectRoot: vi.fn(() => '/fake/project/root'),
+  };
+});
 
 describe('wu-paths', () => {
   describe('resolveRepoRoot', () => {
@@ -73,20 +87,24 @@ describe('wu-paths', () => {
       expect(result).toBe('/a/b');
     });
 
-    it('should handle backlog depth (4 levels)', () => {
-      const backlogPath = '/repo/docs/04-operations/tasks/backlog.md';
-      const result = resolveRepoRoot(backlogPath, 4);
+    it('should handle backlog depth', () => {
+      const backlogPath = `/repo/${BACKLOG_PATH}`;
+      // Depth = number of segments in BACKLOG_PATH (docs/tasks/backlog.md = 3)
+      const depth = BACKLOG_PATH.split('/').length;
+      const result = resolveRepoRoot(backlogPath, depth);
       expect(result).toBe('/repo');
     });
 
-    it('should handle WU YAML depth (5 levels)', () => {
-      const wuPath = '/repo/docs/04-operations/tasks/wu/WU-123.yaml';
-      const result = resolveRepoRoot(wuPath, 5);
+    it('should handle WU YAML depth', () => {
+      const wuPath = `/repo/${WU_DIR}/WU-123.yaml`;
+      // Depth = segments in WU_DIR + 1 for the filename (docs/tasks/wu/WU-123.yaml = 4)
+      const depth = WU_DIR.split('/').length + 1;
+      const result = resolveRepoRoot(wuPath, depth);
       expect(result).toBe('/repo');
     });
 
     it('should handle state store depth (3 levels)', () => {
-      const statePath = '/repo/.lumenflow/state/wu-events.jsonl';
+      const statePath = `/repo/${LUMENFLOW_PATHS.WU_EVENTS}`;
       const result = resolveRepoRoot(statePath, 3);
       expect(result).toBe('/repo');
     });
@@ -100,18 +118,18 @@ describe('wu-paths', () => {
 
   describe('getStateStoreDirFromBacklog', () => {
     it('should compute state store directory from backlog path', () => {
-      const backlogPath = '/fake/repo/docs/04-operations/tasks/backlog.md';
+      const backlogPath = `/fake/repo/${BACKLOG_PATH}`;
       const result = getStateStoreDirFromBacklog(backlogPath);
 
       // Should resolve to repo root + .lumenflow/state
-      expect(result).toBe('/fake/repo/.lumenflow/state');
+      expect(result).toBe(`/fake/repo/${LUMENFLOW_PATHS.STATE_DIR}`);
     });
 
     it('should work with nested repo paths', () => {
-      const backlogPath = '/home/user/projects/myrepo/docs/04-operations/tasks/backlog.md';
+      const backlogPath = `/home/user/projects/myrepo/${BACKLOG_PATH}`;
       const result = getStateStoreDirFromBacklog(backlogPath);
 
-      expect(result).toBe('/home/user/projects/myrepo/.lumenflow/state');
+      expect(result).toBe(`/home/user/projects/myrepo/${LUMENFLOW_PATHS.STATE_DIR}`);
     });
 
     // WU-1523: Test that custom/simple docs structures resolve correctly
@@ -131,8 +149,8 @@ describe('wu-paths', () => {
           sizingGuidePath: 'docs/_frameworks/lumenflow/wu-sizing-guide.md',
         },
         state: {
-          stampsDir: '.lumenflow/stamps',
-          stateDir: '.lumenflow/state',
+          stampsDir: LUMENFLOW_PATHS.STAMPS_DIR,
+          stateDir: LUMENFLOW_PATHS.STATE_DIR,
         },
       } as ReturnType<typeof getConfig>);
 
@@ -140,7 +158,7 @@ describe('wu-paths', () => {
       const result = getStateStoreDirFromBacklog(backlogPath);
 
       // With simple structure (3 levels deep), should still resolve to /project
-      expect(result).toBe('/project/.lumenflow/state');
+      expect(result).toBe(`/project/${LUMENFLOW_PATHS.STATE_DIR}`);
     });
 
     it('should resolve state dir correctly for flat backlog path (tasks/backlog.md)', async () => {
@@ -154,13 +172,13 @@ describe('wu-paths', () => {
           initiativesDir: 'tasks/initiatives',
           worktrees: 'worktrees',
           plansDir: 'plans',
-          templatesDir: '.lumenflow/templates',
+          templatesDir: LUMENFLOW_PATHS.TEMPLATES_DIR,
           onboardingDir: '_frameworks/lumenflow/agent/onboarding',
           sizingGuidePath: '_frameworks/lumenflow/wu-sizing-guide.md',
         },
         state: {
-          stampsDir: '.lumenflow/stamps',
-          stateDir: '.lumenflow/state',
+          stampsDir: LUMENFLOW_PATHS.STAMPS_DIR,
+          stateDir: LUMENFLOW_PATHS.STATE_DIR,
         },
       } as ReturnType<typeof getConfig>);
 
@@ -168,7 +186,7 @@ describe('wu-paths', () => {
       const result = getStateStoreDirFromBacklog(backlogPath);
 
       // With flat structure (2 levels deep), should still resolve to /project
-      expect(result).toBe('/project/.lumenflow/state');
+      expect(result).toBe(`/project/${LUMENFLOW_PATHS.STATE_DIR}`);
     });
   });
 
@@ -195,44 +213,44 @@ describe('wu-paths', () => {
       const paths = createWuPaths();
       const wuPath = paths.WU('WU-123');
 
-      expect(wuPath).toBe('docs/04-operations/tasks/wu/WU-123.yaml');
+      expect(wuPath).toBe(`${WU_DIR}/WU-123.yaml`);
     });
 
     it('should return correct WU_DIR path', () => {
       const paths = createWuPaths();
-      expect(paths.WU_DIR()).toBe('docs/04-operations/tasks/wu');
+      expect(paths.WU_DIR()).toBe(WU_DIR);
     });
 
     it('should return correct STATUS path', () => {
       const paths = createWuPaths();
-      expect(paths.STATUS()).toBe('docs/04-operations/tasks/status.md');
+      expect(paths.STATUS()).toBe(STATUS_PATH);
     });
 
     it('should return correct BACKLOG path', () => {
       const paths = createWuPaths();
-      expect(paths.BACKLOG()).toBe('docs/04-operations/tasks/backlog.md');
+      expect(paths.BACKLOG()).toBe(BACKLOG_PATH);
     });
 
     it('should return correct STAMPS_DIR path', () => {
       const paths = createWuPaths();
-      expect(paths.STAMPS_DIR()).toBe('.lumenflow/stamps');
+      expect(paths.STAMPS_DIR()).toBe(LUMENFLOW_PATHS.STAMPS_DIR);
     });
 
     it('should return correct STAMP path', () => {
       const paths = createWuPaths();
       const stampPath = paths.STAMP('WU-456');
 
-      expect(stampPath).toBe('.lumenflow/stamps/WU-456.done');
+      expect(stampPath).toBe(`${LUMENFLOW_PATHS.STAMPS_DIR}/WU-456.done`);
     });
 
     it('should return correct STATE_DIR path', () => {
       const paths = createWuPaths();
-      expect(paths.STATE_DIR()).toBe('.lumenflow/state');
+      expect(paths.STATE_DIR()).toBe(LUMENFLOW_PATHS.STATE_DIR);
     });
 
     it('should return correct INITIATIVES_DIR path', () => {
       const paths = createWuPaths();
-      expect(paths.INITIATIVES_DIR()).toBe('docs/04-operations/tasks/initiatives');
+      expect(paths.INITIATIVES_DIR()).toBe(INITIATIVES_DIR);
     });
 
     it('should return correct WORKTREES_DIR path', () => {
@@ -247,7 +265,7 @@ describe('wu-paths', () => {
 
     it('should return correct TEMPLATES_DIR path (WU-1310)', () => {
       const paths = createWuPaths();
-      expect(paths.TEMPLATES_DIR()).toBe('.lumenflow/templates');
+      expect(paths.TEMPLATES_DIR()).toBe(LUMENFLOW_PATHS.TEMPLATES_DIR);
     });
 
     it('should return correct ONBOARDING_DIR path (WU-1310)', () => {
@@ -283,8 +301,8 @@ describe('wu-paths', () => {
     });
 
     it('should return correct paths', () => {
-      expect(WU_PATHS.WU('WU-100')).toBe('docs/04-operations/tasks/wu/WU-100.yaml');
-      expect(WU_PATHS.STAMP('WU-100')).toBe('.lumenflow/stamps/WU-100.done');
+      expect(WU_PATHS.WU('WU-100')).toBe(`${WU_DIR}/WU-100.yaml`);
+      expect(WU_PATHS.STAMP('WU-100')).toBe(`${LUMENFLOW_PATHS.STAMPS_DIR}/WU-100.done`);
     });
   });
 
@@ -367,7 +385,7 @@ describe('wu-paths', () => {
     });
 
     it('should handle nested paths', () => {
-      const result = resolveFromProjectRoot('docs/04-operations/tasks/wu/WU-123.yaml');
+      const result = resolveFromProjectRoot(`${WU_DIR}/WU-123.yaml`);
 
       expect(result).toContain('WU-123.yaml');
     });
@@ -395,7 +413,7 @@ describe('wu-paths', () => {
     it('should return absolute path to WU YAML file', () => {
       const result = getAbsoluteWuPath('WU-123');
 
-      expect(result).toBe('/fake/project/root/docs/04-operations/tasks/wu/WU-123.yaml');
+      expect(result).toBe(`/fake/project/root/${WU_DIR}/WU-123.yaml`);
     });
 
     it('should accept custom projectRoot option', () => {
@@ -409,7 +427,7 @@ describe('wu-paths', () => {
     it('should return absolute path to stamp file', () => {
       const result = getAbsoluteStampPath('WU-123');
 
-      expect(result).toBe('/fake/project/root/.lumenflow/stamps/WU-123.done');
+      expect(result).toBe(`/fake/project/root/${LUMENFLOW_PATHS.STAMPS_DIR}/WU-123.done`);
     });
 
     it('should accept custom projectRoot option', () => {

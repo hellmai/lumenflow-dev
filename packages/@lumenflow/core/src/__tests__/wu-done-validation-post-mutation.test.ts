@@ -7,6 +7,11 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 
 import { validatePostMutation } from '../wu-done-validation.js';
+import { LUMENFLOW_PATHS } from '../wu-paths-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 function writeDoneWUFile(wuPath: string) {
   writeFileSync(
@@ -33,9 +38,9 @@ describe('validatePostMutation state consistency', () => {
   it('fails when events do not derive to done', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-post-mutation-'));
     try {
-      const wuPath = path.join(root, 'docs/04-operations/tasks/wu/WU-9000.yaml');
-      const stampPath = path.join(root, '.lumenflow/stamps/WU-9000.done');
-      const eventsPath = path.join(root, '.lumenflow/state/wu-events.jsonl');
+      const wuPath = path.join(root, `${WU_DIR}/WU-9000.yaml`);
+      const stampPath = path.join(root, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9000.done`);
+      const eventsPath = path.join(root, LUMENFLOW_PATHS.WU_EVENTS);
 
       mkdirSync(path.dirname(wuPath), { recursive: true });
       mkdirSync(path.dirname(stampPath), { recursive: true });
@@ -64,9 +69,9 @@ describe('validatePostMutation state consistency', () => {
   it('passes when YAML, stamp, and events all indicate done', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-post-mutation-'));
     try {
-      const wuPath = path.join(root, 'docs/04-operations/tasks/wu/WU-9000.yaml');
-      const stampPath = path.join(root, '.lumenflow/stamps/WU-9000.done');
-      const eventsPath = path.join(root, '.lumenflow/state/wu-events.jsonl');
+      const wuPath = path.join(root, `${WU_DIR}/WU-9000.yaml`);
+      const stampPath = path.join(root, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9000.done`);
+      const eventsPath = path.join(root, LUMENFLOW_PATHS.WU_EVENTS);
 
       mkdirSync(path.dirname(wuPath), { recursive: true });
       mkdirSync(path.dirname(stampPath), { recursive: true });

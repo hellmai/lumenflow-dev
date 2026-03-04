@@ -12,6 +12,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 
 describe('lumenflow init command (WU-1045)', () => {
   let tempDir: string;
@@ -83,7 +88,7 @@ describe('lumenflow init command (WU-1045)', () => {
       const { scaffoldProject } = await import('../src/init.js');
       await scaffoldProject(tempDir, { ...baseOptions });
 
-      const backlogPath = path.join(tempDir, 'docs', '04-operations', 'tasks', 'backlog.md');
+      const backlogPath = path.join(tempDir, BACKLOG_PATH);
       expect(fs.existsSync(backlogPath)).toBe(false);
     });
 
@@ -139,8 +144,8 @@ describe('lumenflow init command (WU-1045)', () => {
       const { scaffoldProject } = await import('../src/init.js');
       await scaffoldProject(tempDir, { ...baseOptions, full: true });
 
-      const backlogPath = path.join(tempDir, 'docs', '04-operations', 'tasks', 'backlog.md');
-      const statusPath = path.join(tempDir, 'docs', '04-operations', 'tasks', 'status.md');
+      const backlogPath = path.join(tempDir, BACKLOG_PATH);
+      const statusPath = path.join(tempDir, STATUS_PATH);
       const templatePath = path.join(
         tempDir,
         'docs',

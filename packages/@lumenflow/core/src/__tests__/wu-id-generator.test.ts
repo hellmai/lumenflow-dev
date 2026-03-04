@@ -22,6 +22,7 @@ import {
   retryCreateOnPushCollision,
 } from '../wu-id-generator.js';
 import type { IWuIdGitAdapter, PushCollisionRetryOptions } from '../wu-id-generator.js';
+import { DIRECTORIES, LUMENFLOW_PATHS } from '../wu-paths-constants.js';
 
 /** Test constant for WU-100.yaml filename (DRY - sonarjs/no-duplicate-string) */
 const WU_100_YAML = 'WU-100.yaml';
@@ -34,13 +35,17 @@ const WU_102_YAML = 'WU-102.yaml';
 vi.mock('node:fs');
 
 // Mock wu-paths to return predictable paths
-vi.mock('../wu-paths.js', () => ({
-  WU_PATHS: {
-    WU_DIR: (): string => 'docs/04-operations/tasks/wu',
-    WU: (id: string): string => `docs/04-operations/tasks/wu/${id}.yaml`,
-    STAMPS_DIR: (): string => '.lumenflow/stamps',
-  },
-}));
+// Note: vi.mock is hoisted, so we must dynamic-import constants inside the factory
+vi.mock('../wu-paths.js', async () => {
+  const { DIRECTORIES: D, LUMENFLOW_PATHS: LP } = await import('../wu-paths-constants.js');
+  return {
+    WU_PATHS: {
+      WU_DIR: (): string => D.WU_DIR,
+      WU: (id: string): string => `${D.WU_DIR}/${id}.yaml`,
+      STAMPS_DIR: (): string => LP.STAMPS_DIR,
+    },
+  };
+});
 
 describe('wu-id-generator', () => {
   beforeEach(() => {

@@ -12,6 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { validateWU, validateReadyWU, validateWUCompleteness } from '../wu-schema.js';
+import { LUMENFLOW_PATHS } from '../wu-paths-constants.js';
 
 /**
  * Helper to create a minimal valid WU object for testing.
@@ -34,7 +35,7 @@ function makeValidWU(overrides: Record<string, unknown> = {}) {
       manual: ['Verify plan field is populated in YAML'],
       unit: ['packages/@lumenflow/core/src/__tests__/wu-schema.test.ts'],
     },
-    artifacts: ['.lumenflow/stamps/WU-1683.done'],
+    artifacts: [`${LUMENFLOW_PATHS.STAMPS_DIR}/WU-1683.done`],
     dependencies: [],
     risks: [],
     notes: 'Implementation notes for the plan field feature.',

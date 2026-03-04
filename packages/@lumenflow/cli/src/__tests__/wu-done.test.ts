@@ -37,6 +37,7 @@ import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
 import { validateInputs } from '@lumenflow/core/wu-done-inputs';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import { getShortestPaths, toDirectedGraph } from '@xstate/graph';
 import {
   wuDoneMachine,
@@ -45,6 +46,8 @@ import {
   type WuDonePipelineEvent,
 } from '@lumenflow/core/wu-done-machine';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 // Mock dependencies
 vi.mock('@lumenflow/core/git-adapter');
 vi.mock('@lumenflow/core/error-handler');
@@ -81,7 +84,7 @@ describe('wu-done', () => {
 
     it('batch migration removes done worktree_path and relativizes active absolute paths', () => {
       const root = mkdtempSync(path.join(tmpdir(), 'wu-2247-sanitize-'));
-      const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
+      const wuDir = path.join(root, WU_DIR);
       mkdirSync(wuDir, { recursive: true });
 
       try {
@@ -129,7 +132,7 @@ status: done
 
         const result = sanitizeWorktreePathMetadataInRepo({
           projectRoot: root,
-          wuDirRelativePath: 'docs/04-operations/tasks/wu',
+          wuDirRelativePath: WU_DIR,
           repoRootForRelativize: '/repo',
         });
 

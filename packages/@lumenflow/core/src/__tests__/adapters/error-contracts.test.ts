@@ -16,6 +16,10 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 import type { LocationContext } from '../../context/location-resolver.js';
 import type { GitState } from '../../context/git-state-reader.js';
 import type { WuStateResult } from '../../context/wu-state-reader.js';
@@ -148,7 +152,7 @@ describe('Adapter error contracts (WU-2128)', () => {
         status: 'in_progress',
         lane: 'Framework: Core Lifecycle',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-2128.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-2128.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       };
@@ -172,7 +176,7 @@ describe('Adapter error contracts (WU-2128)', () => {
         status: 'in_progress',
         lane: 'Framework: Core Lifecycle',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-2128.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-2128.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       };

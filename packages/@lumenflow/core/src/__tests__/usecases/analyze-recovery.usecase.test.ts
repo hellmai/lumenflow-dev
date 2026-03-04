@@ -18,6 +18,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Import use case (will be created after tests fail)
 import { AnalyzeRecoveryUseCase } from '../../usecases/analyze-recovery.usecase.js';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 // Import port interfaces
 import type { IRecoveryAnalyzer, WuContext, RecoveryAnalysis } from '../../ports/recovery.ports.js';
@@ -53,7 +57,7 @@ describe('AnalyzeRecoveryUseCase', () => {
       status: 'ready',
       lane: 'Framework: Core',
       title: 'Test WU',
-      yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1094.yaml',
+      yamlPath: `/repo/${WU_DIR}/WU-1094.yaml`,
       isConsistent: true,
       inconsistencyReason: null,
     },

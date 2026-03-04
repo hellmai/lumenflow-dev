@@ -7,7 +7,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 /**
  * Pattern matching logic extracted from validateStagedFiles in wu-done.ts
  * This tests the MDX whitelist pattern added in WU-1072
@@ -23,7 +29,7 @@ function isWhitelistedMetadataPath(
 ): boolean {
   const whitelist = new Set([...baseWhitelist, ...metadataAllowlist]);
   if (whitelist.has(file)) return true;
-  if (file.startsWith('.lumenflow/stamps/')) return true;
+  if (file.startsWith(`${LUMENFLOW_PATHS.STAMPS_DIR}/`)) return true;
   return false;
 }
 
@@ -55,14 +61,14 @@ describe('wu-done staging whitelist', () => {
 
   describe('initiative metadata allowlist (WU-1572)', () => {
     const baseWhitelist = [
-      'docs/04-operations/tasks/wu/WU-1572.yaml',
-      'docs/04-operations/tasks/status.md',
-      'docs/04-operations/tasks/backlog.md',
-      '.lumenflow/state/wu-events.jsonl',
+      `${WU_DIR}/WU-1572.yaml`,
+      STATUS_PATH,
+      BACKLOG_PATH,
+      LUMENFLOW_PATHS.WU_EVENTS,
     ];
 
     it('should allow the current parent initiative YAML when explicitly allowlisted', () => {
-      const currentParentInit = 'docs/04-operations/tasks/initiatives/INIT-021.yaml';
+      const currentParentInit = `${INITIATIVES_DIR}/INIT-021.yaml`;
 
       expect(isWhitelistedMetadataPath(currentParentInit, baseWhitelist, [currentParentInit])).toBe(
         true,
@@ -70,8 +76,8 @@ describe('wu-done staging whitelist', () => {
     });
 
     it('should reject other initiative YAML files not in the allowlist', () => {
-      const currentParentInit = 'docs/04-operations/tasks/initiatives/INIT-021.yaml';
-      const otherInit = 'docs/04-operations/tasks/initiatives/INIT-999.yaml';
+      const currentParentInit = `${INITIATIVES_DIR}/INIT-021.yaml`;
+      const otherInit = `${INITIATIVES_DIR}/INIT-999.yaml`;
 
       expect(isWhitelistedMetadataPath(otherInit, baseWhitelist, [currentParentInit])).toBe(false);
     });

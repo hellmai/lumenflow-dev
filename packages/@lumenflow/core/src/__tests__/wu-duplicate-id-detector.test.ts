@@ -3,6 +3,10 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { vol } from 'memfs';
+import { LUMENFLOW_PATHS } from '../wu-paths-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
 
 vi.mock('node:fs', async () => {
   const memfs = await import('memfs');
@@ -15,26 +19,32 @@ vi.mock('node:fs/promises', async () => {
 });
 
 // Mock config to return controlled paths
-vi.mock('../lumenflow-config.js', () => ({
-  getConfig: () => ({
-    directories: {
-      wuDir: 'docs/04-operations/tasks/wu',
-      backlogPath: 'docs/04-operations/tasks/backlog.md',
-      statusPath: 'docs/04-operations/tasks/status.md',
-    },
-    state: {
-      stateDir: '.lumenflow/state',
-      stampsDir: '.lumenflow/stamps',
-    },
-  }),
-  getProjectRoot: () => '/repo',
-}));
+// Note: vi.mock is hoisted, so we must dynamic-import constants inside the factory
+vi.mock('../lumenflow-config.js', async () => {
+  const { DOCS_LAYOUT_PRESETS: DLP } = await import('../docs-layout-presets.js');
+  const { LUMENFLOW_PATHS: LP } = await import('../wu-paths-constants.js');
+  const arc42 = DLP.arc42;
+  return {
+    getConfig: () => ({
+      directories: {
+        wuDir: `${arc42.tasks}/wu`,
+        backlogPath: `${arc42.tasks}/backlog.md`,
+        statusPath: `${arc42.tasks}/status.md`,
+      },
+      state: {
+        stateDir: LP.STATE_DIR,
+        stampsDir: LP.STAMPS_DIR,
+      },
+    }),
+    getProjectRoot: () => '/repo',
+  };
+});
 
 import type { DuplicateIdReport, DuplicateIdGroup } from '../wu-duplicate-id-detector.js';
 
-const WU_DIR = '/repo/docs/04-operations/tasks/wu';
-const STAMPS_DIR = '/repo/.lumenflow/stamps';
-const STATE_DIR = '/repo/.lumenflow/state';
+const WU_DIR = `/repo/${ARC42.tasks}/wu`;
+const STAMPS_DIR = `/repo/${LUMENFLOW_PATHS.STAMPS_DIR}`;
+const STATE_DIR = `/repo/${LUMENFLOW_PATHS.STATE_DIR}`;
 
 describe('wu-duplicate-id-detector', () => {
   beforeEach(() => {

@@ -6,7 +6,10 @@ import * as locationResolver from '@lumenflow/core/context/location-resolver';
 import * as errorHandler from '@lumenflow/core/error-handler';
 import * as wuYaml from '@lumenflow/core/wu-yaml';
 import { CONTEXT_VALIDATION, WU_STATUS, CLAIMED_MODES } from '@lumenflow/core/wu-constants';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
 
 // Mock dependencies
@@ -453,12 +456,12 @@ describe('wu-prep dirty-main mutation guard (WU-1750)', () => {
       mainCheckout: '/repo',
       isBranchPr: false,
       mainStatus:
-        ' M packages/@lumenflow/cli/src/wu-prep.ts\n?? docs/04-operations/tasks/status.md\n',
+        ` M packages/@lumenflow/cli/src/wu-prep.ts\n?? ${STATUS_PATH}\n`,
     });
 
     expect(result.blocked).toBe(true);
     expect(result.blockedPaths).toContain('packages/@lumenflow/cli/src/wu-prep.ts');
-    expect(result.blockedPaths).toContain('docs/04-operations/tasks/status.md');
+    expect(result.blockedPaths).toContain(STATUS_PATH);
     expect(result.message).toContain('wu:prep');
     expect(result.message).toContain('MCP');
   });
@@ -468,7 +471,7 @@ describe('wu-prep dirty-main mutation guard (WU-1750)', () => {
     const result = evaluatePrepMainMutationGuard({
       mainCheckout: '/repo',
       isBranchPr: false,
-      mainStatus: ' M .lumenflow/state/wu-events.jsonl\n?? docs/tasks/wu/WU-1750.yaml\n',
+      mainStatus: ` M ${LUMENFLOW_PATHS.WU_EVENTS}\n?? docs/tasks/wu/WU-1750.yaml\n`,
     });
 
     expect(result.blocked).toBe(false);

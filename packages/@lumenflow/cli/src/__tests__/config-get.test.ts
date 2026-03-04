@@ -11,6 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
 // ---------------------------------------------------------------------------
 // Module under test — import the new applyConfigGet + existing utilities
@@ -19,6 +20,8 @@ import { describe, it, expect } from 'vitest';
 import { routeConfigKey, getConfigValue } from '../config-set.js';
 import { applyConfigGet, type ConfigGetResult } from '../config-get.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 // ---------------------------------------------------------------------------
 // Test fixtures
 // ---------------------------------------------------------------------------
@@ -44,7 +47,7 @@ function createTestWorkspace(): Record<string, unknown> {
         minCoverage: 90,
       },
       directories: {
-        wuDir: 'docs/04-operations/tasks/wu',
+        wuDir: WU_DIR,
       },
     },
     control_plane: {

@@ -36,6 +36,10 @@ import { resolveLocation } from '../../context/location-resolver.js';
 import { readGitState } from '../../context/git-state-reader.js';
 import { readWuState } from '../../context/wu-state-reader.js';
 import { CONTEXT_VALIDATION } from '../../wu-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 const { LOCATION_TYPES, THRESHOLDS } = CONTEXT_VALIDATION;
 
@@ -67,7 +71,7 @@ describe('computeContext', () => {
     status: 'in_progress',
     lane: 'Framework: Core',
     title: 'Test WU',
-    yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+    yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
     isConsistent: true,
     inconsistencyReason: null,
   };

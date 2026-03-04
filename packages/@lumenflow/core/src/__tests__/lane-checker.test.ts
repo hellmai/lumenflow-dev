@@ -25,6 +25,7 @@ import {
 import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from '../config-contract.js';
 import { stringifyYAML } from '../wu-yaml.js';
 import { CONFIG_FILES } from '../wu-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
 
 // Test constants to avoid magic string duplication
 const TEST_LANE_FRAMEWORK_CORE = 'Framework: Core';
@@ -65,12 +66,15 @@ function writeWorkspaceConfig(configPath: string, config: Record<string, unknown
   writeFileSync(configPath, stringifyYAML(workspace));
 }
 
+/** Arc42 layout paths matching the test fixture directory structure (docs/04-operations/tasks/...) */
+const ARC42_TASKS = DOCS_LAYOUT_PRESETS['arc42'].tasks;
+
 function withArc42Directories(config: Record<string, unknown>): Record<string, unknown> {
   return {
     directories: {
-      wuDir: 'docs/04-operations/tasks/wu',
-      statusPath: 'docs/04-operations/tasks/status.md',
-      backlogPath: 'docs/04-operations/tasks/backlog.md',
+      wuDir: `${ARC42_TASKS}/wu`,
+      statusPath: `${ARC42_TASKS}/status.md`,
+      backlogPath: `${ARC42_TASKS}/backlog.md`,
     },
     ...config,
   };

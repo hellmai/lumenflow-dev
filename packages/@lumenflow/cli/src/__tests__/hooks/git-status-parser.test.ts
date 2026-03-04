@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   parseDirtyPathsFromStatus,
   getNonAllowlistedDirtyPaths,
@@ -14,6 +15,9 @@ import {
   formatMainDirtyMutationGuardMessage,
 } from '../../hooks/git-status-parser.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const CLAUDE_DIR = '.claude/';
 describe('WU-2127: git-status-parser sub-module', () => {
   describe('parseDirtyPathsFromStatus', () => {
     it('should parse modified file paths', () => {
@@ -63,16 +67,16 @@ describe('WU-2127: git-status-parser sub-module', () => {
   });
 
   describe('getNonAllowlistedDirtyPaths', () => {
-    const ALLOWLIST = ['.lumenflow/', '.claude/', 'docs/04-operations/tasks/wu/'] as const;
+    const ALLOWLIST = [`${LUMENFLOW_PATHS.BASE}/`, `${CLAUDE_DIR}`, `${WU_DIR}/`] as const;
 
     it('should filter out allowlisted paths', () => {
-      const status = ' M .lumenflow/state/events.jsonl\n M packages/cli/src/file.ts\n';
+      const status = ` M ${LUMENFLOW_PATHS.STATE_DIR}/events.jsonl\n M packages/cli/src/file.ts\n`;
       const blocked = getNonAllowlistedDirtyPaths(status, ALLOWLIST);
       expect(blocked).toEqual(['packages/cli/src/file.ts']);
     });
 
     it('should return empty when all paths are allowlisted', () => {
-      const status = ' M .lumenflow/state/events.jsonl\n M .claude/settings.json\n';
+      const status = ` M ${LUMENFLOW_PATHS.STATE_DIR}/events.jsonl\n M .claude/settings.json\n`;
       const blocked = getNonAllowlistedDirtyPaths(status, ALLOWLIST);
       expect(blocked).toEqual([]);
     });

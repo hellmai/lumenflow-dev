@@ -20,11 +20,15 @@ import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   shouldApplyCanonicalClaimUpdate,
   shouldPersistClaimMetadataOnBranch,
 } from '../wu-claim.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
 // Test constants
 const TEST_WU_ID = 'WU-9901';
 const TEST_LANE = 'Framework: CLI';
@@ -38,10 +42,10 @@ const TEST_DESCRIPTION =
 function createTestProject(baseDir: string): void {
   // Create directory structure
   const dirs = [
-    'docs/04-operations/tasks/wu',
-    'docs/04-operations/tasks/initiatives',
-    '.lumenflow/state',
-    '.lumenflow/stamps',
+    WU_DIR,
+    INITIATIVES_DIR,
+    LUMENFLOW_PATHS.STATE_DIR,
+    LUMENFLOW_PATHS.STAMPS_DIR,
     'packages/@lumenflow/cli/src/__tests__',
   ];
 
@@ -98,7 +102,7 @@ function createWUFile(
     codePaths?: string[];
   } = {},
 ): string {
-  const wuDir = join(baseDir, 'docs/04-operations/tasks/wu');
+  const wuDir = join(baseDir, WU_DIR);
   const wuPath = join(wuDir, `${id}.yaml`);
 
   const doc = {
@@ -222,7 +226,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
       it('should reject claim when WU does not exist', () => {
         // Arrange
         process.chdir(tempDir);
-        const nonExistentPath = join(tempDir, 'docs/04-operations/tasks/wu', 'WU-9999.yaml');
+        const nonExistentPath = join(tempDir, WU_DIR,'WU-9999.yaml');
 
         // Assert
         expect(existsSync(nonExistentPath)).toBe(false);
@@ -234,7 +238,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.DONE });
 
         // Read and verify status prevents claiming
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 
@@ -251,7 +255,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.READY });
 
         // Act - Read WU status
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 
@@ -267,7 +271,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.READY });
 
         // Act
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 
@@ -287,7 +291,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.IN_PROGRESS });
 
         // Act
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 
@@ -309,7 +313,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.IN_PROGRESS });
 
         // Act
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 
@@ -338,7 +342,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.READY });
 
         // Act
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 
@@ -354,7 +358,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.IN_PROGRESS });
 
         // Act - Create stamp file
-        const stampDir = join(tempDir, '.lumenflow/stamps');
+        const stampDir = join(tempDir, LUMENFLOW_PATHS.STAMPS_DIR);
         mkdirSync(stampDir, { recursive: true });
         const stampPath = join(stampDir, `${TEST_WU_ID}.done`);
         const stampContent = {
@@ -394,7 +398,7 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         createWUFile(tempDir, TEST_WU_ID, { status: WU_STATUS.READY });
 
         // Act
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR,`${TEST_WU_ID}.yaml`);
         const content = readFileSync(wuPath, 'utf-8');
         const doc = parseYAML(content);
 

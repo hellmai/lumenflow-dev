@@ -14,10 +14,14 @@ import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
 /** Test constants - avoid sonarjs/no-duplicate-string */
-const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
-const TEST_INIT_DIR = 'docs/04-operations/tasks/initiatives';
+const TEST_WU_DIR = WU_DIR;
+const TEST_INIT_DIR = INITIATIVES_DIR;
 const TEST_PLANS_DIR = 'docs/04-operations/plans';
 const TEST_WU_ID = 'WU-1313';
 const TEST_INIT_ID = 'INIT-001';

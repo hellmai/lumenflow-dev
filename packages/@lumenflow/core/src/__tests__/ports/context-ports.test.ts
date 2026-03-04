@@ -17,6 +17,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 import type {
   ILocationResolver,
   IGitStateReader,
@@ -141,7 +145,7 @@ describe('IWuStateReader port interface', () => {
           status: 'in_progress',
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1093.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1093.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         }),

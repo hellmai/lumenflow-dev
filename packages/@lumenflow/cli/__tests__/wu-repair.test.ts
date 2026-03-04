@@ -13,6 +13,10 @@ import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } fr
 import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
+import { DOCS_LAYOUT_PRESETS, LUMENFLOW_PATHS } from '@lumenflow/core';
+
+const WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
+const STATUS_PATH = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/status.md`;
 
 // Track withMicroWorktree calls
 let withMicroWorktreeCalls: Array<{ operation: string; id: string }> = [];
@@ -95,9 +99,9 @@ describe('wu:repair micro-worktree isolation (WU-1078)', () => {
     testProjectRoot = mkdtempSync(path.join(tmpdir(), 'wu-repair-test-'));
 
     // Create necessary directories
-    mkdirSync(path.join(testProjectRoot, 'docs/04-operations/tasks/wu'), { recursive: true });
-    mkdirSync(path.join(testProjectRoot, '.lumenflow/stamps'), { recursive: true });
-    mkdirSync(path.join(testProjectRoot, '.lumenflow/state'), { recursive: true });
+    mkdirSync(path.join(testProjectRoot, WU_DIR), { recursive: true });
+    mkdirSync(path.join(testProjectRoot, LUMENFLOW_PATHS.STAMPS_DIR), { recursive: true });
+    mkdirSync(path.join(testProjectRoot, LUMENFLOW_PATHS.STATE_DIR), { recursive: true });
 
     // Create a done WU without stamp (orphan state to repair)
     const wuContent = `id: WU-9999
@@ -122,7 +126,7 @@ acceptance:
   - Test acceptance criteria
 `;
     writeFileSync(
-      path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-9999.yaml'),
+      path.join(testProjectRoot, `${WU_DIR}/WU-9999.yaml`),
       wuContent,
     );
   });
@@ -185,7 +189,7 @@ acceptance:
       await repairWUInconsistency(report, { projectRoot: testProjectRoot });
 
       // Verify stamp was created directly in projectRoot
-      const stampPath = path.join(testProjectRoot, '.lumenflow/stamps/WU-9999.done');
+      const stampPath = path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9999.done`);
       expect(existsSync(stampPath)).toBe(true);
 
       // Verify stamp content
@@ -200,7 +204,7 @@ acceptance:
 
       // Create status.md with WU-9999 in In Progress section
       writeFileSync(
-        path.join(testProjectRoot, 'docs/04-operations/tasks/status.md'),
+        path.join(testProjectRoot, STATUS_PATH),
         `# Status\n\n## In Progress\n\n- [WU-9999](wu/WU-9999.yaml) Test WU\n\n## Done\n\n`,
       );
 
@@ -230,7 +234,7 @@ acceptance:
       // Create multiple WUs needing repair
       for (const id of ['WU-9998', 'WU-9997']) {
         writeFileSync(
-          path.join(testProjectRoot, `docs/04-operations/tasks/wu/${id}.yaml`),
+          path.join(testProjectRoot, `${WU_DIR}/${id}.yaml`),
           `id: ${id}
 title: Test WU ${id}
 lane: 'Framework: CLI'
@@ -281,9 +285,9 @@ acceptance: []
       expect(withMicroWorktree).not.toHaveBeenCalled();
 
       // Verify all stamps were created directly
-      expect(existsSync(path.join(testProjectRoot, '.lumenflow/stamps/WU-9999.done'))).toBe(true);
-      expect(existsSync(path.join(testProjectRoot, '.lumenflow/stamps/WU-9998.done'))).toBe(true);
-      expect(existsSync(path.join(testProjectRoot, '.lumenflow/stamps/WU-9997.done'))).toBe(true);
+      expect(existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9999.done`))).toBe(true);
+      expect(existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9998.done`))).toBe(true);
+      expect(existsSync(path.join(testProjectRoot, `${LUMENFLOW_PATHS.STAMPS_DIR}/WU-9997.done`))).toBe(true);
     });
   });
 

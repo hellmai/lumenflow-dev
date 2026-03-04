@@ -20,6 +20,10 @@ import { describe, it, expect } from 'vitest';
 import { validateCommand } from '../../validation/validate-command.js';
 import { CONTEXT_VALIDATION, WU_STATUS } from '../../wu-constants.js';
 import type { WuContext } from '../../validation/types.js';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 const { LOCATION_TYPES, COMMANDS, ERROR_CODES } = CONTEXT_VALIDATION;
 
@@ -84,7 +88,7 @@ describe('validateCommand', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -164,7 +168,7 @@ describe('validateCommand', () => {
           status: WU_STATUS.READY,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -203,7 +207,7 @@ describe('validateCommand', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -281,7 +285,7 @@ describe('validateCommand', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -324,7 +328,7 @@ describe('validateCommand', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },

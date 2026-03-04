@@ -15,8 +15,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import { validateCreateSpec } from '../wu-create.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
 /** Default lane for test cases */
 const TEST_LANE = 'Framework: CLI';
 /** Default test WU ID */
@@ -108,7 +111,7 @@ describe('wu:create required field aggregation (WU-1366)', () => {
           codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
           // unit test provided, but no manual test — must be rejected per WU-2263
           testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create.test.ts'],
-          specRefs: ['docs/04-operations/tasks/initiatives/INIT-017.yaml'],
+          specRefs: [`${INITIATIVES_DIR}/INIT-017.yaml`],
           strict: false,
         },
       });
@@ -130,7 +133,7 @@ describe('wu:create required field aggregation (WU-1366)', () => {
           exposure: 'backend-only',
           codePaths: ['packages/@lumenflow/cli/package.json'],
           testPathsManual: ['Manual verification step'],
-          specRefs: ['docs/04-operations/tasks/initiatives/INIT-017.yaml'],
+          specRefs: [`${INITIATIVES_DIR}/INIT-017.yaml`],
           strict: false,
         },
       });

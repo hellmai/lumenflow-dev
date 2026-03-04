@@ -19,6 +19,12 @@ import {
   formatProjectDefaults,
 } from '../dist/wu-claim.js';
 import { WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { DOCS_LAYOUT_PRESETS, LUMENFLOW_PATHS } from '@lumenflow/core';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 
 describe('wu:claim --skip-setup flag (WU-1023)', () => {
   beforeEach(() => {
@@ -59,15 +65,15 @@ describe('wu:claim --skip-setup flag (WU-1023)', () => {
     it('should return WU YAML and state store files', () => {
       const files = getWorktreeCommitFiles('WU-1023');
 
-      expect(files).toContain('docs/04-operations/tasks/wu/WU-1023.yaml');
-      expect(files).toContain('.lumenflow/state/wu-events.jsonl');
+      expect(files).toContain(`${WU_DIR}/WU-1023.yaml`);
+      expect(files).toContain(LUMENFLOW_PATHS.WU_EVENTS);
     });
 
     it('should NOT include backlog.md or status.md (WU-1746)', () => {
       const files = getWorktreeCommitFiles('WU-1234');
 
-      expect(files).not.toContain('docs/04-operations/tasks/backlog.md');
-      expect(files).not.toContain('docs/04-operations/tasks/status.md');
+      expect(files).not.toContain(BACKLOG_PATH);
+      expect(files).not.toContain(STATUS_PATH);
     });
 
     it('should work with different WU IDs', () => {

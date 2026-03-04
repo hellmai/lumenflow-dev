@@ -51,6 +51,10 @@ const SCAN_TARGETS: ScanTarget[] = [
     dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'cli', 'src'),
   },
   {
+    label: 'cli-root-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'cli', '__tests__'),
+  },
+  {
     label: 'mcp',
     dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'mcp', 'src'),
   },
@@ -63,6 +67,10 @@ const SCAN_TARGETS: ScanTarget[] = [
     dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'initiatives', 'src'),
   },
   {
+    label: 'initiatives-root-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'initiatives', '__tests__'),
+  },
+  {
     label: 'agent',
     dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'agent', 'src'),
   },
@@ -70,11 +78,45 @@ const SCAN_TARGETS: ScanTarget[] = [
     label: 'metrics',
     dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'metrics', 'src'),
   },
+  {
+    label: 'cli-e2e',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'cli', 'e2e'),
+  },
+  {
+    label: 'husky-tests',
+    dir: path.join(REPO_ROOT, '.husky', 'hooks', '__tests__'),
+  },
+  // src/__tests__/ directories within production scan targets
+  {
+    label: 'core-src-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'core', 'src', '__tests__'),
+  },
+  {
+    label: 'cli-src-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'cli', 'src', '__tests__'),
+  },
+  {
+    label: 'mcp-src-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'mcp', 'src', '__tests__'),
+  },
+  {
+    label: 'memory-src-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'memory', 'src', '__tests__'),
+  },
+  // Root-level __tests__/ directories not yet covered
+  {
+    label: 'agent-root-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'agent', '__tests__'),
+  },
+  {
+    label: 'metrics-root-tests',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'metrics', '__tests__'),
+  },
 ];
 
 const ALWAYS_ALLOWED_PATH_SEGMENTS = [
-  '__tests__/',
   '__snapshots__/',
+  '__tests__/',
   '/e2e/',
   '/dist/',
   '/node_modules/',
@@ -103,6 +145,21 @@ const ALWAYS_ALLOWED_PATH_SEGMENTS = [
   'git-staged-validator.ts',
   'ports/context.ports.ts',
   'domain/context.schemas.ts',
+];
+
+/**
+ * Test files that are exempt from the test-specific path literal ratcheting guard.
+ * These files legitimately use banned path literals as fixture data or assertions.
+ */
+const TEST_FILE_ALLOWLIST = [
+  'path-literal-guard.test.ts',
+  'path-centralization.test.ts',
+  'path-centralization-cli.test.ts',
+  'doc-path-replacements.test.ts',
+  'init-onboarding-docs.test.ts',
+  'init-quick-ref.test.ts',
+  'init-docs-structure.test.ts',
+  'no-beacon-references-docs.test.ts',
 ];
 
 const BANNED_RULES: BannedRule[] = [
@@ -179,17 +236,31 @@ function isAllowlistedFile(filePath: string): boolean {
   return ALWAYS_ALLOWED_PATH_SEGMENTS.some((segment) => normalized.includes(segment));
 }
 
-async function getRuntimeSourceFiles(scanTarget: ScanTarget): Promise<string[]> {
+function isTestAllowlistedFile(filePath: string): boolean {
+  const normalized = normalizePath(filePath);
+  return TEST_FILE_ALLOWLIST.some((segment) => normalized.includes(segment));
+}
+
+function scanTestFileForBannedPathLiterals(filePath: string): PathLiteralViolation[] {
+  if (isTestAllowlistedFile(filePath)) {
+    return [];
+  }
+  const sourceText = readFileSync(filePath, 'utf-8');
+  return scanSourceTextForBannedPathLiterals(sourceText, filePath);
+}
+
+async function getRuntimeSourceFiles(
+  scanTarget: ScanTarget,
+  opts?: { includeTests?: boolean },
+): Promise<string[]> {
+  const ignore = ['**/__snapshots__/**', '**/dist/**', '**/node_modules/**'];
+  if (!opts?.includeTests) {
+    ignore.push('**/__tests__/**', '**/e2e/**');
+  }
   return glob('**/*.ts', {
     cwd: scanTarget.dir,
     absolute: true,
-    ignore: [
-      '**/__tests__/**',
-      '**/__snapshots__/**',
-      '**/dist/**',
-      '**/node_modules/**',
-      '**/e2e/**',
-    ],
+    ignore,
   });
 }
 
@@ -366,7 +437,7 @@ function scanFileForLegacyLocalConstantDebt(
 async function getCliAndInitiativesRuntimeFiles(): Promise<string[]> {
   const files: string[] = [];
 
-  for (const target of SCAN_TARGETS.filter((t) => t.label === 'cli' || t.label === 'initiatives')) {
+  for (const target of SCAN_TARGETS.filter((t) => ['cli', 'initiatives'].includes(t.label))) {
     const matched = await getRuntimeSourceFiles(target);
     files.push(...matched);
   }
@@ -681,10 +752,64 @@ describe('WU-2093: AST path literal guard foundations', () => {
   });
 });
 
+/** Scan targets that cover only production (non-test) source files */
+const PRODUCTION_SCAN_TARGETS = SCAN_TARGETS.filter(
+  (t) => !t.label.includes('test') && !t.label.includes('e2e'),
+);
+
+/** Scan targets that cover only test directories */
+const TEST_SCAN_TARGETS = SCAN_TARGETS.filter(
+  (t) => t.label.includes('test') || t.label.includes('e2e'),
+);
+
+const PATH_LITERAL_TEST_BASELINE_PATH = path.join(
+  REPO_ROOT,
+  'tools',
+  'baselines',
+  'enforcement',
+  'path-literal-test-baseline.json',
+);
+
+interface PathLiteralBaselineData {
+  description: string;
+  wuId: string;
+  lastUpdated: string;
+  baseline: number;
+  note: string;
+}
+
+function loadPathLiteralTestBaseline(): number | null {
+  if (!existsSync(PATH_LITERAL_TEST_BASELINE_PATH)) {
+    return null;
+  }
+
+  const raw = readFileSync(PATH_LITERAL_TEST_BASELINE_PATH, 'utf-8');
+  const data = JSON.parse(raw) as PathLiteralBaselineData;
+
+  if (typeof data.baseline !== 'number') {
+    return null;
+  }
+
+  return data.baseline;
+}
+
+function persistPathLiteralTestBaseline(count: number): void {
+  const data: PathLiteralBaselineData = {
+    description:
+      'Ratcheting baseline for banned path literals in test files. Count must not increase.',
+    wuId: 'WU-2311',
+    lastUpdated: new Date().toISOString().split('T')[0],
+    baseline: count,
+    note: `Computed from codebase scan. ${count} banned path literals across test files.`,
+  };
+
+  writeFileSync(PATH_LITERAL_TEST_BASELINE_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+}
+
 describe('WU-2093: AST path literal regression guard', () => {
-  it('scans all 7 runtime packages for banned literals', async () => {
+  it('scans all runtime packages for banned literals (zero tolerance)', async () => {
     const filesPerTarget = await Promise.all(
-      SCAN_TARGETS.map(async (target) => {
+      PRODUCTION_SCAN_TARGETS.map(async (target) => {
         const files = await getRuntimeSourceFiles(target);
         return { target: target.label, files };
       }),
@@ -711,6 +836,58 @@ describe('WU-2093: AST path literal regression guard', () => {
     }
 
     expect(allViolations).toHaveLength(0);
+  });
+
+  it('scans test directories for banned literals (ratcheting baseline)', async () => {
+    const filesPerTarget = await Promise.all(
+      TEST_SCAN_TARGETS.map(async (target) => {
+        const files = await getRuntimeSourceFiles(target, { includeTests: true });
+        return { target: target.label, files };
+      }),
+    );
+
+    const allViolations: PathLiteralViolation[] = [];
+    for (const { files } of filesPerTarget) {
+      for (const file of files) {
+        const violations = scanTestFileForBannedPathLiterals(file);
+        allViolations.push(...violations);
+      }
+    }
+
+    const currentCount = allViolations.length;
+    const savedBaseline = loadPathLiteralTestBaseline();
+
+    // WU-2311: Ratchet — count must not increase
+    if (savedBaseline !== null && currentCount > savedBaseline) {
+      expect.fail(
+        `Test path literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
+          `(+${currentCount - savedBaseline}).\n\n` +
+          `New banned path literals detected in test files. Use DIRECTORIES/LUMENFLOW_PATHS/DOCS_LAYOUT_PRESETS constants instead.\n` +
+          `To intentionally update the baseline after a deliberate migration:\n` +
+          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t "test directories"\n\n` +
+          `Violations:\n${formatViolationReport(allViolations)}`,
+      );
+    }
+
+    if (savedBaseline !== null) {
+      const delta = savedBaseline - currentCount;
+      const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
+      console.log(
+        `Test path literal ratchet: ${currentCount} (baseline: ${savedBaseline}) -- ${status}`,
+      );
+    } else {
+      console.log(`Test path literal ratchet: baseline established at ${currentCount} references`);
+    }
+
+    const isExplicitUpdate = process.env.UPDATE_BASELINE === 'true';
+    if (shouldPersistRatchetingBaseline(savedBaseline, currentCount, isExplicitUpdate)) {
+      persistPathLiteralTestBaseline(currentCount);
+      if (isExplicitUpdate && savedBaseline !== null && currentCount === savedBaseline) {
+        console.log(`Test path literal ratchet: baseline explicitly updated to ${currentCount}`);
+      }
+    }
+
+    expect(currentCount).toBeGreaterThanOrEqual(0);
   });
 
   it('scans core spawn template generators for embedded banned path tokens', () => {

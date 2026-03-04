@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { describe, expect, it } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   detectLumenflowVersionChange,
   extractWuEditStampPathsFromDiff,
@@ -9,6 +10,8 @@ import {
   validateUpgradeMarker,
 } from '../pre-commit-check.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 describe('pre-commit-check helpers', () => {
   describe('detectLumenflowVersionChange', () => {
     it('returns true when @lumenflow package versions change', () => {
@@ -25,21 +28,21 @@ describe('pre-commit-check helpers', () => {
   describe('WU edit stamps', () => {
     it('extracts stamped paths from added wu-events checkpoint notes', () => {
       const diff =
-        '+{"type":"checkpoint","wuId":"WU-123","timestamp":"2026-02-28T12:00:00.000Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-123.yaml"}';
+        `+{"type":"checkpoint","wuId":"WU-123","timestamp":"2026-02-28T12:00:00.000Z","note":"[wu:edit] path=${WU_DIR}/WU-123.yaml"}`;
 
       expect(extractWuEditStampPathsFromDiff(diff)).toEqual([
-        'docs/04-operations/tasks/wu/WU-123.yaml',
+        `${WU_DIR}/WU-123.yaml`,
       ]);
     });
 
     it('verifies all changed WU YAML paths have matching stamps', () => {
-      const changed = ['docs/04-operations/tasks/wu/WU-123.yaml'];
-      const stamped = ['docs/04-operations/tasks/wu/WU-123.yaml'];
+      const changed = [`${WU_DIR}/WU-123.yaml`];
+      const stamped = [`${WU_DIR}/WU-123.yaml`];
       expect(hasAllWuEditStamps(changed, stamped)).toBe(true);
     });
 
     it('fails when a changed WU YAML path is missing a stamp', () => {
-      const changed = ['docs/04-operations/tasks/wu/WU-123.yaml'];
+      const changed = [`${WU_DIR}/WU-123.yaml`];
       const stamped: string[] = [];
       expect(hasAllWuEditStamps(changed, stamped)).toBe(false);
     });

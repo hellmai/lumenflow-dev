@@ -11,6 +11,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   buildWUContent,
   collectInitiativeWarnings,
@@ -19,6 +20,9 @@ import {
   resolveLaneLifecycleForWuCreate,
   validateCreateSpec,
 } from '../wu-create.js';
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
 const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 const BASE_WU = {
@@ -49,15 +53,15 @@ describe('wu:create helpers (WU-1429)', () => {
 
     await commitCloudCreateArtifacts({
       git,
-      wuPath: 'docs/04-operations/tasks/wu/WU-1596.yaml',
-      backlogPath: 'docs/04-operations/tasks/backlog.md',
+      wuPath: `${WU_DIR}/WU-1596.yaml`,
+      backlogPath: BACKLOG_PATH,
       commitMessage: 'docs: create wu-1596 for cloud fixes',
       targetBranch: 'claude/session-1596',
     });
 
     expect(git.add).toHaveBeenCalledWith([
-      'docs/04-operations/tasks/wu/WU-1596.yaml',
-      'docs/04-operations/tasks/backlog.md',
+      `${WU_DIR}/WU-1596.yaml`,
+      BACKLOG_PATH,
     ]);
     expect(git.commit).toHaveBeenCalledWith('docs: create wu-1596 for cloud fixes');
     expect(git.push).toHaveBeenCalledWith('origin', 'claude/session-1596', { setUpstream: true });

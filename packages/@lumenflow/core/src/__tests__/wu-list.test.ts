@@ -16,6 +16,11 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach, beforeAll, afterAll } from 'vitest';
 import { vol, fs as memfs } from 'memfs';
+import { LUMENFLOW_PATHS } from '../wu-paths-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 // Store original modules for restoration
 let listWUs: typeof import('../wu-list.js').listWUs;
@@ -49,8 +54,8 @@ type ListWUsOptions = Parameters<typeof listWUs>[0];
 
 describe('listWUs', () => {
   const testProjectRoot = '/test-project';
-  const wuDir = `${testProjectRoot}/docs/04-operations/tasks/wu`;
-  const stateDir = `${testProjectRoot}/.lumenflow/state`;
+  const wuDir = `${testProjectRoot}/${WU_DIR}`;
+  const stateDir = `${testProjectRoot}/${LUMENFLOW_PATHS.STATE_DIR}`;
 
   beforeEach(() => {
     // Reset virtual filesystem

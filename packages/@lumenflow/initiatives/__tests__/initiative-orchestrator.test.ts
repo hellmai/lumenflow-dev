@@ -11,9 +11,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { existsSync, mkdirSync, rmSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { DOCS_LAYOUT_PRESETS, LUMENFLOW_PATHS } from '@lumenflow/core';
 
 // Test constants
-const STAMPS_DIR = '.lumenflow/stamps';
+const STAMPS_DIR = LUMENFLOW_PATHS.STAMPS_DIR;
 
 // Helper functions
 function createDir(dir: string) {
@@ -206,7 +207,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
 });
 
 describe('WU-2280: Prevent false wave spawned confusion', () => {
-  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+  const TEST_WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 
   function createDir(dir: string) {
     if (!existsSync(dir)) {
@@ -386,7 +387,7 @@ acceptance:
  * - AC5: Unit tests cover dry-run suppression and ready-only filtering
  */
 describe('WU-2430: dry-run suppression and ready-only filtering', () => {
-  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+  const TEST_WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
   const WAVE_MANIFEST_DIR = '.lumenflow/artifacts/waves';
 
   function createDir(dir: string) {
@@ -805,7 +806,7 @@ describe('WU-2432: internal blockers and dry-run output alignment', () => {
  * - AC3: Stale wave manifests don't block new orchestration runs
  */
 describe('WU-1200: Prevent premature spawned status in wave manifests', () => {
-  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+  const TEST_WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
   const WAVE_MANIFEST_DIR = '.lumenflow/artifacts/waves';
 
   function createDir(dir: string) {
@@ -1043,7 +1044,7 @@ acceptance:
  * - formatExecutionPlan (non-checkpoint path) should include spawn XML for actual execution
  */
 describe('WU-1202: spawn XML in execution plan path when not dry-run', () => {
-  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+  const TEST_WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 
   function createDir(dir: string) {
     if (!existsSync(dir)) {
@@ -1473,7 +1474,7 @@ describe('WU-1326: Wave building respects lock_policy per lane', () => {
 });
 
 describe('WU-2040: Checkpoint mode Task invocation output', () => {
-  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+  const TEST_WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 
   function createDir(dir: string) {
     if (!existsSync(dir)) {

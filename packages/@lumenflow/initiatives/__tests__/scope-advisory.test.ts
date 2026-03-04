@@ -13,6 +13,9 @@
  * - Edge cases (empty initiatives, missing code_paths)
  */
 import { describe, it, expect } from 'vitest';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
+
+const WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 import type { WUEntry } from '../src/initiative-yaml.js';
 import {
   analyseScopeShape,
@@ -36,7 +39,7 @@ function makeWU(
       lane: overrides.lane ?? 'Framework: Core',
       code_paths: overrides.code_paths ?? [`packages/core/src/${id.toLowerCase()}.ts`],
     },
-    path: `docs/04-operations/tasks/wu/${id}.yaml`,
+    path: `${WU_DIR}/${id}.yaml`,
   };
 }
 

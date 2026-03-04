@@ -18,6 +18,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 import {
   LocationContextSchema,
   GitStateSchema,
@@ -270,7 +274,7 @@ describe('WuStateResultSchema', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Define ports and domain schemas',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1093.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1093.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       };

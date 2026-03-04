@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   normalizeDirectorySegment,
   ensureRepoRelativePrefix,
@@ -17,6 +18,9 @@ import {
   isAllowlistedPath,
 } from '../../hooks/path-utils.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const CLAUDE_DIR = '.claude/';
 describe('WU-2127: path-utils sub-module', () => {
   describe('normalizeDirectorySegment', () => {
     it('should strip leading/trailing slashes and backslashes', () => {
@@ -135,11 +139,11 @@ describe('WU-2127: path-utils sub-module', () => {
 
   describe('isAllowlistedPath', () => {
     const MAIN_REPO = '/test/project';
-    const PREFIXES = ['.lumenflow/', '.claude/', 'docs/04-operations/tasks/wu/'] as const;
+    const PREFIXES = [`${LUMENFLOW_PATHS.BASE}/`, `${CLAUDE_DIR}`, `${WU_DIR}/`] as const;
 
     it('should allow paths matching allowlist prefix', () => {
       expect(
-        isAllowlistedPath('/test/project/.lumenflow/state/events.jsonl', MAIN_REPO, PREFIXES),
+        isAllowlistedPath(`/test/project/${LUMENFLOW_PATHS.STATE_DIR}/events.jsonl`, MAIN_REPO, PREFIXES),
       ).toBe(true);
     });
 

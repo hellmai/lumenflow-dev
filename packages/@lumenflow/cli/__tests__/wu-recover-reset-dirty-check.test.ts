@@ -10,6 +10,20 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+// Constants imported via vi.hoisted() below to avoid TDZ issues with vi.mock() factories
+
+// vi.hoisted ensures these are available before vi.mock factories run
+const { WU_DIR, BACKLOG_PATH, STATUS_PATH, STATE_DIR, WU_EVENTS } = vi.hoisted(() => {
+  // Inline the arc42 tasks path to avoid importing @lumenflow/core in hoisted scope
+  const arc42Tasks = 'docs/04-operations/tasks';
+  return {
+    WU_DIR: `${arc42Tasks}/wu`,
+    BACKLOG_PATH: `${arc42Tasks}/backlog.md`,
+    STATUS_PATH: `${arc42Tasks}/status.md`,
+    STATE_DIR: '.lumenflow/state',
+    WU_EVENTS: '.lumenflow/state/wu-events.jsonl',
+  };
+});
 
 // Mock modules before importing the module under test
 vi.mock('node:fs', async () => {
@@ -33,9 +47,9 @@ vi.mock('@lumenflow/core/wu-yaml', () => ({
 
 vi.mock('@lumenflow/core/wu-paths', () => ({
   WU_PATHS: {
-    WU: vi.fn((id: string) => `docs/04-operations/tasks/wu/${id}.yaml`),
-    BACKLOG: vi.fn(() => 'docs/04-operations/tasks/backlog.md'),
-    STATUS: vi.fn(() => 'docs/04-operations/tasks/status.md'),
+    WU: vi.fn((id: string) => `${WU_DIR}/${id}.yaml`),
+    BACKLOG: vi.fn(() => BACKLOG_PATH),
+    STATUS: vi.fn(() => STATUS_PATH),
   },
 }));
 
@@ -86,8 +100,8 @@ vi.mock('@lumenflow/core/git-adapter', () => ({
 }));
 
 vi.mock('../dist/state-path-resolvers.js', () => ({
-  resolveStateDir: vi.fn((p: string) => `${p}/.lumenflow/state`),
-  resolveWuEventsRelativePath: vi.fn(() => '.lumenflow/state/wu-events.jsonl'),
+  resolveStateDir: vi.fn((p: string) => `${p}/${STATE_DIR}`),
+  resolveWuEventsRelativePath: vi.fn(() => WU_EVENTS),
 }));
 
 describe('WU-2249: reset action checks worktree for uncommitted changes', () => {

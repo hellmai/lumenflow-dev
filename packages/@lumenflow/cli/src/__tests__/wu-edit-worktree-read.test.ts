@@ -15,7 +15,10 @@ import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { stringifyYAML, parseYAML } from '@lumenflow/core/wu-yaml';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 // Test utilities
 function createTempDir(): string {
   const tmpDir = path.join(os.tmpdir(), `wu-edit-worktree-read-${Date.now()}`);
@@ -32,7 +35,7 @@ function cleanupTempDir(dir: string) {
 }
 
 function writeWUYaml(dir: string, id: string, data: Record<string, unknown>) {
-  const wuDir = path.join(dir, 'docs/04-operations/tasks/wu');
+  const wuDir = path.join(dir, WU_DIR);
   mkdirSync(wuDir, { recursive: true });
   writeFileSync(path.join(wuDir, `${id}.yaml`), stringifyYAML(data));
 }

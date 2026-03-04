@@ -15,9 +15,10 @@ import {
   buildExecutionPlanAsync,
   formatExecutionPlan,
 } from '@lumenflow/initiatives';
+import { DOCS_LAYOUT_PRESETS, LUMENFLOW_PATHS } from '@lumenflow/core';
 
-const STAMPS_DIR = '.lumenflow/stamps';
-const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+const STAMPS_DIR = LUMENFLOW_PATHS.STAMPS_DIR;
+const TEST_WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 
 // Lane constants to avoid duplicate string literals
 const LANE_A = 'Lane A';

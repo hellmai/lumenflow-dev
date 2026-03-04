@@ -15,13 +15,17 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/wu-yaml';
 import { readInitiative } from '@lumenflow/initiatives/yaml';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
 // Test constants to avoid lint warnings about duplicate strings
 const TEST_WU_ID = 'WU-123';
 const TEST_INIT_ID = 'INIT-001';
 const TEST_LANE = 'Framework: CLI';
-const WU_REL_PATH = 'docs/04-operations/tasks/wu';
-const INIT_REL_PATH = 'docs/04-operations/tasks/initiatives';
+const WU_REL_PATH = WU_DIR;
+const INIT_REL_PATH = INITIATIVES_DIR;
 const TEST_INIT_SLUG = 'test-initiative';
 const TEST_INIT_TITLE = 'Test Initiative';
 const TEST_INIT_STATUS = 'open';

@@ -16,7 +16,13 @@ import * as os from 'node:os';
 import YAML from 'yaml';
 
 import { scaffoldProject, type ScaffoldOptions } from '../init.js';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 // Constants to avoid sonarjs/no-duplicate-string
 const LUMENFLOW_MD = 'LUMENFLOW.md';
 const VENDOR_RULES_FILE = 'lumenflow.md';
@@ -715,10 +721,10 @@ describe('lumenflow init', () => {
       };
 
       const ARC42_LAYOUT_PATHS = {
-        wuDir: 'docs/04-operations/tasks/wu',
-        initiativesDir: 'docs/04-operations/tasks/initiatives',
-        backlogPath: 'docs/04-operations/tasks/backlog.md',
-        statusPath: 'docs/04-operations/tasks/status.md',
+        wuDir: WU_DIR,
+        initiativesDir: INITIATIVES_DIR,
+        backlogPath: BACKLOG_PATH,
+        statusPath: STATUS_PATH,
         plansDir: 'docs/04-operations/plans',
         onboardingDir: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
         completeGuidePath: 'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md',

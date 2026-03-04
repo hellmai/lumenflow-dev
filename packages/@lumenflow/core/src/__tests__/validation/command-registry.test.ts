@@ -26,6 +26,10 @@ import {
 } from '../../validation/command-registry.js';
 import { CONTEXT_VALIDATION } from '../../wu-constants.js';
 import type { WuContext } from '../../validation/types.js';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 const { LOCATION_TYPES, COMMANDS } = CONTEXT_VALIDATION;
 
@@ -194,7 +198,7 @@ describe('getValidCommandsForContext', () => {
         status: 'ready',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },
@@ -238,7 +242,7 @@ describe('getValidCommandsForContext', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },
@@ -283,7 +287,7 @@ describe('getValidCommandsForContext', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },
@@ -331,7 +335,7 @@ describe('getValidCommandsForContext', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },
@@ -920,7 +924,7 @@ describe('wu:prep command (WU-1223)', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1223.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1223.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },
@@ -1015,7 +1019,7 @@ describe('wu:done updated behavior (WU-1223)', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1223.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1223.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },
@@ -1073,7 +1077,7 @@ describe('wu:done updated behavior (WU-1223)', () => {
         status: 'in_progress',
         lane: 'Framework: Core',
         title: 'Test WU',
-        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1223.yaml',
+        yamlPath: `/repo/${WU_DIR}/WU-1223.yaml`,
         isConsistent: true,
         inconsistencyReason: null,
       },

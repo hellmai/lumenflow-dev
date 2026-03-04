@@ -18,6 +18,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Import use case (will be created after tests fail)
 import { ValidateCommandUseCase } from '../../usecases/validate-command.usecase.js';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 // Import port interfaces
 import type {
@@ -58,7 +62,7 @@ describe('ValidateCommandUseCase', () => {
       status: 'in_progress',
       lane: 'Framework: Core',
       title: 'Test WU',
-      yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1094.yaml',
+      yamlPath: `/repo/${WU_DIR}/WU-1094.yaml`,
       isConsistent: true,
       inconsistencyReason: null,
     },

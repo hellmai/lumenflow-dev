@@ -7,7 +7,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CONTEXT_VALIDATION, WU_STATUS } from '@lumenflow/core/wu-constants';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import type { WuContext } from '@lumenflow/core/validation/types';
+
+const WU_DIR = `${DOCS_LAYOUT_PRESETS.arc42.tasks}/wu`;
 
 const { LOCATION_TYPES, COMMANDS } = CONTEXT_VALIDATION;
 
@@ -86,7 +89,7 @@ describe('wu:status CLI (WU-1090)', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Context-aware state machine',
-          yamlPath: '/home/user/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/home/user/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -132,7 +135,7 @@ describe('wu:status CLI (WU-1090)', () => {
           status: WU_STATUS.READY,
           lane: 'Operations',
           title: 'Test WU',
-          yamlPath: '/home/user/repo/docs/04-operations/tasks/wu/WU-100.yaml',
+          yamlPath: `/home/user/repo/${WU_DIR}/WU-100.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },

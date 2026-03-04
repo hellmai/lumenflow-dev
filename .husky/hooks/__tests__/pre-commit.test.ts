@@ -2,6 +2,11 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
 import {
   filterStagedWUYamlFiles,
   validateWUYamlString,
@@ -11,18 +16,18 @@ import {
 
 describe('pre-commit hook (WU-1164)', () => {
   describe('filterStagedWUYamlFiles', () => {
-    it('returns only WU YAML files under docs/04-operations/tasks/wu/', () => {
+    it(`returns only WU YAML files under ${WU_DIR}/`, () => {
       const result = filterStagedWUYamlFiles([
-        'docs/04-operations/tasks/wu/WU-1164.yaml',
-        'docs/04-operations/tasks/wu/WU-9999.yaml',
-        'docs/04-operations/tasks/backlog.md',
+        `${WU_DIR}/WU-1164.yaml`,
+        `${WU_DIR}/WU-9999.yaml`,
+        BACKLOG_PATH,
         'packages/@lumenflow/core/src/wu-schema.ts',
-        'docs/04-operations/tasks/wu/WU-1234.yml',
+        `${WU_DIR}/WU-1234.yml`,
       ]);
 
       expect(result).toEqual([
-        'docs/04-operations/tasks/wu/WU-1164.yaml',
-        'docs/04-operations/tasks/wu/WU-9999.yaml',
+        `${WU_DIR}/WU-1164.yaml`,
+        `${WU_DIR}/WU-9999.yaml`,
       ]);
     });
   });

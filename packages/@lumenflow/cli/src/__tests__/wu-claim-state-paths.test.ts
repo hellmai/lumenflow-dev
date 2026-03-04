@@ -6,6 +6,7 @@ import { existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { clearConfigCache } from '@lumenflow/core/config';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   removeFromReadyAndAddToInProgressBacklog,
   toRelativeClaimWorktreePathForStorage,
@@ -14,6 +15,10 @@ import {
   getWorktreeCommitFiles,
 } from '../wu-claim-state.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
+const STATUS_PATH = `${ARC42.tasks}/status.md`;
 function createTempDir(): string {
   return mkdtempSync(path.join(tmpdir(), 'lumenflow-wu-claim-state-'));
 }
@@ -89,33 +94,33 @@ describe('toRelativeClaimWorktreePathForStorage', () => {
 describe('WU-2259: claim path isolation for micro-worktree writes', () => {
   it('normalizes absolute source-root paths to repo-relative claim metadata paths', () => {
     const normalized = normalizeClaimPathForWorktree(
-      '/repo/docs/04-operations/tasks/wu/WU-2259.yaml',
+      `/repo/${WU_DIR}/WU-2259.yaml`,
       '/repo',
     );
 
-    expect(normalized).toBe('docs/04-operations/tasks/wu/WU-2259.yaml');
+    expect(normalized).toBe(`${WU_DIR}/WU-2259.yaml`);
   });
 
   it('resolves absolute source-root paths under the micro-worktree root', () => {
     const resolved = resolveClaimPathInWorktree(
-      '/repo/docs/04-operations/tasks/status.md',
+      `/repo/${STATUS_PATH}`,
       '/tmp/micro-wu-2259',
       '/repo',
     );
 
-    expect(resolved).toBe('/tmp/micro-wu-2259/docs/04-operations/tasks/status.md');
+    expect(resolved).toBe(`/tmp/micro-wu-2259/${STATUS_PATH}`);
   });
 
   it('keeps already-relative claim metadata paths stable', () => {
-    const normalized = normalizeClaimPathForWorktree('docs/04-operations/tasks/backlog.md', '/r');
+    const normalized = normalizeClaimPathForWorktree(BACKLOG_PATH, '/r');
     const resolved = resolveClaimPathInWorktree(
-      '.lumenflow/state/wu-events.jsonl',
+      LUMENFLOW_PATHS.WU_EVENTS,
       '/tmp/micro',
       '/r',
     );
 
-    expect(normalized).toBe('docs/04-operations/tasks/backlog.md');
-    expect(resolved).toBe('/tmp/micro/.lumenflow/state/wu-events.jsonl');
+    expect(normalized).toBe(BACKLOG_PATH);
+    expect(resolved).toBe(`/tmp/micro/${LUMENFLOW_PATHS.WU_EVENTS}`);
   });
 
   it('returns repo-relative worktree commit files even when directories are configured as absolute', () => {
@@ -125,21 +130,21 @@ describe('WU-2259: claim path isolation for micro-worktree writes', () => {
     clearConfigCache();
 
     try {
-      const absoluteWuDir = path.join(tmpDir, 'docs/04-operations/tasks/wu');
+      const absoluteWuDir = path.join(tmpDir, WU_DIR);
       writeFileSync(
         path.join(tmpDir, 'workspace.yaml'),
         `software_delivery:
   directories:
     wuDir: ${absoluteWuDir}
   state:
-    stateDir: ${path.join(tmpDir, '.lumenflow/state')}
+    stateDir: ${path.join(tmpDir, LUMENFLOW_PATHS.STATE_DIR)}
 `,
         { encoding: 'utf-8' },
       );
 
       const files = getWorktreeCommitFiles('WU-2259');
-      expect(files).toContain('docs/04-operations/tasks/wu/WU-2259.yaml');
-      expect(files).toContain('.lumenflow/state/wu-events.jsonl');
+      expect(files).toContain(`${WU_DIR}/WU-2259.yaml`);
+      expect(files).toContain(LUMENFLOW_PATHS.WU_EVENTS);
       expect(files.some((filePath) => path.isAbsolute(filePath))).toBe(false);
     } finally {
       clearConfigCache();

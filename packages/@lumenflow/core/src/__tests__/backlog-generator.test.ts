@@ -7,6 +7,11 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { WUStateStore } from '../wu-state-store.js';
 import { generateBacklog, generateStatus } from '../backlog-generator.js';
+import { LUMENFLOW_PATHS } from '../wu-paths-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 describe('generateBacklog', () => {
   let tempDir: string;
@@ -15,8 +20,8 @@ describe('generateBacklog', () => {
 
   beforeEach(() => {
     tempDir = mkdtempSync(join(tmpdir(), 'wu-1147-backlog-'));
-    stateDir = join(tempDir, '.lumenflow', 'state');
-    wuDir = join(tempDir, 'docs', '04-operations', 'tasks', 'wu');
+    stateDir = join(tempDir, LUMENFLOW_PATHS.STATE_DIR);
+    wuDir = join(tempDir, WU_DIR);
     mkdirSync(stateDir, { recursive: true });
     mkdirSync(wuDir, { recursive: true });
   });
@@ -174,7 +179,7 @@ describe('WU-1523: Render backlog and status from state events', () => {
 
   beforeEach(() => {
     tempDir = mkdtempSync(join(tmpdir(), 'wu-1523-render-'));
-    stateDir = join(tempDir, '.lumenflow', 'state');
+    stateDir = join(tempDir, LUMENFLOW_PATHS.STATE_DIR);
     wuDir = join(tempDir, 'docs', 'tasks', 'wu');
     mkdirSync(stateDir, { recursive: true });
     mkdirSync(wuDir, { recursive: true });

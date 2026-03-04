@@ -48,6 +48,10 @@ import { CONTEXT_VALIDATION, WU_STATUS } from '../../wu-constants.js';
 import type { WuContext } from '../../validation/types.js';
 import { existsSync, statSync } from 'node:fs';
 import { simpleGit } from 'simple-git';
+import { DOCS_LAYOUT_PRESETS } from '../../docs-layout-presets.js';
+
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 
 const { LOCATION_TYPES, RECOVERY_ISSUES, RECOVERY_ACTIONS } = CONTEXT_VALIDATION;
 
@@ -97,7 +101,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.READY, // Status says ready
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -143,7 +147,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.READY,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -191,7 +195,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.IN_PROGRESS, // Status says in_progress
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -237,7 +241,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -284,7 +288,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.DONE, // Status is done
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -330,7 +334,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.DONE,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -377,7 +381,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.DONE,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1096.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1096.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },
@@ -424,7 +428,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.READY,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1096.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1096.yaml`,
           isConsistent: false,
           inconsistencyReason: 'YAML status differs from state store',
         },
@@ -473,7 +477,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.READY, // Released back to ready
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1746.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1746.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
           branchMergedToMain: true, // Commits are on main
@@ -523,7 +527,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.READY,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1746.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1746.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
           branchMergedToMain: true,
@@ -570,7 +574,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.DONE, // Already done
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1746.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1746.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
           branchMergedToMain: true,
@@ -620,7 +624,7 @@ describe('analyzeRecovery', () => {
           status: WU_STATUS.IN_PROGRESS,
           lane: 'Framework: Core',
           title: 'Test WU',
-          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1090.yaml',
+          yamlPath: `/repo/${WU_DIR}/WU-1090.yaml`,
           isConsistent: true,
           inconsistencyReason: null,
         },

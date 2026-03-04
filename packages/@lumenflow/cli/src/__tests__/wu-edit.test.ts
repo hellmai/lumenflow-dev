@@ -11,6 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { getConfig } from '@lumenflow/core/config';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import {
   applyEdits,
   buildWuEditStampNote,
@@ -22,6 +23,10 @@ import {
   validateWorktreeExecutionContext,
 } from '../wu-edit.js';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
+const INITIATIVES_DIR = `${ARC42.tasks}/initiatives`;
+const BACKLOG_PATH = `${ARC42.tasks}/backlog.md`;
 describe('wu-edit applyEdits', () => {
   describe('WU-1225: code_paths append-by-default', () => {
     const baseWU = {
@@ -174,12 +179,12 @@ describe('wu-edit mergeStringField', () => {
 describe('WU-1594: backlog sync artifacts for wu:edit', () => {
   it('includes backlog.md in commit files for lane/spec metadata sync', () => {
     const files = getWuEditCommitFiles('WU-1594', [
-      'docs/04-operations/tasks/initiatives/INIT-023.yaml',
+      `${INITIATIVES_DIR}/INIT-023.yaml`,
     ]);
 
-    expect(files).toContain('docs/04-operations/tasks/wu/WU-1594.yaml');
-    expect(files).toContain('docs/04-operations/tasks/backlog.md');
-    expect(files).toContain('docs/04-operations/tasks/initiatives/INIT-023.yaml');
+    expect(files).toContain(`${WU_DIR}/WU-1594.yaml`);
+    expect(files).toContain(BACKLOG_PATH);
+    expect(files).toContain(`${INITIATIVES_DIR}/INIT-023.yaml`);
   });
 });
 
@@ -227,7 +232,7 @@ describe('WU-1618: scope-relevant branch change detection', () => {
 
   it('returns true when source changes are present', () => {
     const result = hasScopeRelevantBranchChanges([
-      '.lumenflow/state/wu-events.jsonl',
+      LUMENFLOW_PATHS.WU_EVENTS,
       'packages/@lumenflow/cli/src/wu-edit.ts',
     ]);
     expect(result).toBe(true);
@@ -236,8 +241,8 @@ describe('WU-1618: scope-relevant branch change detection', () => {
 
 describe('WU-2275: wu:edit stamp notes', () => {
   it('formats canonical wu:edit stamp note with path', () => {
-    const note = buildWuEditStampNote('docs/04-operations/tasks/wu/WU-2275.yaml');
-    expect(note).toBe('[wu:edit] path=docs/04-operations/tasks/wu/WU-2275.yaml');
+    const note = buildWuEditStampNote(`${WU_DIR}/WU-2275.yaml`);
+    expect(note).toBe(`[wu:edit] path=${WU_DIR}/WU-2275.yaml`);
   });
 
   it('invokes stamp-event append during wu:edit execution paths', () => {

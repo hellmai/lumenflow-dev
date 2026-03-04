@@ -22,6 +22,7 @@ import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { stringifyYAML, parseYAML } from '@lumenflow/core/wu-yaml';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
+import { LUMENFLOW_PATHS, DOCS_LAYOUT_PRESETS } from '@lumenflow/core';
 import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
 import { getLatestWuBriefEvidence } from '@lumenflow/core/wu-state-store';
 import {
@@ -43,6 +44,8 @@ import {
 import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
 import { createSignal, loadSignals } from '@lumenflow/memory';
 
+const ARC42 = DOCS_LAYOUT_PRESETS.arc42;
+const WU_DIR = `${ARC42.tasks}/wu`;
 // Test constants
 const TEST_WU_ID = 'WU-9920';
 const TEST_LANE = 'Framework: CLI';
@@ -55,10 +58,10 @@ const TEST_DESCRIPTION =
  */
 function createSpawnProject(baseDir: string): void {
   const dirs = [
-    'docs/04-operations/tasks/wu',
-    '.lumenflow/state',
+    WU_DIR,
+    LUMENFLOW_PATHS.STATE_DIR,
     '.lumenflow/memory',
-    '.lumenflow/stamps',
+    LUMENFLOW_PATHS.STAMPS_DIR,
     '.lumenflow/locks',
     'packages/@lumenflow/cli/src',
   ];
@@ -107,7 +110,7 @@ function createSpawnWU(
     claimedAt?: string;
   } = {},
 ): string {
-  const wuDir = join(baseDir, 'docs/04-operations/tasks/wu');
+  const wuDir = join(baseDir, WU_DIR);
   const wuPath = join(wuDir, `${id}.yaml`);
 
   const doc: Record<string, unknown> = {
@@ -497,7 +500,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should record spawn events', async () => {
         // Arrange
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
 
         // Act - Record spawn event directly
         const spawnEvent = {
@@ -521,7 +524,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should track multiple spawn events', async () => {
         // Arrange
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
 
         // Act - Record multiple spawn events
         const events = [
@@ -598,7 +601,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should enforce pickup evidence when spawn entry is intent-only', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
         writeFileSync(
           registryPath,
           JSON.stringify({
@@ -625,7 +628,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should pass when spawn registry entry includes pickup evidence for initiative-governed WU', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
         const promptHash = 'a'.repeat(64);
         writeFileSync(
           registryPath,
@@ -673,7 +676,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should block when attested hash does not match wu:brief evidence', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
         writeFileSync(
           registryPath,
           JSON.stringify({
@@ -749,7 +752,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         );
 
         const evidence = await getLatestWuBriefEvidence(
-          join(tempDir, '.lumenflow/state'),
+          join(tempDir, LUMENFLOW_PATHS.STATE_DIR),
           TEST_WU_ID,
         );
         expect(evidence).toBeDefined();
@@ -777,7 +780,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
           },
         );
 
-        const evidence = await getLatestWuBriefEvidence(join(tempDir, '.lumenflow/state'), wuId);
+        const evidence = await getLatestWuBriefEvidence(join(tempDir, LUMENFLOW_PATHS.STATE_DIR), wuId);
         expect(evidence).toBeDefined();
         expect(evidence?.wuId).toBe(wuId);
       });
@@ -800,7 +803,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
           },
         );
 
-        const evidence = await getLatestWuBriefEvidence(join(tempDir, '.lumenflow/state'), wuId);
+        const evidence = await getLatestWuBriefEvidence(join(tempDir, LUMENFLOW_PATHS.STATE_DIR), wuId);
         expect(evidence).toBeNull();
       });
     });
@@ -822,7 +825,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         });
 
         // Step 1: Generate spawn prompt
-        const wuPath = join(tempDir, 'docs/04-operations/tasks/wu', `${TEST_WU_ID}.yaml`);
+        const wuPath = join(tempDir, WU_DIR, `${TEST_WU_ID}.yaml`);
         const doc = parseYAML(readFileSync(wuPath, 'utf-8'));
         const strategy = SpawnStrategyFactory.create('claude-code');
         const invocation = generateTaskInvocation(doc, TEST_WU_ID, strategy);
@@ -831,7 +834,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         expect(invocation).toContain('antml:invoke');
 
         // Step 2: Record spawn event
-        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
+        const registryPath = join(tempDir, LUMENFLOW_PATHS.STATE_DIR, DELEGATION_REGISTRY_FILE_NAME);
         const spawnEvent = {
           id: 'dlg-d001',
           parentWuId: 'WU-1363',
