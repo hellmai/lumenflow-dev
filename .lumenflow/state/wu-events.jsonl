@@ -2807,6 +2807,7 @@
 {"type":"claim","wuId":"WU-2323","timestamp":"2026-03-05T10:20:25.035Z","lane":"Framework: CLI WU Commands","title":"Add --from flag to plan:create for importing external plan files"}
 {"type":"checkpoint","wuId":"WU-2323","timestamp":"2026-03-05T10:20:36.139Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2323","timestamp":"2026-03-05T10:20:42.821Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2323","timestamp":"2026-03-05T10:24:06.301Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2323.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2321","timestamp":"2026-03-05T10:15:49.429Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2321","timestamp":"2026-03-05T10:15:55.777Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2321","timestamp":"2026-03-05T10:22:44.573Z"}

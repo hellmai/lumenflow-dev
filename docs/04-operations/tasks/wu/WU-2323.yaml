@@ -22,12 +22,20 @@ plan: lumenflow://plans/WU-2323-plan.md
 spec_refs:
   - lumenflow://plans/WU-2323-plan.md
 risks: []
-notes: ''
+notes: Added --from option to plan:create. Reads content from external .md file instead of blank
+  template. Includes validateFromPath export.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-05T10:20:25.005Z
+worktree_path: worktrees/framework-cli-wu-commands-wu-2323
+session_id: 346cda58-690e-4b52-a8c9-16992d8b1a75
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T10:20:25.012Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +49,3 @@ acceptance:
   - plan:create without --from still generates blank template (backward compatible)
   - --from validates source file exists and is .md
   - 'Unit tests cover --from path: content copy, missing file error, non-.md rejection'
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-wu-commands-wu-2323
-claimed_at: 2026-03-05T10:20:25.005Z
-baseline_main_sha: a6c4d3bcd1441a8c92e9ae2546db15e1e8c40a8a
-session_id: 346cda58-690e-4b52-a8c9-16992d8b1a75
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-05T10:20:25.012Z
