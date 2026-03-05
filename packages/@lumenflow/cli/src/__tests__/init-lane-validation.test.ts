@@ -3,15 +3,12 @@
 
 /**
  * @file init-lane-validation.test.ts
- * Test: lane validation utility for lifecycle boundary checks.
+ * Test: lane inference drift utility for lifecycle boundary checks.
  *
  * WU-1748: Validation moved from init-time to lane lifecycle commands.
  *
- * When workspace.yaml software_delivery defines lanes with "Parent: Sublane" format,
- * the parent name must exist in .lumenflow.lane-inference.yaml.
- * Invalid parents (e.g., "Foundation: Core" when "Foundation" is not a parent
- * in the inference hierarchy) should generate warnings at init time,
- * not silently pass through to fail at wu:create time.
+ * Workspace lanes remain authoritative for validation. Inference parent drift
+ * should produce guidance warnings only and never block via invalidLanes.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -51,7 +48,7 @@ describe('lane validation utilities (WU-1748 boundary shift)', () => {
       expect(result.invalidLanes).toHaveLength(0);
     });
 
-    it('should return warnings when lane parent does not exist in inference hierarchy', () => {
+    it('should warn when lane parent does not exist in inference hierarchy', () => {
       // Arrange: "Foundation" is NOT a valid parent in inference
       const configLanes = [
         { name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] },
@@ -64,10 +61,10 @@ describe('lane validation utilities (WU-1748 boundary shift)', () => {
 
       // Assert
       expect(result.warnings.length).toBeGreaterThan(0);
-      expect(result.invalidLanes).toContain('Foundation: Core');
+      expect(result.invalidLanes).toHaveLength(0);
     });
 
-    it('should list valid parent names in warning message', () => {
+    it('should include regeneration guidance in warning message', () => {
       // Arrange
       const configLanes = [{ name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] }];
       const inferenceParents = ['Framework', 'Content', 'Operations'];
@@ -77,12 +74,11 @@ describe('lane validation utilities (WU-1748 boundary shift)', () => {
 
       // Assert: Warning message should include valid parents for guidance
       const warningText = result.warnings.join(' ');
-      expect(warningText).toContain('Framework');
-      expect(warningText).toContain('Content');
-      expect(warningText).toContain('Operations');
+      expect(warningText).toContain('workspace.yaml is authoritative');
+      expect(warningText).toContain('lane:suggest --output .lumenflow.lane-inference.yaml');
     });
 
-    it('should identify multiple invalid lane parents', () => {
+    it('should report multiple parent drift warnings', () => {
       // Arrange
       const configLanes = [
         { name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] },
@@ -95,12 +91,11 @@ describe('lane validation utilities (WU-1748 boundary shift)', () => {
       const result = validateLaneConfigAgainstInference(configLanes, inferenceParents);
 
       // Assert
-      expect(result.invalidLanes).toHaveLength(2);
-      expect(result.invalidLanes).toContain('Foundation: Core');
-      expect(result.invalidLanes).toContain('Platform: API');
+      expect(result.warnings).toHaveLength(2);
+      expect(result.invalidLanes).toHaveLength(0);
     });
 
-    it('should handle lanes without colon separator gracefully', () => {
+    it('should ignore parent-only lane names without colon separator', () => {
       // Arrange: A lane name without "Parent: Sublane" format
       const configLanes = [{ name: 'Documentation', wip_limit: 1, code_paths: ['docs/**'] }];
       const inferenceParents = ['Framework', 'Content'];
@@ -108,11 +103,12 @@ describe('lane validation utilities (WU-1748 boundary shift)', () => {
       // Act
       const result = validateLaneConfigAgainstInference(configLanes, inferenceParents);
 
-      // Assert: Should not crash, and should warn about non-standard format
-      expect(result.warnings.length).toBeGreaterThan(0);
+      // Assert: Parent-only lanes are valid; no drift warning is needed
+      expect(result.warnings).toHaveLength(0);
+      expect(result.invalidLanes).toHaveLength(0);
     });
 
-    it('should be case-sensitive for parent name matching', () => {
+    it('should be case-sensitive for parent drift detection', () => {
       // Arrange: "framework" (lowercase) is NOT the same as "Framework"
       const configLanes = [{ name: 'framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }];
       const inferenceParents = ['Framework', 'Content'];
@@ -120,8 +116,9 @@ describe('lane validation utilities (WU-1748 boundary shift)', () => {
       // Act
       const result = validateLaneConfigAgainstInference(configLanes, inferenceParents);
 
-      // Assert: Should be invalid because case doesn't match
-      expect(result.invalidLanes).toContain('framework: Core');
+      // Assert: Should warn because case doesn't match
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.invalidLanes).toHaveLength(0);
     });
 
     it('should return empty result for empty lane definitions', () => {

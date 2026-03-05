@@ -14,7 +14,7 @@ import { parseYAML } from './wu-yaml.js';
 import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
-import { CONFIG_FILES, STRING_LITERALS } from './wu-constants.js';
+import { STRING_LITERALS } from './wu-constants.js';
 import { WU_STATUS, resolveWUStatus } from './wu-statuses.js';
 import { findProjectRoot, getConfig, WORKSPACE_CONFIG_FILE_NAME } from './lumenflow-config.js';
 import { WORKSPACE_V2_KEYS } from './config-contract.js';
@@ -128,84 +128,6 @@ export function extractParent(lane: string): string {
 }
 
 /**
- * WU-1308: Check if lane-inference.yaml file exists
- * @returns {boolean} True if the file exists
- */
-function laneInferenceFileExists(): boolean {
-  const projectRoot = findProjectRoot();
-  const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
-  return existsSync(taxonomyPath);
-}
-
-/**
- * Check if a parent lane has sub-lane taxonomy defined
- * @param {string} parent - Parent lane name
- * @returns {boolean} True if parent has sub-lanes in lane-inference config
- */
-function hasSubLaneTaxonomy(parent: string): boolean {
-  const projectRoot = findProjectRoot();
-  const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
-
-  if (!existsSync(taxonomyPath)) {
-    return false;
-  }
-
-  try {
-    const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
-    const taxonomy = parseYAML(taxonomyContent) as Record<string, unknown>;
-
-    // Check if parent exists as top-level key in taxonomy
-    const normalizedParent = parent.trim();
-    return Object.keys(taxonomy).some(
-      (key) => key.toLowerCase().trim() === normalizedParent.toLowerCase(),
-    );
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check if a sub-lane exists for a given parent in lane-inference config
- * @param {string} parent - Parent lane name
- * @param {string} subdomain - Sub-lane name
- * @returns {boolean} True if sub-lane exists
- */
-function isValidSubLane(parent: string, subdomain: string): boolean {
-  const projectRoot = findProjectRoot();
-  const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
-
-  if (!existsSync(taxonomyPath)) {
-    return false;
-  }
-
-  try {
-    const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
-    const taxonomy = parseYAML(taxonomyContent) as Record<string, Record<string, unknown>>;
-
-    // Find parent key (case-insensitive)
-    const normalizedParent = parent.trim().toLowerCase();
-    const parentKey = Object.keys(taxonomy).find(
-      (key) => key.toLowerCase().trim() === normalizedParent,
-    );
-
-    if (!parentKey) {
-      return false;
-    }
-
-    // Check if subdomain exists under parent
-    const subLanes = taxonomy[parentKey];
-    if (!subLanes || typeof subLanes !== 'object') {
-      return false;
-    }
-
-    // Exact match on subdomain (case-sensitive per Codex spec)
-    return Object.keys(subLanes).includes(subdomain.trim());
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Count occurrences of a character in a string
  * @param {string} str - String to search
  * @param {string} char - Character to count
@@ -281,48 +203,37 @@ function validateSubLaneFormat(
     );
   }
 
-  // WU-1308: Check if lane-inference file exists before validating sub-lanes
-  // This provides a clear error message when the file is missing
-  if (!laneInferenceFileExists()) {
-    throw createError(
-      ErrorCodes.FILE_NOT_FOUND,
-      `Sub-lane validation requires ${CONFIG_FILES.LANE_INFERENCE} which is missing.\n\n` +
-        `The file "${CONFIG_FILES.LANE_INFERENCE}" defines the lane taxonomy for sub-lane validation.\n\n` +
-        `To fix this:\n` +
-        `  1. Generate a lane taxonomy from your codebase:\n` +
-        `     pnpm lane:suggest --output ${CONFIG_FILES.LANE_INFERENCE}\n\n` +
-        `  2. Or copy from an example project and customize.\n\n` +
-        `See: LUMENFLOW.md "Setup Notes" section for details.`,
-      { lane, parent, subdomain, missingFile: CONFIG_FILES.LANE_INFERENCE },
-    );
-  }
-
-  // Validate sub-lane exists in taxonomy
-  if (hasSubLaneTaxonomy(parent)) {
-    validateSubLaneInTaxonomy(parent, subdomain);
-  } else {
-    // Parent has no taxonomy - reject sub-lane format
-    throw createError(
-      ErrorCodes.INVALID_LANE,
-      `Parent lane "${parent}" does not support sub-lanes. Use parent-only format or extend ${CONFIG_FILES.LANE_INFERENCE}.`,
-      { parent, lane },
-    );
-  }
+  validateSubLaneInWorkspaceDefinitions(parent, subdomain, lane, configPath);
 
   return { valid: true, parent, error: null };
 }
 
 /**
- * WU-1197: Validate that sub-lane exists in taxonomy
+ * WU-2326: Validate that sub-lane exists in workspace lane definitions.
  * @throws {LumenflowError} If sub-lane is not valid
  */
-function validateSubLaneInTaxonomy(parent: string, subdomain: string): void {
-  if (!isValidSubLane(parent, subdomain)) {
-    const validSubLanes = getSubLanesForParent(parent);
+function validateSubLaneInWorkspaceDefinitions(
+  parent: string,
+  subdomain: string,
+  lane: string,
+  configPath: string | null,
+): void {
+  const validSubLanes = getConfiguredSubLanesForParent(parent, configPath);
+
+  if (validSubLanes.length === 0) {
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Parent lane "${parent}" does not support sub-lanes in ${LANE_DEFINITIONS_HINT}. ` +
+        `Use parent-only format "${parent}" or add "${parent}: <sublane>" to workspace.yaml.`,
+      { parent, lane },
+    );
+  }
+
+  if (!validSubLanes.includes(subdomain)) {
     throw createError(
       ErrorCodes.INVALID_LANE,
       `Unknown sub-lane: "${subdomain}" for parent lane "${parent}".\n\n` +
-        `Valid sub-lanes: ${validSubLanes.join(', ')}`,
+        `Valid sub-lanes in ${LANE_DEFINITIONS_HINT}: ${validSubLanes.join(', ')}`,
       { parent, subdomain, validSubLanes },
     );
   }
@@ -345,9 +256,9 @@ function validateParentOnlyFormat(
     );
   }
 
-  // Block if parent has sub-lane taxonomy (sub-lane required)
-  if (hasSubLaneTaxonomy(trimmed)) {
-    const validSubLanes = getSubLanesForParent(trimmed);
+  // Block if parent has configured sub-lanes (sub-lane required)
+  const validSubLanes = getConfiguredSubLanesForParent(trimmed, configPath);
+  if (validSubLanes.length > 0) {
     const message =
       `Parent-only lane "${trimmed}" blocked. Sub-lane required. ` +
       `Valid: ${validSubLanes.join(', ')}. ` +
@@ -502,17 +413,12 @@ function readRuntimeConfig(projectRoot: string): RuntimeConfigResult {
   }
 }
 
-/**
- * Check if a parent lane exists in LumenFlow config
- *
- * WU-1022: Updated to support lanes.definitions with full "Parent: Sublane" format.
- * When lanes.definitions exists, parent lanes are extracted from full lane names.
- *
- * @param {string} parent - Parent lane name to check
- * @param {string} configPath - Path to config file (optional)
- * @returns {boolean} True if parent lane exists
- */
-function isValidParentLane(parent: string, configPath: string | null = null): boolean {
+interface LoadedLanesConfig {
+  config: LumenflowConfig;
+  resolvedConfigPath: string;
+}
+
+function loadLanesConfig(configPath: string | null): LoadedLanesConfig {
   const resolvedConfigPath = resolveConfigPath(configPath);
 
   let config: LumenflowConfig | null;
@@ -521,7 +427,6 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   } else {
     const result = readRuntimeConfig(findProjectRoot());
 
-    // WU-2223: Distinguish file-missing from parse-failure
     if (result.kind === 'invalid') {
       throw createError(
         ErrorCodes.CONFIG_ERROR,
@@ -540,6 +445,51 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
     });
   }
 
+  return { config, resolvedConfigPath };
+}
+
+function getConfiguredSubLanesForParent(
+  parent: string,
+  configPath: string | null = null,
+): string[] {
+  const { config } = loadLanesConfig(configPath);
+  const { allLanes } = extractLanesForParentCheck(config);
+  const normalizedParent = parent.toLowerCase().trim();
+  const subLanes = new Set<string>();
+
+  for (const laneName of allLanes) {
+    const trimmedLane = laneName.trim();
+    const colonIndex = trimmedLane.indexOf(LANE_SEPARATOR);
+    if (colonIndex === -1) {
+      continue;
+    }
+
+    const laneParent = trimmedLane.substring(0, colonIndex).trim().toLowerCase();
+    if (laneParent !== normalizedParent) {
+      continue;
+    }
+
+    const subLane = trimmedLane.substring(colonIndex + 1).trim();
+    if (subLane.length > 0) {
+      subLanes.add(subLane);
+    }
+  }
+
+  return [...subLanes];
+}
+
+/**
+ * Check if a parent lane exists in LumenFlow config
+ *
+ * WU-1022: Updated to support lanes.definitions with full "Parent: Sublane" format.
+ * When lanes.definitions exists, parent lanes are extracted from full lane names.
+ *
+ * @param {string} parent - Parent lane name to check
+ * @param {string} configPath - Path to config file (optional)
+ * @returns {boolean} True if parent lane exists
+ */
+function isValidParentLane(parent: string, configPath: string | null = null): boolean {
+  const { config } = loadLanesConfig(configPath);
   const { allLanes, parentLanes } = extractLanesForParentCheck(config);
   const normalizedParent = parent.toLowerCase().trim();
 

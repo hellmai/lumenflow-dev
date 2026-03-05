@@ -3,14 +3,15 @@
 
 /**
  * @file init-lane-validation.ts
- * Lane config validation against inference hierarchy.
+ * Lane config drift detection against inference taxonomy.
  *
- * WU-1745: Validate lane config against inference hierarchy at init time
+ * WU-1745: Validate lane config against inference hierarchy at init time.
+ * WU-2326: Inference taxonomy is derived metadata and never blocks
+ * workspace-defined lane validation.
  *
  * Cross-checks lane definitions in workspace.yaml software_delivery against
- * .lumenflow.lane-inference.yaml parents. Catches invalid parent names
- * (e.g., "Foundation: Core" when "Foundation" is not a valid parent)
- * at init time instead of deferring to wu:create.
+ * .lumenflow.lane-inference.yaml parents and emits non-blocking guidance
+ * when taxonomy drifts from workspace definitions.
  */
 
 import * as fs from 'node:fs';
@@ -39,7 +40,7 @@ export interface LaneTaxonomyMap {
 export interface LaneValidationResult {
   /** Warning messages for the user */
   warnings: string[];
-  /** Lane names with invalid parents */
+  /** Lane names that should block lifecycle checks (unused for inference drift) */
   invalidLanes: string[];
 }
 
@@ -82,10 +83,10 @@ function sortMapValues(map: LaneTaxonomyMap): LaneTaxonomyMap {
 }
 
 /**
- * Validate lane definitions from config against valid inference hierarchy parents.
+ * Detect parent drift between workspace lane definitions and inference taxonomy.
  *
- * Checks that each lane's parent (the part before ": ") exists as a top-level
- * key in the lane inference hierarchy.
+ * Workspace definitions are the source of truth. Inference taxonomy drift is
+ * reported as warnings only and does not populate invalidLanes.
  *
  * @param configLanes - Lane definitions from workspace.yaml software_delivery
  * @param inferenceParents - Valid parent names from .lumenflow.lane-inference.yaml
@@ -98,7 +99,7 @@ export function validateLaneConfigAgainstInference(
   const warnings: string[] = [];
   const invalidLanes: string[] = [];
 
-  if (configLanes.length === 0) {
+  if (configLanes.length === 0 || inferenceParents.length === 0) {
     return { warnings, invalidLanes };
   }
 
@@ -108,21 +109,16 @@ export function validateLaneConfigAgainstInference(
     const parent = extractParentName(lane.name);
 
     if (parent === null) {
-      // Lane name doesn't use "Parent: Sublane" format
-      warnings.push(
-        `Lane "${lane.name}" does not use the required "Parent: Sublane" format. ` +
-          `Valid parent names: ${inferenceParents.join(', ')}`,
-      );
-      invalidLanes.push(lane.name);
+      // Parent-only lanes are allowed and validated from workspace.yaml elsewhere.
       continue;
     }
 
     if (!validParentSet.has(parent)) {
       warnings.push(
-        `Lane "${lane.name}" uses invalid parent "${parent}". ` +
-          `Valid parent names in lane-inference hierarchy: ${inferenceParents.join(', ')}`,
+        `Lane "${lane.name}" uses parent "${parent}" which is missing from ${CONFIG_FILES.LANE_INFERENCE}. ` +
+          `workspace.yaml is authoritative for lane validation. ` +
+          `Regenerate inference taxonomy with: pnpm lane:suggest --output ${CONFIG_FILES.LANE_INFERENCE}`,
       );
-      invalidLanes.push(lane.name);
     }
   }
 
@@ -296,7 +292,7 @@ export function validateLanesForProject(targetDir: string): LaneValidationResult
   const configLanes = extractConfigLanes(configPath);
   const inferenceParents = extractInferenceParents(inferencePath);
 
-  // If either file is missing or empty, skip validation
+  // Without config lanes or inference parents there is no drift check to run.
   if (configLanes.length === 0 || inferenceParents.length === 0) {
     return { warnings: [], invalidLanes: [] };
   }

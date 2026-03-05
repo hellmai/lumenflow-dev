@@ -889,12 +889,11 @@ No completed items
 });
 
 /**
- * WU-1308: Tests for lane-inference file missing error message
+ * WU-2326: workspace.yaml is authoritative for lane validation.
  *
- * When a sub-lane is used but .lumenflow.lane-inference.yaml is missing,
- * the error should explicitly name the missing file and suggest how to fix.
+ * Sub-lane validation must not depend on .lumenflow.lane-inference.yaml.
  */
-describe('lane-checker missing lane-inference file error (WU-1308)', () => {
+describe('lane-checker workspace-authoritative lane validation (WU-2326)', () => {
   let testBaseDir: string;
   let configFilePath: string;
 
@@ -954,51 +953,49 @@ describe('lane-checker missing lane-inference file error (WU-1308)', () => {
       return import(LANE_CHECKER_MODULE);
     }
 
-    it('should throw error that mentions the missing file name', async () => {
+    it('should accept workspace-defined sub-lanes without inference taxonomy', async () => {
+      const { validateLaneFormat } = await importMockedLaneChecker();
+
+      const result = validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+      expect(result.valid).toBe(true);
+      expect(result.parent).toBe(TEST_LANE_FRAMEWORK);
+    });
+
+    it('should list workspace-defined sub-lanes when sub-lane is unknown', async () => {
       const { validateLaneFormat } = await importMockedLaneChecker();
 
       try {
-        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        validateLaneFormat('Framework: Data', configFilePath);
         expect.fail(EXPECTED_THROW_MESSAGE);
       } catch (error) {
-        // Error should mention the lane-inference file name
-        expect((error as Error).message).toContain(CONFIG_FILES.LANE_INFERENCE);
+        expect((error as Error).message).toContain(
+          `Valid sub-lanes in ${WORKSPACE_CONFIG_FILE_NAME} (${SOFTWARE_DELIVERY_KEY}.lanes.definitions)`,
+        );
+        expect((error as Error).message).toContain('Core');
+        expect((error as Error).message).toContain('CLI');
       }
     });
 
-    it('should throw error that includes lane:suggest command', async () => {
+    it('should keep parent-only strict behavior when sub-lanes are configured', async () => {
       const { validateLaneFormat } = await importMockedLaneChecker();
 
       try {
-        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        validateLaneFormat(TEST_LANE_FRAMEWORK, configFilePath);
         expect.fail(EXPECTED_THROW_MESSAGE);
       } catch (error) {
-        // Error should include actionable fix command
-        expect((error as Error).message).toContain('lane:suggest');
+        expect((error as Error).message).toContain('Parent-only lane');
+        expect((error as Error).message).toContain(TEST_LANE_FRAMEWORK);
       }
     });
 
-    it('should throw error that explains the file is for lane taxonomy', async () => {
+    it('should use INVALID_LANE error code for unknown sub-lanes', async () => {
       const { validateLaneFormat } = await importMockedLaneChecker();
 
       try {
-        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        validateLaneFormat('Framework: Data', configFilePath);
         expect.fail(EXPECTED_THROW_MESSAGE);
       } catch (error) {
-        // Error should explain the purpose of the file
-        expect((error as Error).message.toLowerCase()).toContain('taxonomy');
-      }
-    });
-
-    it('should use FILE_NOT_FOUND error code', async () => {
-      const { validateLaneFormat } = await importMockedLaneChecker();
-
-      try {
-        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
-        expect.fail(EXPECTED_THROW_MESSAGE);
-      } catch (error) {
-        // Error should have the correct error code
-        expect((error as { code?: string }).code).toBe('FILE_NOT_FOUND');
+        expect((error as { code?: string }).code).toBe('INVALID_LANE');
       }
     });
   });

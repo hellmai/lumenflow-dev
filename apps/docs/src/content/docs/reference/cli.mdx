@@ -98,6 +98,10 @@ Suggest lane for code paths
 pnpm lane:suggest
 ```
 
+`lane:suggest` produces `.lumenflow.lane-inference.yaml` as derived metadata for lane
+suggestion/classification. Lane validation and claim-time checks use `workspace.yaml`
+(`software_delivery.lanes.definitions`) as the source of truth.
+
 ### lane:validate
 
 Validate lane artifacts before lock

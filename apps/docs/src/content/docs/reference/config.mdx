@@ -9,6 +9,14 @@ description: LumenFlow configuration file reference
 
 LumenFlow is configured via `workspace.yaml` in your project root (`software_delivery` block).
 
+`workspace.yaml` (`software_delivery.lanes.definitions`) is authoritative for lane validation.
+`.lumenflow.lane-inference.yaml` is derived lane taxonomy metadata used by suggestion/classification
+commands and can be regenerated with:
+
+```bash
+pnpm lane:suggest --output .lumenflow.lane-inference.yaml
+```
+
 ## Minimal Config
 
 ```yaml

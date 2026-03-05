@@ -61,11 +61,12 @@ function loadConfig(configPath: string | null = null): LaneInferenceConfig {
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
       `Lane inference config not found: ${resolvedConfigPath}\n\n` +
-        `This file defines the lane taxonomy for sub-lane validation.\n\n` +
+        `This file provides derived lane taxonomy for lane suggestion/classification.\n\n` +
         `To fix this:\n` +
         `  1. Generate a lane taxonomy from your codebase:\n` +
         `     pnpm lane:suggest --output ${CONFIG_FILES.LANE_INFERENCE}\n\n` +
-        `  2. Or copy from an example project and customize.\n\n` +
+        `  2. Or copy from an example project and customize.\n` +
+        `     workspace.yaml remains the source of truth for lane validation.\n\n` +
         `See: LUMENFLOW.md "Setup Notes" section for details.`,
       { path: resolvedConfigPath },
     );
