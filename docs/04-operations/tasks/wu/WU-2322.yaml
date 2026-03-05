@@ -2,7 +2,7 @@ id: WU-2322
 title: Clean up orphaned docs directories and add redirects
 lane: 'Content: Site Comms'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-05
 code_paths: []
@@ -46,3 +46,6 @@ session_id: e31f88c5-6bd4-4a45-8b72-d269ade05f1c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-05T10:27:14.086Z
+locked: true
+completed_at: 2026-03-05T10:32:01.787Z
+completed: 2026-03-05

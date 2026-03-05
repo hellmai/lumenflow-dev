@@ -2820,3 +2820,4 @@
 {"type":"checkpoint","wuId":"WU-2319","timestamp":"2026-03-05T10:30:22.283Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2319.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2316","timestamp":"2026-03-05T10:30:41.951Z","lane":"Framework: Metrics","title":"Control-plane cost telemetry contract and local summary"}
 {"type":"claim","wuId":"WU-2317","timestamp":"2026-03-05T10:31:41.278Z","lane":"Operations: Runtime","title":"Heartbeat contract extensions for scheduling and liveness"}
+{"type":"complete","wuId":"WU-2322","timestamp":"2026-03-05T10:32:06.450Z"}

@@ -4,7 +4,6 @@ _Last updated: 2026-03-05_
 
 ## In Progress
 
-- [WU-2322 — Clean up orphaned docs directories and add redirects](wu/WU-2322.yaml)
 - [WU-2316 — Control-plane cost telemetry contract and local summary](wu/WU-2316.yaml)
 - [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml)
 
@@ -1241,3 +1240,4 @@ _Last updated: 2026-03-05_
 - [WU-2320 — Import INIT-49 plan file into repo plans directory](wu/WU-2320.yaml) — 2026-03-05
 - [WU-2321 — Improve consumer docs: learning path, gap fills, cross-linking](wu/WU-2321.yaml) — 2026-03-05
 - [WU-2323 — Add --from flag to plan:create for importing external plan files](wu/WU-2323.yaml) — 2026-03-05
+- [WU-2322 — Clean up orphaned docs directories and add redirects](wu/WU-2322.yaml) — 2026-03-05
