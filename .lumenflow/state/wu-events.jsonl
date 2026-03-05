@@ -2840,3 +2840,4 @@
 {"type":"complete","wuId":"WU-2318","timestamp":"2026-03-05T11:14:16.871Z"}
 {"type":"checkpoint","wuId":"WU-2319","timestamp":"2026-03-05T11:26:38.259Z","note":"[wu:done] force ownership override claimed_session=387ddb32-5de1-47d4-82d4-5dcd79d983b3 active_session=none","progress":"wu:done ownership override","nextSteps":"orphan recovery: completing claimed WU from local coding session"}
 {"type":"complete","wuId":"WU-2319","timestamp":"2026-03-05T11:26:44.016Z"}
+{"type":"claim","wuId":"WU-2325","timestamp":"2026-03-05T17:27:52.985Z","lane":"Framework: CLI Enforcement","title":"Detect lane drift between workspace lanes and inference taxonomy"}

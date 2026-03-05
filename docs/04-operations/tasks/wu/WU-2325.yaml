@@ -2,7 +2,7 @@ id: WU-2325
 title: Detect lane drift between workspace lanes and inference taxonomy
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-05
 code_paths:
@@ -18,7 +18,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run pnpm lane:health in a fixture where workspace lanes and inference taxonomy drift; verify lane lifecycle commands fail with sync guidance and suggested remediation command.
+    - Run pnpm lane:health in a fixture where workspace lanes and inference taxonomy drift; verify
+      lane lifecycle commands fail with sync guidance and suggested remediation command.
   unit:
     - packages/@lumenflow/cli/src/__tests__/lane-create.test.ts
     - packages/@lumenflow/cli/src/__tests__/lane-edit.test.ts
@@ -41,9 +42,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Teams update software_delivery.lanes.definitions in workspace.yaml but lane validators still read stale .lumenflow.lane-inference.yaml entries. Problem: agents cannot claim/use new sub-lanes and see outdated "Valid sub-lanes" guidance. Solution: add deterministic drift detection and a single remediation path so lane:create/lane:edit/lane:validate/lane:lock fail fast with actionable sync instructions.'
+description: 'Context: Teams update software_delivery.lanes.definitions in workspace.yaml but lane
+  validators still read stale .lumenflow.lane-inference.yaml entries. Problem: agents cannot
+  claim/use new sub-lanes and see outdated "Valid sub-lanes" guidance. Solution: add deterministic
+  drift detection and a single remediation path so lane:create/lane:edit/lane:validate/lane:lock
+  fail fast with actionable sync instructions.'
 acceptance:
-  - lane lifecycle commands fail with a clear error when workspace lane definitions and .lumenflow.lane-inference.yaml sub-lanes are out of sync
-  - error output includes copy-paste remediation commands and identifies missing/extra sub-lanes by parent
+  - lane lifecycle commands fail with a clear error when workspace lane definitions and
+    .lumenflow.lane-inference.yaml sub-lanes are out of sync
+  - error output includes copy-paste remediation commands and identifies missing/extra sub-lanes by
+    parent
   - automated tests cover drift detection for create/edit/validate/lock flows and pass
-  - operator-facing docs for lane commands are updated to reflect actual flags and drift remediation flow
+  - operator-facing docs for lane commands are updated to reflect actual flags and drift remediation
+    flow
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-enforcement-wu-2325
+claimed_at: 2026-03-05T17:27:52.959Z
+baseline_main_sha: d814618cc545af28a1fcfaee5f718de246e01964
+session_id: f4bd37bf-63a0-496f-81f4-e787825a979b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T17:27:52.966Z

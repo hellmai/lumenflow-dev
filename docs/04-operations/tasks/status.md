@@ -4,7 +4,7 @@ _Last updated: 2026-03-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2325 — Detect lane drift between workspace lanes and inference taxonomy](wu/WU-2325.yaml)
 
 ## Completed
 
