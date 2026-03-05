@@ -2804,3 +2804,4 @@
 {"type":"claim","wuId":"WU-2320","timestamp":"2026-03-05T10:10:14.799Z","lane":"Operations: Runtime","title":"Import INIT-49 plan file into repo plans directory"}
 {"type":"complete","wuId":"WU-2320","timestamp":"2026-03-05T10:14:09.526Z"}
 {"type":"claim","wuId":"WU-2321","timestamp":"2026-03-05T10:15:38.611Z","lane":"Content: Site Comms","title":"Improve consumer docs: learning path, gap fills, cross-linking"}
+{"type":"claim","wuId":"WU-2323","timestamp":"2026-03-05T10:20:25.035Z","lane":"Framework: CLI WU Commands","title":"Add --from flag to plan:create for importing external plan files"}

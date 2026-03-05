@@ -2,7 +2,7 @@ id: WU-2323
 title: Add --from flag to plan:create for importing external plan files
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-05
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/plan-create.test.ts
 tests:
   manual:
-    - Run pnpm plan:create --id INIT-TEST --title Test --from /tmp/test-plan.md and verify file content is copied
+    - Run pnpm plan:create --id INIT-TEST --title Test --from /tmp/test-plan.md and verify file
+      content is copied
   unit:
     - packages/@lumenflow/cli/src/__tests__/plan-create.test.ts
   e2e: []
@@ -30,9 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: plan:create only generates blank templates. Add a --from <path> option that reads content from an external file (e.g. ~/.claude/plans/my-plan.md) and writes it into the repo plans directory instead of the blank template. This enables importing Claude-generated plans or any external plan file into the repo in one step.
+description: plan:create only generates blank templates. Add a --from <path> option that reads
+  content from an external file (e.g. ~/.claude/plans/my-plan.md) and writes it into the repo plans
+  directory instead of the blank template. This enables importing Claude-generated plans or any
+  external plan file into the repo in one step.
 acceptance:
-  - plan:create --id INIT-XX --title T --from /path/to/external.md copies external file content into repo plansDir
+  - plan:create --id INIT-XX --title T --from /path/to/external.md copies external file content into
+    repo plansDir
   - plan:create without --from still generates blank template (backward compatible)
   - --from validates source file exists and is .md
   - 'Unit tests cover --from path: content copy, missing file error, non-.md rejection'
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2323
+claimed_at: 2026-03-05T10:20:25.005Z
+baseline_main_sha: a6c4d3bcd1441a8c92e9ae2546db15e1e8c40a8a
+session_id: 346cda58-690e-4b52-a8c9-16992d8b1a75
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T10:20:25.012Z

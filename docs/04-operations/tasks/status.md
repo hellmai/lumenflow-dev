@@ -5,6 +5,7 @@ _Last updated: 2026-03-05_
 ## In Progress
 
 - [WU-2321 — Improve consumer docs: learning path, gap fills, cross-linking](wu/WU-2321.yaml)
+- [WU-2323 — Add --from flag to plan:create for importing external plan files](wu/WU-2323.yaml)
 
 ## Completed
 
