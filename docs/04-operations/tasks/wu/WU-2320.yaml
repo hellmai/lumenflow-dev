@@ -8,7 +8,6 @@ created: 2026-03-05
 code_paths:
   - docs/04-operations/plans/rustling-jingling-summit.md
   - docs/04-operations/tasks/initiatives/INIT-49.yaml
-  - docs/04-operations/plans/INIT-49-control-plane-interface-upgrad.md
 tests:
   manual:
     - Run pnpm initiative:status --id INIT-49 and verify related_plan resolves to
