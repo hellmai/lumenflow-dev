@@ -2,7 +2,7 @@ id: WU-2319
 title: Approval contract adapters and CLI wrappers
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-05
 code_paths:
@@ -63,3 +63,11 @@ acceptance:
   - Documentation is updated for approval CLI/API usage and command reference entries.
   - Documentation changes are made in source docs files (apps/docs/src/content/docs/** and
     docs/04-operations/**), not generated output artifacts.
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2319
+claimed_at: 2026-03-05T10:37:42.036Z
+baseline_main_sha: 9d43a64c01aaf1cdb76f15a81fe71785ad08fc8d
+session_id: 387ddb32-5de1-47d4-82d4-5dcd79d983b3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T10:37:42.042Z
