@@ -23,6 +23,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-2316.done
 dependencies: []
+initiative: INIT-49
+phase: 1
 spec_refs:
   - lumenflow://plans/control-plane-interface-roadmap.md
 risks: []
@@ -56,4 +58,3 @@ acceptance:
   - All changes are backward compatible with existing telemetry consumers.
   - Documentation is updated for cost telemetry and cost:summary in reference docs and command
     quick-ref.
-initiative: INIT-49
