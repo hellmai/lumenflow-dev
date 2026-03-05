@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml) — Framework: Core Lifecycle
 - [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml) — Operations: Runtime
 - [WU-2316 — Control-plane cost telemetry contract and local summary](wu/WU-2316.yaml) — Framework: Metrics
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
