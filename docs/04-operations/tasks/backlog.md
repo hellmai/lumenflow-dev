@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2326 — Make workspace.yaml authoritative for lane existence and sub-lane validation](wu/WU-2326.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1272,6 +1272,7 @@ sections:
 - [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml)
 - [WU-2319 — Approval contract adapters and CLI wrappers](wu/WU-2319.yaml)
 - [WU-2325 — Detect lane drift between workspace lanes and inference taxonomy](wu/WU-2325.yaml)
+- [WU-2326 — Make workspace.yaml authoritative for lane existence and sub-lane validation](wu/WU-2326.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

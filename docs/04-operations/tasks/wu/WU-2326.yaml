@@ -2,7 +2,7 @@ id: WU-2326
 title: Make workspace.yaml authoritative for lane existence and sub-lane validation
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-05
 code_paths:
@@ -64,3 +64,6 @@ acceptance:
   - automated tests cover workspace-authoritative validation paths and stale-taxonomy regressions
   - internal onboarding docs and Starlight reference docs explain source-of-truth rules and
     regeneration workflow
+locked: true
+completed_at: 2026-03-05T17:53:01.573Z
+completed: 2026-03-05
