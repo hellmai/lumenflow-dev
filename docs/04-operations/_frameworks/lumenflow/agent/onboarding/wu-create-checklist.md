@@ -19,17 +19,17 @@ The lane should match the real implementation scope, not just the first file you
 
 ## Step 2: Gather the Required Fields
 
-| Field | Required For | Example |
-| ----- | ------------ | ------- |
-| `--lane` | All WUs | `"Framework: CLI"` |
-| `--title` | All WUs | `"Eliminate onboarding docs drift"` |
-| `--description` | All WUs | `"Context: ... Problem: ... Solution: ..."` |
-| `--acceptance` | All WUs | `--acceptance "Docs and templates stay aligned"` |
-| `--exposure` | All WUs | `documentation` |
-| `--code-paths` | Non-documentation WUs | `"packages/@lumenflow/cli/src/init.ts"` |
-| `--test-paths-manual` | Non-documentation WUs | `"Run focused init/docs-sync tests"` |
-| `--test-paths-unit` | Code WUs | `"packages/@lumenflow/cli/src/__tests__/init.test.ts"` |
-| `--spec-refs` | Feature WUs | `"lumenflow://plans/WU-XXXX-plan.md"` |
+| Field                 | Required For          | Example                                                |
+| --------------------- | --------------------- | ------------------------------------------------------ |
+| `--lane`              | All WUs               | `"Framework: CLI"`                                     |
+| `--title`             | All WUs               | `"Eliminate onboarding docs drift"`                    |
+| `--description`       | All WUs               | `"Context: ... Problem: ... Solution: ..."`            |
+| `--acceptance`        | All WUs               | `--acceptance "Docs and templates stay aligned"`       |
+| `--exposure`          | All WUs               | `documentation`                                        |
+| `--code-paths`        | Non-documentation WUs | `"packages/@lumenflow/cli/src/init.ts"`                |
+| `--test-paths-manual` | Non-documentation WUs | `"Run focused init/docs-sync tests"`                   |
+| `--test-paths-unit`   | Code WUs              | `"packages/@lumenflow/cli/src/__tests__/init.test.ts"` |
+| `--spec-refs`         | Feature WUs           | `"lumenflow://plans/WU-XXXX-plan.md"`                  |
 
 `--id` is optional. If omitted, `wu:create` allocates the next WU ID automatically.
 

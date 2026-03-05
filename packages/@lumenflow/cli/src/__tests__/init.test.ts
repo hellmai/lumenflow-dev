@@ -436,43 +436,43 @@ describe('lumenflow init', () => {
       });
     });
 
-  describe('starting-prompt.md scaffolding', () => {
-    it('should scaffold starting-prompt.md in onboarding docs with --full', async () => {
-      const options: ScaffoldOptions = {
-        force: false,
-        full: true,
-        docsStructure: 'arc42', // WU-1309: Explicitly request arc42 for legacy test
-      };
+    describe('starting-prompt.md scaffolding', () => {
+      it('should scaffold starting-prompt.md in onboarding docs with --full', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+          docsStructure: 'arc42', // WU-1309: Explicitly request arc42 for legacy test
+        };
 
-      await scaffoldProject(tempDir, options);
+        await scaffoldProject(tempDir, options);
 
-      const onboardingDir = path.join(tempDir, ONBOARDING_DOCS_PATH);
-      const startingPromptPath = path.join(onboardingDir, 'starting-prompt.md');
-      expect(fs.existsSync(startingPromptPath)).toBe(true);
+        const onboardingDir = path.join(tempDir, ONBOARDING_DOCS_PATH);
+        const startingPromptPath = path.join(onboardingDir, 'starting-prompt.md');
+        expect(fs.existsSync(startingPromptPath)).toBe(true);
 
-      const content = fs.readFileSync(startingPromptPath, 'utf-8');
-      expect(content).toContain(LUMENFLOW_MD);
-      expect(content).toContain('constraints');
+        const content = fs.readFileSync(startingPromptPath, 'utf-8');
+        expect(content).toContain(LUMENFLOW_MD);
+        expect(content).toContain('constraints');
+      });
     });
-  });
 
-  describe('LUMENFLOW.md scaffolding', () => {
-    it('should scaffold LUMENFLOW.md with wu:prep then wu:done guidance', async () => {
-      const options: ScaffoldOptions = {
-        force: false,
-        full: true,
-        docsStructure: 'arc42',
-      };
+    describe('LUMENFLOW.md scaffolding', () => {
+      it('should scaffold LUMENFLOW.md with wu:prep then wu:done guidance', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+          docsStructure: 'arc42',
+        };
 
-      await scaffoldProject(tempDir, options);
+        await scaffoldProject(tempDir, options);
 
-      const content = fs.readFileSync(path.join(tempDir, LUMENFLOW_MD), 'utf-8');
-      expect(content).toContain('## Critical Rule: Use wu:prep Then wu:done');
-      expect(content).toContain('pnpm wu:prep --id WU-XXXX');
-      expect(content).not.toContain('## Critical Rule: ALWAYS Run wu:done');
-      expect(content).not.toContain('ALWAYS Run wu:done');
+        const content = fs.readFileSync(path.join(tempDir, LUMENFLOW_MD), 'utf-8');
+        expect(content).toContain('## Critical Rule: Use wu:prep Then wu:done');
+        expect(content).toContain('pnpm wu:prep --id WU-XXXX');
+        expect(content).not.toContain('## Critical Rule: ALWAYS Run wu:done');
+        expect(content).not.toContain('ALWAYS Run wu:done');
+      });
     });
-  });
 
     describe('template path portability', () => {
       it('should not have absolute paths in generated templates', async () => {

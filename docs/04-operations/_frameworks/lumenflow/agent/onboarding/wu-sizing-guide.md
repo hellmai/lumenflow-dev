@@ -8,12 +8,12 @@ Use this summary when deciding whether a WU still fits in a single agent session
 
 ## Baseline Heuristics
 
-| Complexity | Files | Tool Calls | Suggested Strategy |
-| ---------- | ----- | ---------- | ------------------ |
-| Simple | <20 | <50 | Single session |
-| Medium | 20-50 | 50-100 | Checkpoint and resume |
-| Complex | 50+ | 100+ | Decompose or orchestrate |
-| Oversized | 100+ | 200+ | Split before implementation |
+| Complexity | Files | Tool Calls | Suggested Strategy          |
+| ---------- | ----- | ---------- | --------------------------- |
+| Simple     | <20   | <50        | Single session              |
+| Medium     | 20-50 | 50-100     | Checkpoint and resume       |
+| Complex    | 50+   | 100+       | Decompose or orchestrate    |
+| Oversized  | 100+  | 200+       | Split before implementation |
 
 These are guardrails, not a license to keep pushing once context is clearly degrading.
 

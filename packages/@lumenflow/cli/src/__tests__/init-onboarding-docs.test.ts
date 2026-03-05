@@ -76,10 +76,7 @@ describe('onboarding docs scaffold', () => {
     it('should teach two-step completion in the local quick start', async () => {
       await scaffoldProject(tempDir, getArc42Options());
 
-      const content = fs.readFileSync(
-        path.join(getOnboardingDir(), STARTING_PROMPT_FILE),
-        'utf-8',
-      );
+      const content = fs.readFileSync(path.join(getOnboardingDir(), STARTING_PROMPT_FILE), 'utf-8');
       const localQuickStart = getSection(
         content,
         '## Quick Start -- Local',
@@ -98,13 +95,12 @@ describe('onboarding docs scaffold', () => {
     it('should describe cloud mode as explicit-only', async () => {
       await scaffoldProject(tempDir, getArc42Options());
 
-      const content = fs.readFileSync(
-        path.join(getOnboardingDir(), STARTING_PROMPT_FILE),
-        'utf-8',
-      );
+      const content = fs.readFileSync(path.join(getOnboardingDir(), STARTING_PROMPT_FILE), 'utf-8');
 
       expect(content).toContain('Activation is explicit-only');
-      expect(content).toContain('Runtime identity env vars such as `CLAUDECODE`, `CODEX`, or `CI` do not activate cloud mode.');
+      expect(content).toContain(
+        'Runtime identity env vars such as `CLAUDECODE`, `CODEX`, or `CI` do not activate cloud mode.',
+      );
       expect(content).not.toContain('Config-driven auto-detection when `cloud.auto_detect: true`');
     });
 

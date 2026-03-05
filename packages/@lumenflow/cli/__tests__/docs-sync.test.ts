@@ -28,7 +28,10 @@ function getQuickRefRelativePath(): string {
 }
 
 function getOnboardingRelativePath(fileName: string): string {
-  return path.join(getDefaultConfig().directories.onboardingDir, fileName).split(path.sep).join('/');
+  return path
+    .join(getDefaultConfig().directories.onboardingDir, fileName)
+    .split(path.sep)
+    .join('/');
 }
 
 describe('lumenflow docs:sync command (WU-1083)', () => {

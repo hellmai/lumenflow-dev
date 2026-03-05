@@ -51,13 +51,13 @@ Write({
 
 2. **Check file path format**:
 
-   | Pattern                             | Safe? | Example                          |
-   | ----------------------------------- | ----- | -------------------------------- |
-   | Starts with an absolute-root prefix | NO    | `<absolute-path>/.../file.ts`    |
-   | Contains full repo path             | NO    | `<repo-root>/apps/.../file.ts`   |
-   | Starts with package name            | YES   | `apps/web/src/...`               |
-   | Starts with `./` or `../`           | YES   | `./src/lib/...`                  |
-   | Just filename                       | YES   | `README.md`                      |
+   | Pattern                             | Safe? | Example                        |
+   | ----------------------------------- | ----- | ------------------------------ |
+   | Starts with an absolute-root prefix | NO    | `<absolute-path>/.../file.ts`  |
+   | Contains full repo path             | NO    | `<repo-root>/apps/.../file.ts` |
+   | Starts with package name            | YES   | `apps/web/src/...`             |
+   | Starts with `./` or `../`           | YES   | `./src/lib/...`                |
+   | Just filename                       | YES   | `README.md`                    |
 
 3. **Use relative paths for ALL file operations**
 
