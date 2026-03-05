@@ -45,7 +45,8 @@ export default defineConfig({
     '/guides/initiatives': '/packs/software-delivery/advanced/initiatives',
     '/guides/metrics': '/packs/software-delivery/advanced/metrics',
     '/guides/custom-skills': '/packs/software-delivery/advanced/custom-skills',
-    '/guides/customizing-spawn-prompts': '/packs/software-delivery/advanced/customizing-spawn-prompts',
+    '/guides/customizing-spawn-prompts':
+      '/packs/software-delivery/advanced/customizing-spawn-prompts',
     '/guides/troubleshooting': '/packs/software-delivery/setup/troubleshooting',
     '/guides/create-a-pack': '/packs/software-delivery/setup/create-a-pack',
     '/guides/existing-projects': '/packs/software-delivery/setup/existing-projects',
