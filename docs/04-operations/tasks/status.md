@@ -4,7 +4,6 @@ _Last updated: 2026-03-05_
 
 ## In Progress
 
-- [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml)
 - [WU-2319 — Approval contract adapters and CLI wrappers](wu/WU-2319.yaml)
 
 ## Completed
@@ -1244,3 +1243,4 @@ _Last updated: 2026-03-05_
 - [WU-2324 — Fix orphaned doc links and add --from flag to quick-ref](wu/WU-2324.yaml) — 2026-03-05
 - [WU-2316 — Control-plane cost telemetry contract and local summary](wu/WU-2316.yaml) — 2026-03-05
 - [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml) — 2026-03-05
+- [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml) — 2026-03-05

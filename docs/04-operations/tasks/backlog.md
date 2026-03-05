@@ -26,7 +26,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml) — Framework: Core Lifecycle
 - [WU-2319 — Approval contract adapters and CLI wrappers](wu/WU-2319.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
@@ -1270,6 +1269,7 @@ sections:
 - [WU-2324 — Fix orphaned doc links and add --from flag to quick-ref](wu/WU-2324.yaml)
 - [WU-2316 — Control-plane cost telemetry contract and local summary](wu/WU-2316.yaml)
 - [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml)
+- [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
