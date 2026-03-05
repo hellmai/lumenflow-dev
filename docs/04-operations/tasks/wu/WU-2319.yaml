@@ -26,6 +26,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-2319.done
 dependencies: []
+initiative: INIT-49
+phase: 2
 spec_refs:
   - lumenflow://plans/control-plane-interface-roadmap.md
 risks: []
@@ -59,4 +61,3 @@ acceptance:
     --help output.
   - Existing local WU escalation and wu:done approval-gate behavior remains unchanged.
   - Documentation is updated for approval CLI/API usage and command reference entries.
-initiative: INIT-49
