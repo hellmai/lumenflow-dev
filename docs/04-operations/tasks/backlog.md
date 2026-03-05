@@ -24,12 +24,13 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
 - [WU-2316 — Control-plane cost telemetry contract and local summary](wu/WU-2316.yaml) — Framework: Metrics
+- [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml) — Operations: Runtime
 - [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml) — Framework: Core Lifecycle
 - [WU-2319 — Approval contract adapters and CLI wrappers](wu/WU-2319.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml) — Operations: Runtime
+(No items currently in progress)
 
 ## ⛔ Blocked
 

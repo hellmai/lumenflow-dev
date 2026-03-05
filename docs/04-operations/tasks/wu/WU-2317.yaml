@@ -2,7 +2,7 @@ id: WU-2317
 title: Heartbeat contract extensions for scheduling and liveness
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: ready
 priority: P1
 created: 2026-03-05
 code_paths:
@@ -29,7 +29,9 @@ phase: 1
 spec_refs:
   - lumenflow://plans/control-plane-interface-roadmap.md
 risks: []
-notes: Implements WU-2 from Control Plane Interface Roadmap.
+notes: |-
+  Implements WU-2 from Control Plane Interface Roadmap.
+  Released (2026-03-05): Claim+brief completed; releasing to avoid overlap before next INIT-49 claim
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -63,7 +65,6 @@ acceptance:
   - Documentation is updated for heartbeat contract fields and behavior in API/reference docs.
   - Documentation changes are made in source docs files (apps/docs/src/content/docs/** and
     docs/04-operations/**), not generated output artifacts.
-claimed_mode: worktree
 worktree_path: worktrees/operations-runtime-wu-2317
 claimed_at: 2026-03-05T10:31:41.251Z
 baseline_main_sha: be4063cbf30101ec1f3f24e926d0ca104903dbbe

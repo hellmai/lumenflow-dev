@@ -4,7 +4,7 @@ _Last updated: 2026-03-05_
 
 ## In Progress
 
-- [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml)
+(No items currently in progress)
 
 ## Completed
 
