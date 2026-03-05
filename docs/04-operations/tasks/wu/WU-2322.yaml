@@ -2,7 +2,7 @@ id: WU-2322
 title: Clean up orphaned docs directories and add redirects
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-05
 code_paths: []
@@ -29,10 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Delete 43 orphaned .mdx files in concepts/, guides/, language-guides/ that duplicate pack-scoped content. Relocate manual-quickstart.mdx to getting-started/. Add Astro redirects for old paths.
+description: Delete 43 orphaned .mdx files in concepts/, guides/, language-guides/ that duplicate
+  pack-scoped content. Relocate manual-quickstart.mdx to getting-started/. Add Astro redirects for
+  old paths.
 acceptance:
   - concepts/ directory deleted (13 files)
   - guides/ directory deleted except manual-quickstart relocated to getting-started/
   - language-guides/ directory deleted (8 files)
   - Astro redirects configured for old paths
   - No broken links in docs site
+claimed_mode: worktree
+worktree_path: worktrees/content-site-comms-wu-2322
+claimed_at: 2026-03-05T10:27:14.079Z
+baseline_main_sha: 139cd19b984204722750636ffce682084427b535
+session_id: e31f88c5-6bd4-4a45-8b72-d269ade05f1c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T10:27:14.086Z

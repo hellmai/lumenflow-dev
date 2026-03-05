@@ -2813,3 +2813,4 @@
 {"type":"checkpoint","wuId":"WU-2323","timestamp":"2026-03-05T10:24:06.301Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2323.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2323","timestamp":"2026-03-05T10:25:30.923Z","note":"[wu:done] force ownership override claimed_session=346cda58-690e-4b52-a8c9-16992d8b1a75 active_session=none","progress":"wu:done ownership override","nextSteps":"Same agent completing from main checkout after wu:prep passed in worktree"}
 {"type":"complete","wuId":"WU-2323","timestamp":"2026-03-05T10:25:36.607Z"}
+{"type":"claim","wuId":"WU-2322","timestamp":"2026-03-05T10:27:14.108Z","lane":"Content: Site Comms","title":"Clean up orphaned docs directories and add redirects"}

@@ -27,11 +27,10 @@ sections:
 - [WU-2317 — Heartbeat contract extensions for scheduling and liveness](wu/WU-2317.yaml) — Operations: Runtime
 - [WU-2318 — Standardize agent identity metadata in session contracts](wu/WU-2318.yaml) — Framework: Core Lifecycle
 - [WU-2319 — Approval contract adapters and CLI wrappers](wu/WU-2319.yaml) — Framework: CLI WU Commands
-- [WU-2322 — Clean up orphaned docs directories and add redirects](wu/WU-2322.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2322 — Clean up orphaned docs directories and add redirects](wu/WU-2322.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 

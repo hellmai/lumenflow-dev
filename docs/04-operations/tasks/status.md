@@ -4,7 +4,7 @@ _Last updated: 2026-03-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2322 — Clean up orphaned docs directories and add redirects](wu/WU-2322.yaml)
 
 ## Completed
 
