@@ -2823,3 +2823,4 @@
 {"type":"complete","wuId":"WU-2322","timestamp":"2026-03-05T10:32:06.450Z"}
 {"type":"release","wuId":"WU-2316","timestamp":"2026-03-05T10:32:35.765Z","reason":"Claim+brief completed; releasing to avoid overlap before next INIT-49 claim"}
 {"type":"release","wuId":"WU-2317","timestamp":"2026-03-05T10:32:46.359Z","reason":"Claim+brief completed; releasing to avoid overlap before next INIT-49 claim"}
+{"type":"claim","wuId":"WU-2324","timestamp":"2026-03-05T10:34:20.917Z","lane":"Content: Site Comms","title":"Fix orphaned doc links and add --from flag to quick-ref"}

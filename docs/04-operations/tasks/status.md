@@ -4,7 +4,7 @@ _Last updated: 2026-03-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2324 — Fix orphaned doc links and add --from flag to quick-ref](wu/WU-2324.yaml)
 
 ## Completed
 
