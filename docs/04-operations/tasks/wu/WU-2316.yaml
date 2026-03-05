@@ -58,3 +58,5 @@ acceptance:
   - All changes are backward compatible with existing telemetry consumers.
   - Documentation is updated for cost telemetry and cost:summary in reference docs and command
     quick-ref.
+  - Documentation changes are made in source docs files (apps/docs/src/content/docs/** and
+    docs/04-operations/**), not generated output artifacts.
