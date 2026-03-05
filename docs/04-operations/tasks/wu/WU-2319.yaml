@@ -61,3 +61,5 @@ acceptance:
     --help output.
   - Existing local WU escalation and wu:done approval-gate behavior remains unchanged.
   - Documentation is updated for approval CLI/API usage and command reference entries.
+  - Documentation changes are made in source docs files (apps/docs/src/content/docs/** and
+    docs/04-operations/**), not generated output artifacts.
