@@ -8,7 +8,7 @@ import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 The **Software Delivery Pack** is the default domain pack shipped with LumenFlow. It provides everything you need for structured software delivery — from work unit lifecycle to quality gates to agent coordination.
 
 <Aside type="note" title="Pack architecture">
-  LumenFlow's [kernel](/concepts/kernel) is domain-agnostic — it provides scope enforcement, policy
+  LumenFlow's [kernel](/kernel/runtime) is domain-agnostic — it provides scope enforcement, policy
   evaluation, and evidence recording. Packs add domain-specific tools and policies. The Software
   Delivery Pack is the first production pack. Additional domains should ship as fully implemented
   packs using the same manifest contract.
@@ -19,19 +19,19 @@ The **Software Delivery Pack** is the default domain pack shipped with LumenFlow
 <CardGrid>
   <Card title="Work Units" icon="document">
     Atomic units of work with YAML specs, worktree isolation, and lifecycle tracking. [Learn more
-    →](/concepts/work-units)
+    →](/packs/software-delivery/concepts/work-units)
   </Card>
   <Card title="Lanes" icon="bars">
     Scoped work streams with WIP limits, lock policies, and path-based access control. [Learn more
-    →](/concepts/lanes)
+    →](/packs/software-delivery/concepts/lanes)
   </Card>
   <Card title="Gates" icon="approve-check">
     Config-driven quality checks (format, lint, typecheck, test) enforced as kernel policies. [Learn
-    more →](/concepts/gates)
+    more →](/packs/software-delivery/concepts/gates)
   </Card>
   <Card title="Memory Layer" icon="puzzle">
     Session tracking, checkpoints, coordination signals, and context recovery for agents. [Learn
-    more →](/concepts/memory)
+    more →](/packs/software-delivery/concepts/memory)
   </Card>
 </CardGrid>
 
@@ -77,7 +77,7 @@ The Software Delivery Pack ships with policies that the kernel evaluates automat
 - **Scope policies** — Lane-based path restrictions enforced on every tool call
 - **Constraint policies** — Non-negotiable rules like "no edits outside worktrees" and "no force-push"
 
-See the [Policy Engine](/concepts/policy-engine) for how these are evaluated.
+See the [Policy Engine](/kernel/policy-engine) for how these are evaluated.
 
 ## Why the Software Delivery Pack?
 
@@ -122,7 +122,7 @@ Kanban boards have "Done" columns. The Software Delivery Pack creates **immutabl
 
 ## Next Steps
 
-- **Concepts** — [Work Units](/concepts/work-units), [Lanes](/concepts/lanes), [Gates](/concepts/gates), [Memory](/concepts/memory)
-- **Workflows** — [A Day with LumenFlow](/guides/a-day-with-lumenflow), [Solo](/guides/solo-workflow), [Team](/guides/team-workflow)
-- **Advanced** — [Initiatives](/guides/initiatives), [Flow Metrics](/guides/metrics), [Custom Skills](/guides/custom-skills)
-- **Build your own** — [Create a Pack](/guides/create-a-pack)
+- **Concepts** — [Work Units](/packs/software-delivery/concepts/work-units), [Lanes](/packs/software-delivery/concepts/lanes), [Gates](/packs/software-delivery/concepts/gates), [Memory](/packs/software-delivery/concepts/memory)
+- **Workflows** — [A Day with LumenFlow](/packs/software-delivery/workflows/a-day-with-lumenflow), [Solo](/packs/software-delivery/workflows/solo-workflow), [Team](/packs/software-delivery/workflows/team-workflow)
+- **Advanced** — [Initiatives](/packs/software-delivery/advanced/initiatives), [Flow Metrics](/packs/software-delivery/advanced/metrics), [Custom Skills](/packs/software-delivery/advanced/custom-skills)
+- **Build your own** — [Create a Pack](/packs/software-delivery/setup/create-a-pack)

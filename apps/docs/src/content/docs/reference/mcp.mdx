@@ -1144,7 +1144,7 @@ interface ToolResult {
 
 ## Architecture
 
-The MCP server uses a **pack dispatch** architecture: tools are executed through the [kernel runtime](/concepts/kernel), not by shelling out to CLI commands.
+The MCP server uses a **pack dispatch** architecture: tools are executed through the [kernel runtime](/kernel/runtime), not by shelling out to CLI commands.
 
 ```
 AI Client (Claude, Cursor, etc.)
@@ -1170,7 +1170,7 @@ MCP Server (@lumenflow/mcp)
         └─ 8. Evidence recording (append-only JSONL)
 ```
 
-Every MCP tool call passes through the kernel's full execution pipeline, including [scope intersection](/concepts/scope-intersection), [policy evaluation](/concepts/policy-engine), and [evidence recording](/concepts/evidence). This means MCP tools receive the same security guarantees as direct kernel API calls.
+Every MCP tool call passes through the kernel's full execution pipeline, including [scope intersection](/kernel/scope-intersection), [policy evaluation](/kernel/policy-engine), and [evidence recording](/kernel/evidence-store). This means MCP tools receive the same security guarantees as direct kernel API calls.
 
 <Aside type="note" title="Fallback behavior">
   If the kernel runtime fails to initialize (e.g., missing `workspace.yaml`), the MCP server falls
@@ -1182,13 +1182,13 @@ Every MCP tool call passes through the kernel's full execution pipeline, includi
 
 1. **`runtimeFactory()`** — Creates a `KernelRuntime` instance for the workspace, loading the [workspace spec](/reference/workspace-spec) and resolving all pack pins
 2. **`executeViaPack()`** — Routes the MCP tool call to the kernel's `executeTool()` method with the appropriate execution context
-3. **Kernel pipeline** — The tool passes through scope, policy, validation, and dispatch stages (see [Kernel Runtime](/concepts/kernel) for details)
-4. **Evidence** — Success or denial is recorded in the [evidence store](/concepts/evidence) — the audit trail has no gaps
+3. **Kernel pipeline** — The tool passes through scope, policy, validation, and dispatch stages (see [Kernel Runtime](/kernel/runtime) for details)
+4. **Evidence** — Success or denial is recorded in the [evidence store](/kernel/evidence-store) — the audit trail has no gaps
 
 ## Next Steps
 
 - [CLI Commands](/reference/cli) — Full CLI command reference
 - [Workspace Spec](/reference/workspace-spec) — Kernel-level workspace.yaml reference
-- [Kernel Runtime](/concepts/kernel) — How tool calls are authorized and executed
-- [Packs](/concepts/packs) — Domain pack architecture (the Software Delivery Pack)
-- [Evidence Store](/concepts/evidence) — How tool call evidence is recorded
+- [Kernel Runtime](/kernel/runtime) — How tool calls are authorized and executed
+- [Packs](/kernel/packs) — Domain pack architecture (the Software Delivery Pack)
+- [Evidence Store](/kernel/evidence-store) — How tool call evidence is recorded

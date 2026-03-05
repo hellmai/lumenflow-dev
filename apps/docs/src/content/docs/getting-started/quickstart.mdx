@@ -6,11 +6,11 @@ description: Canonical setup guide for AI agents. Setup phase = LumenFlow only.
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
 <Aside type="note" title="Architecture context">
-  LumenFlow is a [runtime kernel](/concepts/kernel) with pluggable domain [packs](/concepts/packs).
-  The CLI commands you'll use below (like `wu:create` and `wu:claim`) are tools in the **Software
+  LumenFlow is a [runtime kernel](/kernel/runtime) with pluggable domain [packs](/kernel/packs). The
+  CLI commands you'll use below (like `wu:create` and `wu:claim`) are tools in the **Software
   Delivery Pack** — they route through the kernel's execution pipeline for [scope
-  enforcement](/concepts/scope-intersection), [policy evaluation](/concepts/policy-engine), and
-  [evidence recording](/concepts/evidence).
+  enforcement](/kernel/scope-intersection), [policy evaluation](/kernel/policy-engine), and
+  [evidence recording](/kernel/evidence-store).
 </Aside>
 
 ## Read this first: Your purpose
@@ -33,7 +33,8 @@ You are here to set up LumenFlow. That is your **only** job in the setup phase.
 </Aside>
 
 <Aside type="tip" title="Running setup yourself?">
-  Use the [Manual Quickstart (Humans)](/guides/manual-quickstart/) if you are not an AI agent.
+  Use the [Manual Quickstart (Humans)](/getting-started/manual-quickstart/) if you are not an AI
+  agent.
 </Aside>
 
 ## Setup Exit Criteria (Must be true)

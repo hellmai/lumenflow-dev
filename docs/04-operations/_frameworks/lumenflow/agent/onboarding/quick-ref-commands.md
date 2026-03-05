@@ -305,6 +305,7 @@ stub in `$LUMENFLOW_HOME/plans/` and automatically set the WU's `plan` field to 
 | Command                                                                  | Description                                                         |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
 | `pnpm plan:create --id INIT-XXX --title "..."`                           | Create a repo-native plan file in configured `directories.plansDir` |
+| `pnpm plan:create --id INIT-XXX --title "..." --from <path>`             | Import external plan file into repo plansDir                        |
 | `pnpm plan:edit --id INIT-XXX --section Goal --content "..."`            | Edit a section in a plan file                                       |
 | `pnpm plan:link --id INIT-XXX --plan lumenflow://plans/INIT-XXX-plan.md` | Link plan URI to initiative or WU                                   |
 | `pnpm plan:promote --id INIT-XXX`                                        | Promote plan status to approved                                     |
@@ -318,6 +319,9 @@ stub in `$LUMENFLOW_HOME/plans/` and automatically set the WU's `plan` field to 
 ```bash
 # Create a plan
 pnpm plan:create --id INIT-001 --title "Auth System Rollout"
+
+# Import an external plan into the repo
+pnpm plan:create --id INIT-001 --title "Auth System Rollout" --from ~/.claude/plans/my-plan.md
 
 # Link plan URI to initiative
 pnpm plan:link --id INIT-001 --plan lumenflow://plans/INIT-001-plan.md

@@ -5,7 +5,7 @@ description: Reference for the workspace.yaml kernel configuration file
 
 import { Aside } from '@astrojs/starlight/components';
 
-The workspace spec (`workspace.yaml`) is the kernel-level configuration file that defines the runtime environment for a LumenFlow workspace. It declares which [packs](/concepts/packs) are loaded, which [lanes](/concepts/lanes) exist, what security boundaries apply, and where events and memory are stored.
+The workspace spec (`workspace.yaml`) is the kernel-level configuration file that defines the runtime environment for a LumenFlow workspace. It declares which [packs](/kernel/packs) are loaded, which [lanes](/packs/software-delivery/concepts/lanes) exist, what security boundaries apply, and where events and memory are stored.
 
 <Aside type="note">
   `workspace.yaml` is the single source of truth. The kernel reads top-level workspace fields at
@@ -85,19 +85,20 @@ Root keys fall into three categories based on how they are modified:
 
 ### Pack config keys
 
-When a pack declares a `config_key` in its [manifest](/guides/create-a-pack#pack-configuration), that key becomes a valid root-level field in `workspace.yaml`. For example, the Software Delivery pack declares `config_key: software_delivery`, which makes the `software_delivery` root key available.
+When a pack declares a `config_key` in its [manifest](/packs/software-delivery/setup/create-a-pack#pack-configuration), that key becomes a valid root-level field in `workspace.yaml`. For example, the Software Delivery pack declares `config_key: software_delivery`, which makes the `software_delivery` root key available.
 
 The `software_delivery` field is **optional**. If the Software Delivery pack is not pinned in the `packs` array, the workspace boots without it. This allows workspaces that use other domain packs (or no packs at all) to operate with a minimal kernel-only configuration.
 
 <Aside type="tip">
   Any custom pack can declare its own `config_key`. For example, a `customer-support` pack could
   declare `config_key: customer_support`, making `customer_support.*` keys writable via
-  `config:set`. See the [Create a Pack](/guides/create-a-pack) guide for details.
+  `config:set`. See the [Create a Pack](/packs/software-delivery/setup/create-a-pack) guide for
+  details.
 </Aside>
 
 ## Pack Pins
 
-Each entry in the `packs` array is a **pack pin** — a versioned, integrity-checked reference to a domain pack that the [kernel](/concepts/kernel) loads at startup.
+Each entry in the `packs` array is a **pack pin** — a versioned, integrity-checked reference to a domain pack that the [kernel](/kernel/runtime) loads at startup.
 
 | Field          | Type   | Required | Description                                            |
 | -------------- | ------ | -------- | ------------------------------------------------------ |
@@ -147,7 +148,7 @@ Each entry in `lanes` defines a lane at the kernel level (separate from delivery
 | `wip_limit`        | integer     | No       | Maximum concurrent active tasks                      |
 | `policy_overrides` | object      | No       | Lane-level policy configuration                      |
 
-The lane's `allowed_scopes` are used as the second level of the [scope intersection](/concepts/scope-intersection) algorithm:
+The lane's `allowed_scopes` are used as the second level of the [scope intersection](/kernel/scope-intersection) algorithm:
 
 ```
 effective_scope = workspace ∩ lane ∩ task ∩ tool
@@ -259,7 +260,7 @@ The `software_delivery` root key is a **pack config block** owned by the Softwar
 
 ## Next Steps
 
-- [Kernel Runtime](/concepts/kernel) — How the workspace spec is loaded and used
-- [Packs](/concepts/packs) — Domain pack architecture and the Software Delivery Pack
-- [Scope Intersection](/concepts/scope-intersection) — How workspace security becomes effective permissions
+- [Kernel Runtime](/kernel/runtime) — How the workspace spec is loaded and used
+- [Packs](/kernel/packs) — Domain pack architecture and the Software Delivery Pack
+- [Scope Intersection](/kernel/scope-intersection) — How workspace security becomes effective permissions
 - [Configuration](/reference/config) — `software_delivery` configuration reference
