@@ -19,7 +19,7 @@ tests:
   unit:
     - packages/@lumenflow/control-plane-sdk/__tests__/http-sync-port.test.ts
     - packages/@lumenflow/control-plane-sdk/__tests__/sync-port.test.ts
-    - packages/@lumenflow/agent/src/__tests__/auto-session-integration.test.ts
+    - packages/@lumenflow/agent/__tests__/auto-session-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2317.done
