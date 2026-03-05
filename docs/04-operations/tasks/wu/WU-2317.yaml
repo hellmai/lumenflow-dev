@@ -1,0 +1,52 @@
+id: WU-2317
+title: Heartbeat contract extensions for scheduling and liveness
+lane: 'Operations: Runtime'
+type: feature
+status: ready
+priority: P1
+created: 2026-03-05
+code_paths:
+  - packages/@lumenflow/control-plane-sdk/src/sync-port.ts
+  - packages/@lumenflow/control-plane-sdk/src/http/http-control-plane-sync-port.ts
+  - packages/@lumenflow/control-plane-sdk/src/mock/mock-control-plane-sync-port.ts
+  - packages/@lumenflow/agent/src/agent-heartbeat.ts
+  - packages/@lumenflow/agent/src/auto-session-integration.ts
+  - apps/docs/src/content/docs/reference/api.mdx
+tests:
+  manual:
+    - Run heartbeat cycle against mock port and verify next_heartbeat_ms and assignment handling.
+    - Simulate heartbeat failure and verify backoff/coalescing behavior.
+  unit:
+    - packages/@lumenflow/control-plane-sdk/__tests__/http-sync-port.test.ts
+    - packages/@lumenflow/control-plane-sdk/__tests__/sync-port.test.ts
+    - packages/@lumenflow/agent/src/__tests__/auto-session-integration.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2317.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/control-plane-interface-roadmap.md
+risks: []
+notes: Implements WU-2 from Control Plane Interface Roadmap.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+sizing_estimate:
+  estimated_files: 14
+  estimated_tool_calls: 50
+  strategy: checkpoint-resume
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: Control-plane scheduling and liveness depend on richer heartbeat exchanges while keeping current clients operational.
+  Problem: Existing heartbeat payloads are too narrow for server-directed cadence, assignment, and liveness hints.
+  Solution: Add additive optional heartbeat fields across SDK, HTTP adapter, mocks, and agent heartbeat management with backoff/coalescing semantics.
+acceptance:
+  - HeartbeatInput and HeartbeatResult include additive optional fields for agent identity, health, scheduling cadence, assignment, and budget signal.
+  - HTTP sync-port adapter and mock control-plane implementations support new fields without breaking existing callers.
+  - Agent heartbeat manager enforces single-flight execution and coalescing behavior with retry/backoff.
+  - Compatibility tests confirm old heartbeat clients remain functional with unchanged required fields.
+  - Documentation is updated for heartbeat contract fields and behavior in API/reference docs.
