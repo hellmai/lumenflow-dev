@@ -376,10 +376,7 @@ describe('Auto-Session Integration', () => {
 
   describe('heartbeat manager coalescing and backoff (WU-2317)', () => {
     it('coalesces concurrent heartbeats into one follow-up call', async () => {
-      let resolveFirst: ((value: {
-        status: 'ok';
-        server_time: string;
-      }) => void) | null = null;
+      let resolveFirst: ((value: { status: 'ok'; server_time: string }) => void) | null = null;
 
       const heartbeat = vi
         .fn()
