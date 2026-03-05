@@ -2815,3 +2815,4 @@
 {"type":"complete","wuId":"WU-2323","timestamp":"2026-03-05T10:25:36.607Z"}
 {"type":"claim","wuId":"WU-2322","timestamp":"2026-03-05T10:27:14.108Z","lane":"Content: Site Comms","title":"Clean up orphaned docs directories and add redirects"}
 {"type":"checkpoint","wuId":"WU-2316","timestamp":"2026-03-05T10:30:00.152Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2316.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
+{"type":"checkpoint","wuId":"WU-2317","timestamp":"2026-03-05T10:30:07.292Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2317.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}

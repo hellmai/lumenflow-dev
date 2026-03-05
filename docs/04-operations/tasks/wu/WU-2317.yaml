@@ -61,3 +61,5 @@ acceptance:
   - Compatibility tests confirm old heartbeat clients remain functional with unchanged required
     fields.
   - Documentation is updated for heartbeat contract fields and behavior in API/reference docs.
+  - Documentation changes are made in source docs files (apps/docs/src/content/docs/** and
+    docs/04-operations/**), not generated output artifacts.
