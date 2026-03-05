@@ -194,7 +194,8 @@ export function getCommitMessage(id: string, title: string): string {
 const FROM_OPTION = {
   name: 'from',
   flags: '--from <path>',
-  description: 'Import content from an external markdown file instead of generating a blank template',
+  description:
+    'Import content from an external markdown file instead of generating a blank template',
 };
 
 export async function main(): Promise<void> {
