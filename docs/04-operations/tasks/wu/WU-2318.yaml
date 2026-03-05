@@ -21,6 +21,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-2318.done
 dependencies: []
+initiative: INIT-49
+phase: 2
 spec_refs:
   - lumenflow://plans/control-plane-interface-roadmap.md
 risks: []
@@ -56,4 +58,3 @@ acceptance:
   - Tests cover metadata serialization, registration, retrieval, and compatibility behavior.
   - Documentation is updated in integration/reference docs for session metadata semantics and
     examples.
-initiative: INIT-49
