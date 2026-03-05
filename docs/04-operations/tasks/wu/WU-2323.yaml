@@ -1,0 +1,38 @@
+id: WU-2323
+title: Add --from flag to plan:create for importing external plan files
+lane: 'Framework: CLI WU Commands'
+type: feature
+status: ready
+priority: P2
+created: 2026-03-05
+code_paths:
+  - packages/@lumenflow/cli/src/plan-create.ts
+  - packages/@lumenflow/cli/src/__tests__/plan-create.test.ts
+tests:
+  manual:
+    - Run pnpm plan:create --id INIT-TEST --title Test --from /tmp/test-plan.md and verify file content is copied
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/plan-create.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2323.done
+dependencies: []
+plan: lumenflow://plans/WU-2323-plan.md
+spec_refs:
+  - lumenflow://plans/WU-2323-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: plan:create only generates blank templates. Add a --from <path> option that reads content from an external file (e.g. ~/.claude/plans/my-plan.md) and writes it into the repo plans directory instead of the blank template. This enables importing Claude-generated plans or any external plan file into the repo in one step.
+acceptance:
+  - plan:create --id INIT-XX --title T --from /path/to/external.md copies external file content into repo plansDir
+  - plan:create without --from still generates blank template (backward compatible)
+  - --from validates source file exists and is .md
+  - 'Unit tests cover --from path: content copy, missing file error, non-.md rejection'
