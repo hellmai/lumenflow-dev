@@ -1,0 +1,18 @@
+id: INIT-49
+slug: control-plane-interface
+title: Control Plane Interface Upgrades
+description: 'Objective: deliver additive control-plane interface upgrades for cost telemetry,
+  heartbeat scheduling/liveness, agent identity metadata, and approval command adapters. This
+  initiative focuses on backward-compatible contracts, thin adapters, and documentation updates for
+  OSS consumers.'
+status: draft
+priority: P1
+owner: tom
+created: 2026-03-05
+phases: []
+success_metrics:
+  - Cost telemetry schema and costs NDJSON source are live and documented
+  - Heartbeat extensions are additive and verified with compatibility tests
+  - Session metadata keys are standardized and observable via session listings
+  - Approval CLI and adapter methods are available with docs and tests
+labels: []
