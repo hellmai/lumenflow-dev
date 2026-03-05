@@ -23,7 +23,7 @@
 
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
-import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
@@ -82,15 +82,37 @@ export function getPlanUri(id: string): string {
 }
 
 /**
+ * Validate that a --from source path is a readable .md file
+ *
+ * @param fromPath - Path to source file
+ * @throws Error if file doesn't exist or isn't .md
+ */
+export function validateFromPath(fromPath: string): void {
+  if (!fromPath.endsWith('.md')) {
+    die(`Invalid source file format: "${fromPath}"\n\nSource file must be markdown (.md)`);
+  }
+
+  if (!existsSync(fromPath)) {
+    die(`Source file not found: "${fromPath}"\n\nProvide a valid path to an existing .md file`);
+  }
+}
+
+/**
  * Create a plan file in the repo plansDir
  *
  * @param worktreePath - Path to repo root or worktree
  * @param id - WU or Initiative ID
  * @param title - Plan title
+ * @param fromPath - Optional path to external file whose content replaces the template
  * @returns Path to created file
  * @throws Error if file already exists
  */
-export function createPlan(worktreePath: string, id: string, title: string): string {
+export function createPlan(
+  worktreePath: string,
+  id: string,
+  title: string,
+  fromPath?: string,
+): string {
   const plansDir = join(worktreePath, WU_PATHS.PLANS_DIR());
   const planPath = join(plansDir, `${id}-plan.md`);
 
@@ -109,8 +131,13 @@ export function createPlan(worktreePath: string, id: string, title: string): str
     mkdirSync(plansDir, { recursive: true });
   }
 
-  const today = todayISO();
-  const template = `# ${id} Plan - ${title}
+  let content: string;
+  if (fromPath) {
+    content = readFileSync(fromPath, { encoding: 'utf-8' });
+    console.log(`${LOG_PREFIX} Imported content from: ${fromPath}`);
+  } else {
+    const today = todayISO();
+    content = `# ${id} Plan - ${title}
 
 Created: ${today}
 
@@ -143,8 +170,9 @@ Created: ${today}
 - ID: ${id}
 - Created: ${today}
 `;
+  }
 
-  writeFileSync(planPath, template, { encoding: 'utf-8' });
+  writeFileSync(planPath, content, { encoding: 'utf-8' });
   console.log(`${LOG_PREFIX} Created plan: ${planPath}`);
 
   return planPath;
@@ -162,20 +190,31 @@ export function getCommitMessage(id: string, title: string): string {
   return `docs: create plan for ${idLower} - ${title}`;
 }
 
+/** CLI option for importing content from an external file */
+const FROM_OPTION = {
+  name: 'from',
+  flags: '--from <path>',
+  description: 'Import content from an external markdown file instead of generating a blank template',
+};
+
 export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'plan-create',
     description: 'Create a new plan file in repo plansDir',
-    options: [WU_OPTIONS.id, WU_OPTIONS.title],
+    options: [WU_OPTIONS.id, WU_OPTIONS.title, FROM_OPTION],
     required: ['id', 'title'],
     allowPositionalId: true,
   });
 
   const id = args.id as string;
   const title = args.title as string;
+  const fromPath = args.from as string | undefined;
 
   // Validate inputs
   validatePlanId(id);
+  if (fromPath) {
+    validateFromPath(fromPath);
+  }
 
   console.log(`${LOG_PREFIX} Creating plan for ${id}...`);
 
@@ -191,8 +230,8 @@ export async function main(): Promise<void> {
       logPrefix: LOG_PREFIX,
       pushOnly: true,
       execute: async ({ worktreePath }) => {
-        // Create plan file
-        createdPlanPath = createPlan(worktreePath, id, title);
+        // Create plan file (with optional external content)
+        createdPlanPath = createPlan(worktreePath, id, title, fromPath);
 
         // Get relative path for commit
         const planRelPath = createdPlanPath.replace(worktreePath + '/', '');

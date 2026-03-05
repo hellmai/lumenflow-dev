@@ -146,6 +146,81 @@ describe('plan:create command', () => {
   });
 });
 
+describe('plan:create --from flag (WU-2323)', () => {
+  let tempDir: string;
+  let originalCwd: string;
+
+  beforeEach(() => {
+    tempDir = join(tmpdir(), `plan-create-from-test-${Date.now()}`);
+    mkdirSync(tempDir, { recursive: true });
+    originalCwd = process.cwd();
+  });
+
+  afterEach(() => {
+    process.chdir(originalCwd);
+    if (existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+    vi.clearAllMocks();
+  });
+
+  describe('createPlan with fromPath', () => {
+    it('should copy content from external file instead of template', async () => {
+      const { createPlan } = await import('../plan-create.js');
+
+      // Create an external plan file
+      const externalPlan = join(tempDir, 'external-plan.md');
+      const externalContent = '# My External Plan\n\n## Goal\n\nBuild something great.\n';
+      writeFileSync(externalPlan, externalContent);
+
+      const planPath = createPlan(tempDir, 'INIT-049', 'Control Plane Upgrade', externalPlan);
+
+      expect(existsSync(planPath)).toBe(true);
+      const content = readFileSync(planPath, 'utf-8');
+      expect(content).toBe(externalContent);
+    });
+
+    it('should still use template when fromPath is not provided', async () => {
+      const { createPlan } = await import('../plan-create.js');
+
+      const planPath = createPlan(tempDir, 'WU-9999', 'Template Plan');
+
+      expect(existsSync(planPath)).toBe(true);
+      const content = readFileSync(planPath, 'utf-8');
+      expect(content).toContain('## Goal');
+      expect(content).toContain('<!-- What is the primary objective? -->');
+    });
+  });
+
+  describe('validateFromPath', () => {
+    it('should accept existing .md files', async () => {
+      const { validateFromPath } = await import('../plan-create.js');
+
+      const mdFile = join(tempDir, 'valid-plan.md');
+      writeFileSync(mdFile, '# Plan');
+
+      expect(() => validateFromPath(mdFile)).not.toThrow();
+    });
+
+    it('should reject non-existent files', async () => {
+      const { validateFromPath } = await import('../plan-create.js');
+
+      const missing = join(tempDir, 'missing.md');
+
+      expect(() => validateFromPath(missing)).toThrow(/not found/i);
+    });
+
+    it('should reject non-.md files', async () => {
+      const { validateFromPath } = await import('../plan-create.js');
+
+      const txtFile = join(tempDir, 'plan.txt');
+      writeFileSync(txtFile, 'Not markdown');
+
+      expect(() => validateFromPath(txtFile)).toThrow(/\.md/);
+    });
+  });
+});
+
 describe('plan:create CLI exports', () => {
   it('should export main function for CLI entry', async () => {
     const planCreate = await import('../plan-create.js');
