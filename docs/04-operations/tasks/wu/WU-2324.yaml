@@ -8,6 +8,7 @@ created: 2026-03-05
 code_paths:
   - apps/docs/src/content/docs/
   - docs/04-operations/
+  - docs/04-operations/
 tests:
   manual: []
   unit: []
@@ -18,10 +19,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-05T10:34:20.889Z
+worktree_path: worktrees/content-site-comms-wu-2324
+session_id: 387ddb32-5de1-47d4-82d4-5dcd79d983b3
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T10:34:20.896Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +39,3 @@ acceptance:
   - All /concepts/ links point to /kernel/ or /packs/software-delivery/concepts/
   - All /guides/ links point to canonical pack-scoped paths
   - quick-ref-commands.md documents plan:create --from flag
-claimed_mode: worktree
-worktree_path: worktrees/content-site-comms-wu-2324
-claimed_at: 2026-03-05T10:34:20.889Z
-baseline_main_sha: a019f48beaab27523974033bdec62a46a6366518
-session_id: 387ddb32-5de1-47d4-82d4-5dcd79d983b3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-05T10:34:20.896Z

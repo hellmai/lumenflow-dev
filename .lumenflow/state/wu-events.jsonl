@@ -2825,6 +2825,7 @@
 {"type":"release","wuId":"WU-2317","timestamp":"2026-03-05T10:32:46.359Z","reason":"Claim+brief completed; releasing to avoid overlap before next INIT-49 claim"}
 {"type":"claim","wuId":"WU-2324","timestamp":"2026-03-05T10:34:20.917Z","lane":"Content: Site Comms","title":"Fix orphaned doc links and add --from flag to quick-ref"}
 {"type":"checkpoint","wuId":"WU-2324","timestamp":"2026-03-05T10:34:32.115Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2324","timestamp":"2026-03-05T10:37:17.671Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2324.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"claim","wuId":"WU-2316","timestamp":"2026-03-05T10:36:05.935Z","lane":"Framework: Metrics","title":"Control-plane cost telemetry contract and local summary"}
 {"type":"claim","wuId":"WU-2317","timestamp":"2026-03-05T10:36:33.436Z","lane":"Operations: Runtime","title":"Heartbeat contract extensions for scheduling and liveness"}
 {"type":"claim","wuId":"WU-2318","timestamp":"2026-03-05T10:37:14.046Z","lane":"Framework: Core Lifecycle","title":"Standardize agent identity metadata in session contracts"}
