@@ -22,3 +22,8 @@ success_metrics:
   - Session metadata keys are standardized and observable via session listings
   - Approval CLI and adapter methods are available with docs and tests
 labels: []
+wus:
+  - WU-2316
+  - WU-2317
+  - WU-2318
+  - WU-2319

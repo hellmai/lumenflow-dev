@@ -40,13 +40,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: Control-plane scheduling and liveness depend on richer heartbeat exchanges while keeping current clients operational.
-  Problem: Existing heartbeat payloads are too narrow for server-directed cadence, assignment, and liveness hints.
-  Solution: Add additive optional heartbeat fields across SDK, HTTP adapter, mocks, and agent heartbeat management with backoff/coalescing semantics.
+description: >-
+  Context: Control-plane scheduling and liveness depend on richer heartbeat exchanges while keeping
+  current clients operational.
+
+  Problem: Existing heartbeat payloads are too narrow for server-directed cadence, assignment, and
+  liveness hints.
+
+  Solution: Add additive optional heartbeat fields across SDK, HTTP adapter, mocks, and agent
+  heartbeat management with backoff/coalescing semantics.
 acceptance:
-  - HeartbeatInput and HeartbeatResult include additive optional fields for agent identity, health, scheduling cadence, assignment, and budget signal.
-  - HTTP sync-port adapter and mock control-plane implementations support new fields without breaking existing callers.
-  - Agent heartbeat manager enforces single-flight execution and coalescing behavior with retry/backoff.
-  - Compatibility tests confirm old heartbeat clients remain functional with unchanged required fields.
+  - HeartbeatInput and HeartbeatResult include additive optional fields for agent identity, health,
+    scheduling cadence, assignment, and budget signal.
+  - HTTP sync-port adapter and mock control-plane implementations support new fields without
+    breaking existing callers.
+  - Agent heartbeat manager enforces single-flight execution and coalescing behavior with
+    retry/backoff.
+  - Compatibility tests confirm old heartbeat clients remain functional with unchanged required
+    fields.
   - Documentation is updated for heartbeat contract fields and behavior in API/reference docs.
+initiative: INIT-49

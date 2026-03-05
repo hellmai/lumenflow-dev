@@ -16,7 +16,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run approval CLI commands against mock/stub control-plane and verify expected request and output paths.
+    - Run approval CLI commands against mock/stub control-plane and verify expected request and
+      output paths.
     - Run wu:done gate path to confirm local escalation behavior is unchanged.
   unit:
     - packages/@lumenflow/control-plane-sdk/__tests__/http-sync-port.test.ts
@@ -41,13 +42,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: Control-plane approval workflows need client-side request/review/list wrappers while preserving local completion governance.
-  Problem: There is no thin CLI/API contract bridge for approval operations in the control-plane sync interface.
-  Solution: Add optional approval methods to sync-port/http adapter and expose approval CLI commands aligned with existing WU escalation behavior.
+description: >-
+  Context: Control-plane approval workflows need client-side request/review/list wrappers while
+  preserving local completion governance.
+
+  Problem: There is no thin CLI/API contract bridge for approval operations in the control-plane
+  sync interface.
+
+  Solution: Add optional approval methods to sync-port/http adapter and expose approval CLI commands
+  aligned with existing WU escalation behavior.
 acceptance:
-  - Control-plane sync contracts include optional requestApproval, resolveApproval, and listApprovals methods without breaking existing consumers.
+  - Control-plane sync contracts include optional requestApproval, resolveApproval, and
+    listApprovals methods without breaking existing consumers.
   - HTTP control-plane adapter supports approval method calls with clear failure handling.
-  - approval:request, approval:review, and approval:list commands are registered and provide usable --help output.
+  - approval:request, approval:review, and approval:list commands are registered and provide usable
+    --help output.
   - Existing local WU escalation and wu:done approval-gate behavior remains unchanged.
   - Documentation is updated for approval CLI/API usage and command reference entries.
+initiative: INIT-49

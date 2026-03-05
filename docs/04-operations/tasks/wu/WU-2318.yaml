@@ -37,13 +37,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: Control-plane attribution needs consistent agent identity metadata carried through session registration and listing.
-  Problem: Session metadata usage is inconsistent, limiting reliable filtering and diagnostics by client and runtime attributes.
-  Solution: Standardize session metadata keys and wire them through auto-session integration while preserving existing session APIs.
+description: >-
+  Context: Control-plane attribution needs consistent agent identity metadata carried through
+  session registration and listing.
+
+  Problem: Session metadata usage is inconsistent, limiting reliable filtering and diagnostics by
+  client and runtime attributes.
+
+  Solution: Standardize session metadata keys and wire them through auto-session integration while
+  preserving existing session APIs.
 acceptance:
-  - Session registration consistently includes client_type, capabilities, agent_version, and host_id metadata keys.
-  - Session listing and downstream consumers can observe and use the standardized metadata without schema breakage.
-  - No parallel local agent registry is introduced; existing session model remains canonical for this phase.
+  - Session registration consistently includes client_type, capabilities, agent_version, and host_id
+    metadata keys.
+  - Session listing and downstream consumers can observe and use the standardized metadata without
+    schema breakage.
+  - No parallel local agent registry is introduced; existing session model remains canonical for
+    this phase.
   - Tests cover metadata serialization, registration, retrieval, and compatibility behavior.
-  - Documentation is updated in integration/reference docs for session metadata semantics and examples.
+  - Documentation is updated in integration/reference docs for session metadata semantics and
+    examples.
+initiative: INIT-49

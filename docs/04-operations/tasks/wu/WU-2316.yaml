@@ -39,13 +39,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: Control-plane integrations need structured cost telemetry from clients for aggregation and budget-aware decisions.
+description: >-
+  Context: Control-plane integrations need structured cost telemetry from clients for aggregation
+  and budget-aware decisions.
+
   Problem: Current telemetry lacks a dedicated cost event stream and local operator summary command.
-  Solution: Add cost event/snapshot contract types, costs NDJSON source integration, and a thin cost:summary command while preserving backward compatibility.
+
+  Solution: Add cost event/snapshot contract types, costs NDJSON source integration, and a thin
+  cost:summary command while preserving backward compatibility.
 acceptance:
   - CostEvent and CostSummary types are defined and exported in @lumenflow/metrics.
-  - Telemetry module appends cost events to .lumenflow/telemetry/costs.ndjson and includes costs in cloud sync source iteration.
-  - cost:summary command is registered, has --help, and reports aggregated local totals by model/agent/WU.
+  - Telemetry module appends cost events to .lumenflow/telemetry/costs.ndjson and includes costs in
+    cloud sync source iteration.
+  - cost:summary command is registered, has --help, and reports aggregated local totals by
+    model/agent/WU.
   - All changes are backward compatible with existing telemetry consumers.
-  - Documentation is updated for cost telemetry and cost:summary in reference docs and command quick-ref.
+  - Documentation is updated for cost telemetry and cost:summary in reference docs and command
+    quick-ref.
+initiative: INIT-49
