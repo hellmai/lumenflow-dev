@@ -5,11 +5,17 @@ description: 'Objective: deliver additive control-plane interface upgrades for c
   heartbeat scheduling/liveness, agent identity metadata, and approval command adapters. This
   initiative focuses on backward-compatible contracts, thin adapters, and documentation updates for
   OSS consumers.'
-status: draft
+status: open
 priority: P1
 owner: tom
 created: 2026-03-05
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Cost telemetry + heartbeat contracts'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Agent identity metadata + approval wrappers'
+    status: pending
 success_metrics:
   - Cost telemetry schema and costs NDJSON source are live and documented
   - Heartbeat extensions are additive and verified with compatibility tests
