@@ -9,7 +9,6 @@ code_paths:
   - packages/@lumenflow/core/src/lane-checker.ts
   - packages/@lumenflow/core/src/lane-inference.ts
   - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
-  - packages/@lumenflow/core/src/__tests__/kernel-first-config-parity.test.ts
   - packages/@lumenflow/cli/src/init-lane-validation.ts
   - packages/@lumenflow/cli/src/lane-suggest.ts
   - packages/@lumenflow/cli/src/__tests__/init-lane-validation.test.ts
@@ -29,9 +28,15 @@ artifacts:
   - .lumenflow/stamps/WU-2326.done
 dependencies: []
 risks: []
-notes: ''
+notes: Switched lane validation to workspace.yaml lane definitions; removed claim-time dependency on
+  .lumenflow.lane-inference.yaml; updated inference messaging as derived metadata; refreshed
+  onboarding and Starlight docs with source-of-truth + regeneration guidance.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-05T17:28:08.862Z
+worktree_path: worktrees/framework-core-validation-wu-2326
+session_id: f4bd37bf-63a0-496f-81f4-e787825a979b
 exposure: backend-only
 sizing_estimate:
   estimated_files: 32
@@ -39,6 +44,9 @@ sizing_estimate:
   strategy: orchestrator-worker
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-05T17:28:08.868Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -56,11 +64,3 @@ acceptance:
   - automated tests cover workspace-authoritative validation paths and stale-taxonomy regressions
   - internal onboarding docs and Starlight reference docs explain source-of-truth rules and
     regeneration workflow
-claimed_mode: worktree
-worktree_path: worktrees/framework-core-validation-wu-2326
-claimed_at: 2026-03-05T17:28:08.862Z
-baseline_main_sha: 89da491efed29d0adb1a83c6e569afb3a72acd11
-session_id: f4bd37bf-63a0-496f-81f4-e787825a979b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-05T17:28:08.868Z

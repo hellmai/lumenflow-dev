@@ -2842,6 +2842,7 @@
 {"type":"complete","wuId":"WU-2319","timestamp":"2026-03-05T11:26:44.016Z"}
 {"type":"claim","wuId":"WU-2325","timestamp":"2026-03-05T17:27:52.985Z","lane":"Framework: CLI Enforcement","title":"Detect lane drift between workspace lanes and inference taxonomy"}
 {"type":"claim","wuId":"WU-2326","timestamp":"2026-03-05T17:28:08.887Z","lane":"Framework: Core Validation","title":"Make workspace.yaml authoritative for lane existence and sub-lane validation"}
+{"type":"checkpoint","wuId":"WU-2326","timestamp":"2026-03-05T17:51:41.914Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2326.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2325","timestamp":"2026-03-05T17:39:57.491Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2325.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2325","timestamp":"2026-03-05T17:40:30.782Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2325.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2325","timestamp":"2026-03-05T17:42:26.386Z"}
