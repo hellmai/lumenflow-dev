@@ -476,8 +476,54 @@ gates:
     test: 'go test ./...'
 ```
 
+## Memory and Context Recovery
+
+When AI agents work on longer tasks, they can lose context. The memory layer preserves progress across sessions.
+
+### Checkpointing
+
+Create checkpoints during long sessions so work can be resumed:
+
+```bash
+# Save progress before a break or context limit
+pnpm mem:checkpoint --wu WU-020
+```
+
+### Recovering Context
+
+When resuming work (or handing off to a fresh agent session):
+
+```bash
+# Generate recovery context with progress, decisions, and next steps
+pnpm mem:recover --wu WU-020
+```
+
+### Agent Session Lifecycle
+
+For a complete agent session with memory:
+
+```bash
+# 1. Start session
+pnpm agent:session --wu WU-020 --tier 2
+
+# 2. Signal progress during work
+pnpm mem:signal "Completed API routes, starting tests" --wu WU-020
+
+# 3. Checkpoint before context limit
+pnpm mem:checkpoint --wu WU-020
+
+# 4. End session
+pnpm agent:session-end --wu WU-020
+```
+
+<Aside type="tip">
+  If an AI agent hits its context limit, run `pnpm wu:brief --id WU-020 --client <client>` to
+  generate a fresh prompt with all context for a new session.
+</Aside>
+
 ## Next Steps
 
-- [Existing Projects](/packs/software-delivery/setup/existing-projects) - Add to existing codebase
-- [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration) - Deep dive on AI workflows
-- [CLI Reference](/reference/cli) - Full command documentation
+- [Existing Projects](/packs/software-delivery/setup/existing-projects) -- Add to existing codebase
+- [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration) -- Deep dive on AI workflows
+- [Memory Layer](/packs/software-delivery/concepts/memory) -- Full memory system documentation
+- [CLI Reference](/reference/cli) -- Full command documentation

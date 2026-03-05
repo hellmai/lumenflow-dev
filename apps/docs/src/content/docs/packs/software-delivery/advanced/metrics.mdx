@@ -111,17 +111,50 @@ LumenFlow emits telemetry events for observability:
 | `deploy.started`   | Deployment started   |
 | `deploy.completed` | Deployment completed |
 
+### Event Format
+
+Each event is a JSON object written as a single line to `.lumenflow/telemetry/events.jsonl`:
+
+```json
+{
+  "event": "wu.completed",
+  "timestamp": "2026-03-05T14:32:00Z",
+  "wu_id": "WU-042",
+  "lane": "Framework: Core",
+  "duration_ms": 7200000,
+  "agent": "claude-code",
+  "metadata": {
+    "gate_results": { "format": "pass", "lint": "pass", "typecheck": "pass", "test": "pass" },
+    "files_changed": 5
+  }
+}
+```
+
 ### Telemetry Integration
 
 Events are written to `.lumenflow/telemetry/` as JSONL files. Integrate with your observability stack:
 
 ```bash
-# Stream to Datadog
-tail -f .lumenflow/telemetry/events.jsonl | datadog-agent
+# Stream to stdout (for piping to external tools)
+tail -f .lumenflow/telemetry/events.jsonl
 
-# Generate metrics snapshot for analysis
+# Filter for failures only
+grep '"gate.failed"' .lumenflow/telemetry/events.jsonl
+
+# Generate metrics snapshot for dashboards
 pnpm metrics:snapshot --format json > metrics.json
+
+# Count events by type
+cat .lumenflow/telemetry/events.jsonl | jq -r '.event' | sort | uniq -c | sort -rn
 ```
+
+### External Tool Integration
+
+For teams using observability platforms:
+
+- **Datadog/New Relic:** Pipe JSONL events via their log agents or use `metrics:snapshot --format json` with their API
+- **Grafana:** Export snapshots as JSON and import into Grafana dashboards
+- **CI/CD:** Run `pnpm flow:report --format json` in your pipeline to track trends over time
 
 ## Best Practices
 

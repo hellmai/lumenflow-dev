@@ -468,6 +468,76 @@ pnpm mem:checkpoint --wu WU-042
 pnpm mem:checkpoint --wu WU-XXX
 ```
 
+## Context Validation Errors
+
+LumenFlow commands include context-aware validation that checks your location, WU status, and git state before running. When validation fails, you'll see an error with a copy-paste fix.
+
+### WRONG_LOCATION
+
+**Symptom:**
+
+```
+ERROR: WRONG_LOCATION - wu:done must be run from main checkout
+FIX: cd /home/user/repo && pnpm wu:done --id WU-042
+```
+
+**Fix:** Run the command from the correct location. `wu:done` runs from main; `wu:prep` runs from the worktree.
+
+### WRONG_STATUS
+
+**Symptom:**
+
+```
+ERROR: WRONG_STATUS - WU-042 is in 'ready' status, expected 'in_progress'
+```
+
+**Fix:** Claim the WU first: `pnpm wu:claim --id WU-042 --lane "Your Lane"`
+
+### GIT_DIRTY
+
+**Symptom:**
+
+```
+ERROR: GIT_DIRTY - Worktree has uncommitted changes
+```
+
+**Fix:** Commit your changes before running `wu:prep`:
+
+```bash
+cd worktrees/lane-wu-xxx
+git add .
+git commit -m "wu(wu-xxx): describe changes"
+```
+
+### Configuring Validation
+
+You can adjust validation behavior in `workspace.yaml`:
+
+```yaml
+software_delivery:
+  experimental:
+    context_validation: true # Enable validation (default: true)
+    validation_mode: 'warn' # 'off' | 'warn' | 'error'
+    show_next_steps: true # Show guidance after success
+```
+
+## Enforcement Hooks
+
+If you're using AI agents with Claude Code, Cursor, or similar tools, LumenFlow can enforce workflow compliance at the tool level using hooks. When enabled, hooks block non-compliant operations (like editing files outside a worktree) instead of relying on agents to remember workflow rules.
+
+```bash
+# Generate enforcement hooks for your AI client
+pnpm lumenflow:integrate --client claude-code
+```
+
+If a hook blocks your operation, check:
+
+1. **Are you in a worktree?** Hooks block edits outside worktrees. Run `pwd` and verify.
+2. **Do you have a claimed WU?** Some hooks require an active WU for edits.
+3. **Is the file in your code_paths?** Hooks may restrict edits to scoped files.
+
+See [Agent Safety](/reference/agent-safety) for the full enforcement architecture.
+
 ## Still Stuck?
 
 If these solutions don't help:

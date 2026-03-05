@@ -306,6 +306,49 @@ pnpm initiative:bulk-assign \
   --wus WU-042,WU-043,WU-044
 ```
 
+## Bug Triage Patterns
+
+### Severity Classification
+
+| Severity | Description                     | Response                          |
+| -------- | ------------------------------- | --------------------------------- |
+| **P0**   | Production down, data loss      | Drop everything. Fix immediately. |
+| **P1**   | Major feature broken, no hotfix | Fix within current session.       |
+| **P2**   | Degraded experience, workaround | Create Bug WU, schedule next.     |
+| **P3**   | Minor issue, cosmetic           | Create Bug WU, add to backlog.    |
+
+### Fix-in-Place vs Bug WU
+
+When you discover a bug while working on a WU:
+
+**Fix in place** if ALL are true:
+
+- Bug is in your WU's `code_paths`
+- Fix is under 10 lines
+- No new test file needed
+- Under 30 minutes of work
+
+**Create a separate Bug WU** if ANY are true:
+
+- Bug is outside your `code_paths`
+- Fix requires significant testing
+- P0/P1 that needs its own evidence trail
+- Would blow your WU's sizing budget
+
+### Create a Bug WU
+
+```bash
+pnpm wu:create \
+  --title "Fix: null crash in payment handler" \
+  --lane "Framework: Core" \
+  --type bug \
+  --exposure backend-only \
+  --description "Payment handler crashes when user has no saved cards" \
+  --acceptance "Handler returns empty array instead of crashing" \
+  --code-paths "src/payments/handler.ts" \
+  --test-paths-unit "src/payments/__tests__/handler.test.ts"
+```
+
 ## Debugging Patterns
 
 ### Check WU Status

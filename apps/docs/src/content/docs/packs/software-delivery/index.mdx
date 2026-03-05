@@ -9,6 +9,19 @@ This section is the canonical home for Software Delivery Pack documentation.
 
 <Aside type="note">The kernel docs are intentionally separate. See [Kernel](/kernel).</Aside>
 
+## How It Fits Together
+
+The **kernel** provides domain-agnostic primitives: scope intersection, policy evaluation, evidence recording, and tool execution. The **Software Delivery Pack** builds on these to provide the concepts teams use daily:
+
+| Kernel Primitive                                 | Pack Concept                                                                                |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| [Scope Intersection](/kernel/scope-intersection) | [Lanes](/packs/software-delivery/concepts/lanes) (code_paths, WIP limits)                   |
+| [Policy Engine](/kernel/policy-engine)           | [Gates](/packs/software-delivery/concepts/gates) (format, lint, typecheck, test)            |
+| [Evidence Store](/kernel/evidence-store)         | [Work Units](/packs/software-delivery/concepts/work-units) (lifecycle, stamps, audit trail) |
+| [Tool Execution](/kernel/tool-execution)         | CLI commands (wu:create, wu:claim, wu:prep, wu:done)                                        |
+
+You don't need to understand the kernel to use the pack -- but if you're curious about _why_ things work the way they do, the kernel docs explain the underlying mechanics.
+
 <CardGrid>
   <Card title="Overview" icon="open-book">
     Pack architecture and capabilities. [Open](/packs/software-delivery/overview)

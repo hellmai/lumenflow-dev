@@ -1,0 +1,117 @@
+---
+title: Learning Path
+description: Curated reading order from beginner to advanced
+---
+
+import { Card, CardGrid, Aside, Steps } from '@astrojs/starlight/components';
+
+New to LumenFlow? This page organizes our docs into a recommended reading order so you can learn at your own pace.
+
+## Beginner: Get Up and Running
+
+Start here to understand what LumenFlow is and get your first WU completed.
+
+<Steps>
+
+1. [What is LumenFlow?](/getting-started/introduction) -- The problem LumenFlow solves
+2. [Why LumenFlow?](/getting-started/why-lumenflow) -- Four kernel guarantees
+3. [Get Started (Humans)](/guides/manual-quickstart) -- Install and complete your first WU
+4. [A Day with LumenFlow](/packs/software-delivery/workflows/a-day-with-lumenflow) -- Full day walkthrough
+5. [Solo Developer Workflow](/packs/software-delivery/workflows/solo-workflow) -- Streamlined setup for individuals
+
+</Steps>
+
+## Intermediate: Core Concepts and Team Patterns
+
+Once you're comfortable with the basics, learn the concepts behind the workflow.
+
+<CardGrid>
+  <Card title="Work Units" icon="document">
+    Structure, lifecycle, and evidence model. [Read](/packs/software-delivery/concepts/work-units)
+  </Card>
+  <Card title="Lanes" icon="random">
+    Parallel tracks, WIP limits, and scope boundaries.
+    [Read](/packs/software-delivery/concepts/lanes)
+  </Card>
+  <Card title="Gates" icon="approve-check">
+    Automated quality checks before completion. [Read](/packs/software-delivery/concepts/gates)
+  </Card>
+  <Card title="Constraints" icon="warning">
+    Non-negotiable rules the kernel enforces. [Read](/packs/software-delivery/concepts/constraints)
+  </Card>
+</CardGrid>
+
+Then explore team patterns and practical recipes:
+
+<Steps>
+
+1. [Team Workflow](/packs/software-delivery/workflows/team-workflow) -- Lane strategies, claiming protocols, reviews
+2. [Sizing WUs](/packs/software-delivery/workflows/sizing) -- How to break work into right-sized units
+3. [WU Completion Workflow](/packs/software-delivery/workflows/wu-prep-workflow) -- The wu:prep + wu:done two-step
+4. [Cookbook](/packs/software-delivery/workflows/cookbook) -- Copy-paste recipes for common scenarios
+5. [Troubleshooting](/packs/software-delivery/setup/troubleshooting) -- Symptom-based fixes
+
+</Steps>
+
+## Advanced: Initiatives, Metrics, and Architecture
+
+For power users managing larger projects or building on the kernel.
+
+<CardGrid>
+  <Card title="Initiatives" icon="star">
+    Multi-phase projects spanning multiple WUs and lanes.
+    [Read](/packs/software-delivery/advanced/initiatives)
+  </Card>
+  <Card title="Flow Metrics" icon="chart">
+    DORA metrics, bottleneck analysis, and telemetry.
+    [Read](/packs/software-delivery/advanced/metrics)
+  </Card>
+  <Card title="Custom Skills" icon="puzzle">
+    Build domain-specific skills for your agents.
+    [Read](/packs/software-delivery/advanced/custom-skills)
+  </Card>
+  <Card title="Kernel Architecture" icon="setting">
+    Runtime, policy engine, scope intersection, evidence store. [Read](/kernel)
+  </Card>
+</CardGrid>
+
+Additional advanced topics:
+
+- [Choosing Methodology](/packs/software-delivery/workflows/choosing-methodology) -- Kanban vs Scrum vs hybrid
+- [Spawn Prompts](/packs/software-delivery/advanced/customizing-spawn-prompts) -- Customize agent delegation
+- [Memory Layer](/packs/software-delivery/concepts/memory) -- Context preservation across sessions
+- [Idea to Shipping](/packs/software-delivery/workflows/idea-to-shipping) -- Full end-to-end project example
+
+## AI Agent Track
+
+If you're setting up LumenFlow for AI agents specifically:
+
+<Steps>
+
+1. [Agent Onboarding](/packs/software-delivery/agents/agent-onboarding) -- Configure agents for your project
+2. [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration) -- Deep dive on agent workflows
+3. [AI Integrations Setup](/packs/software-delivery/agents/ai-integrations-setup) -- Client-specific configuration
+4. [MCP Setup](/packs/software-delivery/agents/mcp-setup) -- Model Context Protocol for tool access
+5. [Agent Branch Patterns](/packs/software-delivery/agents/agent-branch-patterns) -- Branch strategies for agents
+6. [Agent Safety](/reference/agent-safety) -- Safety guardrails and enforcement
+
+</Steps>
+
+## Setup and Migration
+
+Adding LumenFlow to an existing project or migrating from another tool:
+
+- [Existing Projects](/packs/software-delivery/setup/existing-projects) -- Adopt LumenFlow incrementally
+- [Migration Guide](/packs/software-delivery/setup/migration-guide) -- Migrate from other tools
+- [Upgrading](/packs/software-delivery/setup/upgrading) -- Upgrade between LumenFlow versions
+- [Language Guides](/packs/software-delivery/languages) -- Stack-specific gate presets and setup
+
+## Reference
+
+For quick lookups:
+
+- [CLI Commands](/reference/cli) -- Full command reference
+- [MCP Server](/reference/mcp) -- MCP tool reference
+- [Configuration](/reference/config) -- workspace.yaml schema
+- [WU Schema](/reference/wu-schema) -- WU YAML specification
+- [FAQ](/getting-started/faq) -- Common questions answered

@@ -227,7 +227,59 @@ lanes:
 
 Or use separate repos per team, each with LumenFlow.
 
+## AI Agent Coordination
+
+Teams can delegate WUs to AI agents and coordinate multiple agents working in parallel.
+
+### Handoff Prompts
+
+Generate a context-loaded prompt that an AI agent can use to pick up a WU:
+
+```bash
+pnpm wu:brief --id WU-100 --client claude-code
+```
+
+This produces a prompt with the WU spec, code paths, acceptance criteria, and project context. Paste it into your AI agent to start work.
+
+### Delegation with Lineage
+
+For initiative work where you need auditable delegation tracking:
+
+```bash
+pnpm wu:delegate --id WU-101 --parent-wu WU-100
+```
+
+This records delegation lineage so you can trace which WUs were delegated from which parent:
+
+```bash
+pnpm delegation:list --initiative INIT-007
+```
+
+### Multi-Agent Orchestration
+
+When an initiative spans multiple WUs, orchestrate agents across lanes:
+
+```bash
+# Launch initiative orchestration
+pnpm orchestrate:initiative --id INIT-007
+
+# Monitor agent activity
+pnpm orchestrate:monitor
+
+# Check coordination signals between agents
+pnpm mem:inbox --since 30m
+```
+
+Agents coordinate via the [memory layer](/packs/software-delivery/concepts/memory) using signals and checkpoints. Each agent works in its own worktree, isolated from other agents.
+
+<Aside type="tip">
+  Start with `wu:brief` for simple delegation. Use `wu:delegate` when you need lineage tracking. Use
+  `orchestrate:initiative` when coordinating 3+ agents on an initiative.
+</Aside>
+
 ## Next Steps
 
-- [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration) – Working with AI teammates
-- [CLI Reference](/reference/cli) – Team commands
+- [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration) -- Working with AI teammates
+- [Initiatives](/packs/software-delivery/advanced/initiatives) -- Multi-phase project coordination
+- [Memory Layer](/packs/software-delivery/concepts/memory) -- Context preservation and agent coordination
+- [CLI Reference](/reference/cli) -- Team commands

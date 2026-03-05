@@ -28,6 +28,7 @@ export default defineConfig({
             { label: 'Get Started (Humans)', slug: 'guides/manual-quickstart' },
             { label: 'Get Started (Agents)', slug: 'getting-started/quickstart' },
             { label: 'FAQ', slug: 'getting-started/faq' },
+            { label: 'Learning Path', slug: 'getting-started/learning-path' },
           ],
         },
         {

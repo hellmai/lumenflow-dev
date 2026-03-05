@@ -176,7 +176,31 @@ acceptance:
 
 Discovery WUs produce decisions, not code. They unblock future implementation WUs.
 
+## Sizing for Initiatives
+
+When working within an [initiative](/packs/software-delivery/advanced/initiatives), sizing changes because the orchestrator manages wave-based execution with checkpoints between waves.
+
+### Checkpoint-per-Wave
+
+Each wave in an initiative is a batch of WUs that can execute in parallel. Between waves, the orchestrator checkpoints progress:
+
+```
+Wave 1: WU-A, WU-B (parallel) → checkpoint
+Wave 2: WU-C, WU-D (parallel, depends on Wave 1) → checkpoint
+Wave 3: WU-E (depends on Wave 2) → done
+```
+
+This means individual WUs within an initiative should still be Simple or Medium sized. The initiative handles the coordination — don't try to make individual WUs larger because "the initiative will manage it."
+
+### Initiative Sizing Rules
+
+- Each WU in an initiative follows standard sizing thresholds
+- The orchestrator handles cross-WU coordination via memory signals
+- If a wave has more than 4-5 parallel WUs, consider splitting into sub-waves
+- Use `pnpm orchestrate:init-status --id INIT-XXX` to monitor wave progress
+
 ## Next Steps
 
-- [Work Units](/packs/software-delivery/concepts/work-units) – WU structure and lifecycle
-- [Team Workflow](/packs/software-delivery/workflows/team-workflow) – Collaborative sizing
+- [Work Units](/packs/software-delivery/concepts/work-units) -- WU structure and lifecycle
+- [Team Workflow](/packs/software-delivery/workflows/team-workflow) -- Collaborative sizing
+- [Initiatives](/packs/software-delivery/advanced/initiatives) -- Multi-phase project coordination
