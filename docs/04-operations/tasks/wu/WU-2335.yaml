@@ -2,7 +2,7 @@ id: WU-2335
 title: Tighten wu:brief verification precedence for UI-classified work
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-06
 code_paths:
@@ -30,8 +30,8 @@ artifacts:
   - .lumenflow/stamps/WU-2335.done
 dependencies: []
 risks: []
-notes: 'Implementation notes: 1) wu-spawn prompt builders now render required verification ahead
-  of generic strategy guidance in both template-driven and fallback paths. 2) Default methodology
+notes: 'Implementation notes: 1) wu-spawn prompt builders now render required verification ahead of
+  generic strategy guidance in both template-driven and fallback paths. 2) Default methodology
   templates explicitly exclude UI-domain work, so UI classification cannot accidentally pick up
   TDD/test-after/none directives unless consumers override templates. 3) Repo defaults, generated
   core templates, and init-time bootstrap docs now describe fit-for-surface verification instead of
@@ -73,3 +73,6 @@ session_id: bb8cb41b-c6fc-4fd5-89fa-cfab5aca1d6d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-06T14:11:49.829Z
+locked: true
+completed_at: 2026-03-06T14:27:46.200Z
+completed: 2026-03-06
