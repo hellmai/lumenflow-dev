@@ -15,6 +15,10 @@ pnpm lumenflow:upgrade --latest
 pnpm docs:sync --force
 ```
 
+Package upgrades change the runtime `wu:brief` defaults immediately. `docs:sync --force` refreshes
+scaffolded onboarding docs and supported vendor assets, but project-local `.lumenflow/templates/`
+remains optional unless you want custom overrides.
+
 ## Version Compatibility
 
 LumenFlow follows semantic versioning:
@@ -63,6 +67,15 @@ This updates:
 - Scaffolded onboarding documentation
 - Supported vendor assets such as Claude skills
 
+It does not rewrite root workflow files such as `LUMENFLOW.md` or `.lumenflow/constraints.md`.
+
+## Defaults vs Overrides
+
+- New installs already get the current `wu:brief` defaults.
+- Existing installs get the new runtime behavior as soon as packages are upgraded.
+- Project-local `.lumenflow/templates/manifest.yaml` and `spawn-prompt/*.md` files are only needed
+  when you want to override the built-in prompt composition.
+
 ### 5. Verify Installation
 
 ```bash
@@ -105,6 +118,14 @@ If `docs:sync` reports conflicts:
 1. Review the diff for each conflicting file
 2. Merge manually or accept incoming changes
 3. Run `pnpm gates` to verify
+
+### `wu:brief` Still Uses Older Wording
+
+Project-local templates override the built-in defaults. Review:
+
+- `.lumenflow/templates/manifest.yaml`
+- `.lumenflow/templates/spawn-prompt/*.md`
+- `.lumenflow/templates.<client>/spawn-prompt/*.md`
 
 ## Migration Guides
 

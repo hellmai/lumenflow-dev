@@ -7,12 +7,20 @@ priority: P2
 created: 2026-03-06
 code_paths:
   - apps/docs/src/content/docs/getting-started/upgrade.mdx
+  - apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx
   - apps/docs/src/content/docs/packs/software-delivery/advanced/customizing-spawn-prompts.mdx
   - apps/docs/src/content/docs/reference/spawn-manifest.mdx
   - apps/docs/src/content/docs/reference/templates.mdx
   - apps/docs/src/content/docs/reference/work-classifier.mdx
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/starting-prompt.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/agent-safety-card.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/wu-create-checklist.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/wu-sizing-guide.md.template
+  - packages/@lumenflow/cli/templates/core/UPGRADING.md.template
+  - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/worktree-discipline/SKILL.md.template
 tests:
   manual:
     - Run pnpm docs:validate and verify the updated docs build cleanly.

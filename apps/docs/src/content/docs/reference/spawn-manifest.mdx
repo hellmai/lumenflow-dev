@@ -7,6 +7,12 @@ import { Aside } from '@astrojs/starlight/components';
 
 The manifest file (`.lumenflow/templates/manifest.yaml`) controls how templates are assembled into spawn prompts. It defines the order, requirements, and conditions for each template.
 
+<Aside type="note" title="Optional override surface">
+  This file is only required when you want to override or extend the bundled `wu:brief` defaults. If
+  it is absent, `wu:brief` falls back to the default composition shipped with your installed CLI
+  version.
+</Aside>
+
 ## File Location
 
 ```
@@ -40,20 +46,78 @@ defaults:
   tokenFormat: '{TOKEN}'
 
 templates:
-  # Type-specific directives (order 10-50)
+  - id: methodology-tdd
+    path: spawn-prompt/methodology/tdd-directive.md
+    required: false
+    order: 5
+    condition: "policy.testing === 'tdd' && type !== 'documentation' && type !== 'docs' && type !== 'config' && type !== 'refactor' && type !== 'visual' && type !== 'design' && type !== 'ui' && work.testMethodologyHint !== 'smoke-test' && work.testMethodologyHint !== 'structured-content'"
+
+  - id: methodology-test-after
+    path: spawn-prompt/methodology/test-after-directive.md
+    required: false
+    order: 5
+    condition: "policy.testing === 'test-after' && type !== 'documentation' && type !== 'docs' && type !== 'config' && type !== 'refactor' && type !== 'visual' && type !== 'design' && type !== 'ui' && work.testMethodologyHint !== 'smoke-test' && work.testMethodologyHint !== 'structured-content'"
+
+  - id: methodology-none
+    path: spawn-prompt/methodology/none-directive.md
+    required: false
+    order: 5
+    condition: "policy.testing === 'none' && type !== 'documentation' && type !== 'docs' && type !== 'config' && type !== 'refactor' && type !== 'visual' && type !== 'design' && type !== 'ui' && work.testMethodologyHint !== 'smoke-test' && work.testMethodologyHint !== 'structured-content'"
+
+  - id: architecture-hexagonal
+    path: spawn-prompt/architecture/hexagonal-directive.md
+    required: false
+    order: 6
+    condition: "policy.architecture === 'hexagonal'"
+
+  - id: architecture-layered
+    path: spawn-prompt/architecture/layered-directive.md
+    required: false
+    order: 6
+    condition: "policy.architecture === 'layered'"
+
+  - id: architecture-none
+    path: spawn-prompt/architecture/none-directive.md
+    required: false
+    order: 6
+    condition: "policy.architecture === 'none'"
+
   - id: tdd-directive
     path: spawn-prompt/tdd-directive.md
     required: false
     order: 10
-    condition: "type !== 'documentation'"
+    condition: "type !== 'documentation' && type !== 'docs' && type !== 'config'"
 
   - id: documentation-directive
     path: spawn-prompt/documentation-directive.md
     required: false
     order: 10
-    condition: "type === 'documentation'"
+    condition: "type === 'documentation' || type === 'docs' || type === 'config'"
 
-  # Common sections (order 50-200)
+  - id: visual-directive
+    path: spawn-prompt/visual-directive.md
+    required: false
+    order: 15
+    condition: "type === 'visual' || type === 'design' || type === 'ui' || work.testMethodologyHint === 'smoke-test'"
+
+  - id: refactor-directive
+    path: spawn-prompt/refactor-directive.md
+    required: false
+    order: 15
+    condition: "type === 'refactor'"
+
+  - id: structured-content-directive
+    path: spawn-prompt/structured-content-directive.md
+    required: false
+    order: 15
+    condition: "work.testMethodologyHint === 'structured-content' && type !== 'documentation' && type !== 'docs' && type !== 'config'"
+
+  - id: verification-requirements
+    path: spawn-prompt/verification-requirements.md
+    required: false
+    order: 18
+    condition: 'hasRequiredVerification'
+
   - id: skills-selection
     path: spawn-prompt/skills-selection.md
     required: true
@@ -69,25 +133,76 @@ templates:
     required: true
     order: 60
 
+  - id: design-context-ui
+    path: spawn-prompt/design-context-ui.md
+    required: false
+    order: 65
+    condition: "work.domain === 'ui'"
+
   - id: effort-scaling
     path: spawn-prompt/effort-scaling.md
     required: true
     order: 100
 
-  # Lane-specific guidance (order 400-500)
+  - id: parallel-tool-calls
+    path: spawn-prompt/parallel-tool-calls.md
+    required: true
+    order: 110
+
+  - id: search-heuristics
+    path: spawn-prompt/search-heuristics.md
+    required: true
+    order: 120
+
+  - id: token-budget
+    path: spawn-prompt/token-budget.md
+    required: true
+    order: 130
+
+  - id: bug-discovery
+    path: spawn-prompt/bug-discovery.md
+    required: true
+    order: 200
+
+  - id: quick-fix-commands
+    path: spawn-prompt/quick-fix-commands.md
+    required: true
+    order: 210
+
+  - id: lane-selection
+    path: spawn-prompt/lane-selection.md
+    required: true
+    order: 220
+
+  - id: worktree-recovery
+    path: spawn-prompt/worktree-recovery.md
+    required: false
+    order: 300
+    condition: 'worktreePath'
+
   - id: lane-guidance-framework
     path: spawn-prompt/lane-guidance/framework.md
     required: false
     order: 400
     condition: "laneParent === 'Framework'"
 
-  # Self-review near completion (order 850)
+  - id: lane-guidance-operations
+    path: spawn-prompt/lane-guidance/operations.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Operations'"
+
+  - id: lane-guidance-content
+    path: spawn-prompt/lane-guidance/content.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Content'"
+
   - id: self-review
     path: spawn-prompt/self-review.md
     required: true
     order: 850
 
-  # Constraints always last (order 900+)
   - id: constraints
     path: spawn-prompt/constraints.md
     required: true
@@ -252,15 +367,23 @@ Optional JavaScript-like expression controlling template inclusion.
 
 **Available variables:**
 
-| Variable       | Description                            |
-| -------------- | -------------------------------------- |
-| `type`         | WU type (feature, bug, documentation)  |
-| `lane`         | Full lane name                         |
-| `laneParent`   | Parent lane (Framework, Content, etc.) |
-| `wuId`         | Work Unit ID                           |
-| `worktreePath` | Worktree path (truthy if claimed)      |
-| `title`        | WU title                               |
-| `description`  | WU description                         |
+| Variable                   | Description                                                |
+| -------------------------- | ---------------------------------------------------------- |
+| `type`                     | WU type (feature, bug, documentation)                      |
+| `lane`                     | Full lane name                                             |
+| `laneParent`               | Parent lane (Framework, Content, etc.)                     |
+| `wuId`                     | Work Unit ID                                               |
+| `worktreePath`             | Worktree path (truthy if claimed)                          |
+| `title`                    | WU title                                                   |
+| `description`              | WU description                                             |
+| `policy.testing`           | Resolved testing policy (`tdd`, `test-after`, `none`)      |
+| `policy.architecture`      | Resolved architecture policy                               |
+| `work.domain`              | Classified work domain (`ui`, `backend`, `docs`, etc.)     |
+| `work.testMethodologyHint` | Classifier hint (`smoke-test`, `structured-content`)       |
+| `hasRequiredVerification`  | Truthy when any required verification is declared          |
+| `tests.hasUnit`            | Truthy when the WU spec declares unit test paths           |
+| `tests.hasE2E`             | Truthy when the WU spec declares E2E test paths            |
+| `tests.hasManual`          | Truthy when the WU spec declares manual verification items |
 
 **Examples:**
 
@@ -276,6 +399,15 @@ condition: "worktreePath"
 
 # Framework lane only
 condition: "laneParent === 'Framework'"
+
+# UI work only
+condition: "work.domain === 'ui'"
+
+# Structured-content guidance only
+condition: "work.testMethodologyHint === 'structured-content'"
+
+# Only when the WU spec declares required verification
+condition: 'hasRequiredVerification'
 
 # Combined: features in Framework lane
 condition: "type === 'feature' && laneParent === 'Framework'"
@@ -360,147 +492,19 @@ When assembling for `--client claude-code`:
   client-specific condition or create them in the base directory with a client condition.
 </Aside>
 
-## Example: Full Manifest
+## Default Built-In Sections
 
-This example shows the default LumenFlow manifest structure:
+These are the built-in sections most consumers override first:
 
-```yaml
-# .lumenflow/templates/manifest.yaml
-version: '1.0'
-
-defaults:
-  tokenFormat: '{TOKEN}'
-
-templates:
-  # ─────────────────────────────────────────────────────────────────────
-  # Phase 1: Type-specific directives (order 10-50)
-  # ─────────────────────────────────────────────────────────────────────
-  - id: tdd-directive
-    path: spawn-prompt/tdd-directive.md
-    required: false
-    order: 10
-    condition: "type !== 'documentation' && type !== 'docs' && type !== 'config'"
-
-  - id: documentation-directive
-    path: spawn-prompt/documentation-directive.md
-    required: false
-    order: 10
-    condition: "type === 'documentation' || type === 'docs' || type === 'config'"
-
-  - id: visual-directive
-    path: spawn-prompt/visual-directive.md
-    required: false
-    order: 15
-    condition: "type === 'visual' || type === 'design' || type === 'ui'"
-
-  - id: refactor-directive
-    path: spawn-prompt/refactor-directive.md
-    required: false
-    order: 15
-    condition: "type === 'refactor'"
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Skills selection (order 50)
-  # ─────────────────────────────────────────────────────────────────────
-  - id: skills-selection
-    path: spawn-prompt/skills-selection.md
-    required: true
-    order: 50
-
-  - id: code-craft
-    path: spawn-prompt/code-craft.md
-    required: true
-    order: 55
-
-  - id: read-before-write
-    path: spawn-prompt/read-before-write.md
-    required: true
-    order: 60
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Phase 2: Agent guidance (order 100-200)
-  # ─────────────────────────────────────────────────────────────────────
-  - id: effort-scaling
-    path: spawn-prompt/effort-scaling.md
-    required: true
-    order: 100
-
-  - id: parallel-tool-calls
-    path: spawn-prompt/parallel-tool-calls.md
-    required: true
-    order: 110
-
-  - id: search-heuristics
-    path: spawn-prompt/search-heuristics.md
-    required: true
-    order: 120
-
-  - id: token-budget
-    path: spawn-prompt/token-budget.md
-    required: true
-    order: 130
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Phase 3: Operational guidance (order 200-300)
-  # ─────────────────────────────────────────────────────────────────────
-  - id: bug-discovery
-    path: spawn-prompt/bug-discovery.md
-    required: true
-    order: 200
-
-  - id: quick-fix-commands
-    path: spawn-prompt/quick-fix-commands.md
-    required: true
-    order: 210
-
-  - id: lane-selection
-    path: spawn-prompt/lane-selection.md
-    required: true
-    order: 220
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Phase 4: Recovery and worktree (order 300-400)
-  # ─────────────────────────────────────────────────────────────────────
-  - id: worktree-recovery
-    path: spawn-prompt/worktree-recovery.md
-    required: false
-    order: 300
-    condition: 'worktreePath'
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Phase 5: Lane-specific guidance (order 400-500)
-  # ─────────────────────────────────────────────────────────────────────
-  - id: lane-guidance-operations
-    path: spawn-prompt/lane-guidance/operations.md
-    required: false
-    order: 400
-    condition: "laneParent === 'Operations'"
-
-  - id: lane-guidance-framework
-    path: spawn-prompt/lane-guidance/framework.md
-    required: false
-    order: 400
-    condition: "laneParent === 'Framework'"
-
-  - id: lane-guidance-content
-    path: spawn-prompt/lane-guidance/content.md
-    required: false
-    order: 400
-    condition: "laneParent === 'Content'"
-
-  - id: self-review
-    path: spawn-prompt/self-review.md
-    required: true
-    order: 850
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Phase 6: Constraints (order 900+) - ALWAYS LAST
-  # ─────────────────────────────────────────────────────────────────────
-  - id: constraints
-    path: spawn-prompt/constraints.md
-    required: true
-    order: 1000
-```
+| Template ID                    | When it is included                                    | Typical reason to override                         |
+| ------------------------------ | ------------------------------------------------------ | -------------------------------------------------- |
+| `visual-directive`             | UI work or `work.testMethodologyHint === 'smoke-test'` | Add project-specific UI verification commands      |
+| `structured-content-directive` | `work.testMethodologyHint === 'structured-content'`    | Add content/config evaluators or schema checks     |
+| `verification-requirements`    | `hasRequiredVerification`                              | Reformat or extend WU-declared verification output |
+| `design-context-ui`            | `work.domain === 'ui'`                                 | Add design system or accessibility review guidance |
+| `code-craft`                   | Always                                                 | Tighten implementation standards                   |
+| `read-before-write`            | Always                                                 | Add repo-specific discovery expectations           |
+| `self-review`                  | Always                                                 | Add completion checklist items                     |
 
 ## Next Steps
 

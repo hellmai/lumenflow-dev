@@ -1,38 +1,64 @@
 ---
-title: Current Setup
-description: Canonical workspace-first setup for LumenFlow
+title: Upgrade Existing Installations
+description: Upgrade LumenFlow and understand what changes automatically
 ---
 
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
 <Badge text="Current" variant="success" />
 
-This page documents the current setup path for LumenFlow. Use these commands as the canonical workflow.
+Use this flow when a repository already has LumenFlow installed and you want the latest
+`wu:brief` defaults, onboarding docs, and vendor assets.
 
-## Canonical Setup Flow
+## Existing Installs
 
 <Steps>
-1. **Initialize canonical workspace config**: `pnpm workspace-init --yes`
+1. **Upgrade the installed packages**
 
-2. **Run canonical bootstrap**
+```bash
+pnpm lumenflow:upgrade --latest
+```
 
-   ```bash
-   npx lumenflow
-   ```
-
-3. **Verify runtime health**
+2. **Refresh scaffolded onboarding docs and supported vendor assets**
 
    ```bash
-   pnpm exec lumenflow-doctor
+   pnpm docs:sync --force
    ```
 
-4. **Refresh agent docs/templates**
+3. **Verify the upgrade**
 
    ```bash
-   pnpm exec lumenflow docs:sync --force
+   pnpm gates --docs-only
    ```
 
-</Steps>
+   </Steps>
+
+## What Changes Automatically
+
+- Upgrading the packages changes the runtime `wu:brief` defaults immediately.
+- `pnpm docs:sync --force` refreshes scaffolded onboarding docs and supported vendor assets.
+- Project-local `.lumenflow/templates/` files are optional. Only create or edit them when you
+  want to override the built-in prompt composition.
+
+<Aside type="note" title="Defaults vs overrides">
+  The installed CLI ships the default `wu:brief` composition. Consumers do not need a local
+  `.lumenflow/templates/manifest.yaml` just to get lane-aware UI guidance, structured-content
+  guidance, or required-verification rendering.
+</Aside>
+
+## New Installs
+
+Fresh installs already get the current defaults. Run `npx lumenflow` or
+`pnpm exec lumenflow init`, then create project-local templates only when you want custom prompt
+sections or client-specific overrides.
+
+## What `docs:sync` Refreshes
+
+- Scaffolded onboarding documentation
+- Supported vendor assets such as Claude skills
+- Existing tracked docs only when you intentionally pass `--force`
+
+It does not rewrite root workflow files such as `LUMENFLOW.md` or `.lumenflow/constraints.md`.
 
 ## Config Contract
 
@@ -50,7 +76,7 @@ pnpm config:get --key software_delivery.methodology.testing
 ```
 
 <Aside type="caution" title="Canonical command">
-  Use `npx lumenflow` for setup and onboarding.
+  Use `npx lumenflow` for setup and `pnpm lumenflow:upgrade` for upgrades.
 </Aside>
 
 ## Troubleshooting
@@ -69,7 +95,17 @@ Replace them with:
 npx lumenflow
 ```
 
+### `wu:brief` still shows older project wording
+
+Project-local overrides take precedence over the built-in defaults. Review:
+
+- `.lumenflow/templates/manifest.yaml`
+- `.lumenflow/templates/spawn-prompt/*.md`
+- `.lumenflow/templates.<client>/spawn-prompt/*.md`
+
 ## Next Steps
 
 - [CLI Reference](/reference/cli) — full command surface
+- [Customizing Spawn Prompts](/packs/software-delivery/advanced/customizing-spawn-prompts) —
+  project-specific overrides
 - [Configuration](/reference/config) — canonical config model

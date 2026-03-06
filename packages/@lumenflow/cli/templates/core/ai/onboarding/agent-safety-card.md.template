@@ -27,20 +27,20 @@ Quick reference for AI agents working in LumenFlow projects.
 | `git stash` (on main)    | Hides work       |
 | `git clean -fd`          | Deletes files    |
 | Work in main after claim | Breaks isolation |
-| Skip wu:prep or wu:done | Incomplete WU    |
+| Skip wu:prep or wu:done  | Incomplete WU    |
 
 ---
 
 ## Always Do
 
-| Action                     | Why              |
-| -------------------------- | ---------------- |
-| Read WU spec first         | Understand scope |
-| cd to worktree after claim | Isolation        |
-| Write tests before code    | TDD              |
+| Action                               | Why                               |
+| ------------------------------------ | --------------------------------- |
+| Read WU spec first                   | Understand scope                  |
+| cd to worktree after claim           | Isolation                         |
+| Write tests before code              | TDD                               |
 | Run wu:prep in the claimed workspace | Quality and lifecycle correctness |
-| Run wu:done from main               | Complete WU      |
-| Stay within code_paths     | Scope discipline |
+| Run wu:done from main                | Complete WU                       |
+| Stay within code_paths               | Scope discipline                  |
 
 ---
 

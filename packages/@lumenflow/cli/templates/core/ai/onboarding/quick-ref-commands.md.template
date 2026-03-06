@@ -56,25 +56,25 @@ Run `--help` first, then run the real command with explicit flags.
 
 **For this monorepo (development):**
 
-| Command                    | Description                                       |
-| -------------------------- | ------------------------------------------------- |
-| `pnpm setup`               | Install deps and build CLI (first time)           |
-| `pnpm bootstrap`           | Build CLI with dependency closure (worktree-safe) |
-| `pnpm build`               | Build all packages                                |
-| `pnpm build:dist`          | Build distribution packages                       |
-| `pnpm dev`                 | Start development mode                            |
-| `pnpm clean`               | Clean build artifacts and caches                  |
-| `pnpm pack:all`            | Pack all packages for distribution                |
-| `pnpm exec lumenflow init` | Scaffold LumenFlow in a project                   |
-| `pnpm exec lumenflow init --docs-structure simple` | Use simple docs structure (`docs/tasks`) |
-| `pnpm exec lumenflow init --docs-structure arc42`  | Use arc42 docs structure (`{{DOCS_OPERATIONS_PATH}}`) |
-| `pnpm docs:sync --force`   | Refresh scaffolded onboarding docs and supported vendor assets |
-| `pnpm sync:templates`      | Sync repo docs into bundled templates             |
-| `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages                        |
-| `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration                  |
-| `pnpm lumenflow:integrate` | Generate enforcement hooks for client             |
-| `pnpm cloud:connect`       | Configure cloud control-plane access              |
-| `npx lumenflow commands`   | List all available CLI commands                   |
+| Command                                            | Description                                                    |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm setup`                                       | Install deps and build CLI (first time)                        |
+| `pnpm bootstrap`                                   | Build CLI with dependency closure (worktree-safe)              |
+| `pnpm build`                                       | Build all packages                                             |
+| `pnpm build:dist`                                  | Build distribution packages                                    |
+| `pnpm dev`                                         | Start development mode                                         |
+| `pnpm clean`                                       | Clean build artifacts and caches                               |
+| `pnpm pack:all`                                    | Pack all packages for distribution                             |
+| `pnpm exec lumenflow init`                         | Scaffold LumenFlow in a project                                |
+| `pnpm exec lumenflow init --docs-structure simple` | Use simple docs structure (`docs/tasks`)                       |
+| `pnpm exec lumenflow init --docs-structure arc42`  | Use arc42 docs structure (`{{DOCS_OPERATIONS_PATH}}`)                |
+| `pnpm docs:sync --force`                           | Refresh scaffolded onboarding docs and supported vendor assets |
+| `pnpm sync:templates`                              | Sync repo docs into bundled templates                          |
+| `pnpm lumenflow:upgrade`                           | Upgrade LumenFlow packages                                     |
+| `pnpm lumenflow:doctor`                            | Diagnose LumenFlow configuration                               |
+| `pnpm lumenflow:integrate`                         | Generate enforcement hooks for client                          |
+| `pnpm cloud:connect`                               | Configure cloud control-plane access                           |
+| `npx lumenflow commands`                           | List all available CLI commands                                |
 
 **For external projects (end users):**
 
@@ -98,16 +98,16 @@ pnpm exec lumenflow init --client all      # All clients
 These commands use **micro-worktree isolation** internally — they handle their own
 commit and push atomically. Do NOT wrap them in a WU or use raw `pnpm update`/`git commit`.
 
-| Command                                           | Description                               |
-| ------------------------------------------------- | ----------------------------------------- |
-| `pnpm lumenflow:upgrade --version 3.5.0`          | Upgrade all 7 @lumenflow/\* packages      |
-| `pnpm lumenflow:upgrade --latest`                 | Upgrade to latest version                 |
-| `pnpm lumenflow:upgrade --latest --dry-run`       | Preview upgrade without executing         |
-| `pnpm config:set --key <dotpath> --value <value>` | Set workspace.yaml config (Zod-validated) |
-| `pnpm config:get --key <dotpath>`                 | Read workspace.yaml config                |
-| `pnpm cloud:connect`                              | Configure cloud control-plane access      |
+| Command                                           | Description                                      |
+| ------------------------------------------------- | ------------------------------------------------ |
+| `pnpm lumenflow:upgrade --version 3.5.0`          | Upgrade all 7 @lumenflow/\* packages             |
+| `pnpm lumenflow:upgrade --latest`                 | Upgrade to latest version                        |
+| `pnpm lumenflow:upgrade --latest --dry-run`       | Preview upgrade without executing                |
+| `pnpm config:set --key <dotpath> --value <value>` | Set workspace.yaml config (Zod-validated)        |
+| `pnpm config:get --key <dotpath>`                 | Read workspace.yaml config                       |
+| `pnpm cloud:connect`                              | Configure cloud control-plane access             |
 | `pnpm docs:sync --force`                          | Refresh scaffolded onboarding docs after upgrade |
-| `pnpm sync:templates`                             | Sync repo docs into bundled templates     |
+| `pnpm sync:templates`                             | Sync repo docs into bundled templates            |
 
 **Key principle:** If a LumenFlow CLI command exists for the operation, use it instead of
 raw pnpm/git. These tooling commands commit directly to main via micro-worktree — no dirty
@@ -115,6 +115,11 @@ files, no manual git, no WU ceremony. Only actual **code changes** need WUs.
 
 `docs:sync` refreshes the scaffolded onboarding set plus supported vendor assets. Existing
 tracked docs are skipped by default; use `--force` when you intentionally want the refresh.
+
+For existing installs, upgrade packages first with `pnpm lumenflow:upgrade --latest`, then run
+`pnpm docs:sync --force` if you want refreshed onboarding docs and vendor assets. The improved
+default `wu:brief` behavior comes from the package upgrade itself. New installs get those defaults
+automatically, and `.lumenflow/templates/` remains optional unless you want custom overrides.
 
 > **Anti-pattern:** Do NOT use `pnpm update @lumenflow/*` to upgrade packages.
 > This leaves dirty `package.json` and `pnpm-lock.yaml` on main.
@@ -297,12 +302,12 @@ and [YAML editing policy](../../../../../.lumenflow/rules/yaml-editing-policy.md
 These scripts are useful in this monorepo, but they are **repo-only scripts** rather than part of
 the public CLI surface shown by `pnpm lumenflow:commands`.
 
-| Command                     | Description                            |
-| --------------------------- | -------------------------------------- |
-| `pnpm docs:validate`        | Validate generated docs against source |
-| `pnpm docs:generate`        | Regenerate docs outputs                |
-| `pnpm pre-release:check`    | Run pre-release verification           |
-| `pnpm release:changeset`    | Create or update release changesets    |
+| Command                  | Description                            |
+| ------------------------ | -------------------------------------- |
+| `pnpm docs:validate`     | Validate generated docs against source |
+| `pnpm docs:generate`     | Regenerate docs outputs                |
+| `pnpm pre-release:check` | Run pre-release verification           |
+| `pnpm release:changeset` | Create or update release changesets    |
 
 ---
 

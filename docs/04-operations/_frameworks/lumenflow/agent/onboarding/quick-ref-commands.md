@@ -116,6 +116,11 @@ files, no manual git, no WU ceremony. Only actual **code changes** need WUs.
 `docs:sync` refreshes the scaffolded onboarding set plus supported vendor assets. Existing
 tracked docs are skipped by default; use `--force` when you intentionally want the refresh.
 
+For existing installs, upgrade packages first with `pnpm lumenflow:upgrade --latest`, then run
+`pnpm docs:sync --force` if you want refreshed onboarding docs and vendor assets. The improved
+default `wu:brief` behavior comes from the package upgrade itself. New installs get those defaults
+automatically, and `.lumenflow/templates/` remains optional unless you want custom overrides.
+
 > **Anti-pattern:** Do NOT use `pnpm update @lumenflow/*` to upgrade packages.
 > This leaves dirty `package.json` and `pnpm-lock.yaml` on main.
 > Use `pnpm lumenflow:upgrade` instead — it handles everything atomically.

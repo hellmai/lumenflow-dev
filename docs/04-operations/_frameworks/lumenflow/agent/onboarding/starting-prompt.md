@@ -508,18 +508,31 @@ pnpm wu:delegate --id WU-XXXX --parent-wu WU-YYYY --client <client-type>
 
 **IMPORTANT:** The `--client` flag identifies your IDE/tool environment, NOT the underlying AI model. Use `--client windsurf` even if Windsurf is running a Claude agent.
 
-### Guidance Profiles (WU-2309)
+### Guidance Profiles (WU-2309 / WU-2329)
 
-`wu:brief` testing guidance is profile-aware:
+`wu:brief` verification guidance is profile-aware and ships with sensible built-in defaults.
+Project-local `.lumenflow/templates` is optional and only needed when you want different wording,
+extra project commands, or client-specific overrides.
+
+- New installs get the current defaults automatically.
+- Existing installs get the runtime defaults after `pnpm lumenflow:upgrade --latest`.
+- Run `pnpm docs:sync --force` when you also want refreshed scaffolded onboarding docs and
+  supported vendor assets.
+
+Default profiles:
 
 - Behavior/logic changes: follow project policy (`methodology.testing`: `tdd`, `test-after`, or `none`).
 - Structured-content-only changes (`.yaml/.yml/.json/.md/.mdx`): use parse/schema/lint/eval evidence; TDD checkpoint is omitted.
-- UI presentation hints: use smoke/manual verification guidance.
+- UI presentation hints: prefer smoke/manual/integration/E2E verification and use unit tests for pure logic or explicitly required checks.
+
+Common override points include `visual-directive`, `structured-content-directive`,
+`verification-requirements`, and `design-context-ui`.
 
 Domain-specific commands must come from local configuration, not core framework code:
 
-- Template path: `.lumenflow/templates/spawn-prompt/lane-guidance/*.md`
 - Template manifest: `.lumenflow/templates/manifest.yaml`
+- Base templates: `.lumenflow/templates/spawn-prompt/*.md`
+- Client overrides: `.lumenflow/templates.{client}/spawn-prompt/*.md`
 - Client config: `workspace.yaml` under `software_delivery.agents.clients.*`
 
 ### Sub-Agent Coordination

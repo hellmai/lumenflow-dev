@@ -508,18 +508,31 @@ pnpm wu:delegate --id WU-XXXX --parent-wu WU-YYYY --client <client-type>
 
 **IMPORTANT:** The `--client` flag identifies your IDE/tool environment, NOT the underlying AI model. Use `--client windsurf` even if Windsurf is running a Claude agent.
 
-### Guidance Profiles (WU-2309)
+### Guidance Profiles (WU-2309 / WU-2329)
 
-`wu:brief` testing guidance is profile-aware:
+`wu:brief` verification guidance is profile-aware and ships with sensible built-in defaults.
+Project-local `.lumenflow/templates` is optional and only needed when you want different wording,
+extra project commands, or client-specific overrides.
+
+- New installs get the current defaults automatically.
+- Existing installs get the runtime defaults after `pnpm lumenflow:upgrade --latest`.
+- Run `pnpm docs:sync --force` when you also want refreshed scaffolded onboarding docs and
+  supported vendor assets.
+
+Default profiles:
 
 - Behavior/logic changes: follow project policy (`methodology.testing`: `tdd`, `test-after`, or `none`).
 - Structured-content-only changes (`.yaml/.yml/.json/.md/.mdx`): use parse/schema/lint/eval evidence; TDD checkpoint is omitted.
-- UI presentation hints: use smoke/manual verification guidance.
+- UI presentation hints: prefer smoke/manual/integration/E2E verification and use unit tests for pure logic or explicitly required checks.
+
+Common override points include `visual-directive`, `structured-content-directive`,
+`verification-requirements`, and `design-context-ui`.
 
 Domain-specific commands must come from local configuration, not core framework code:
 
-- Template path: `.lumenflow/templates/spawn-prompt/lane-guidance/*.md`
 - Template manifest: `.lumenflow/templates/manifest.yaml`
+- Base templates: `.lumenflow/templates/spawn-prompt/*.md`
+- Client overrides: `.lumenflow/templates.{client}/spawn-prompt/*.md`
 - Client config: `workspace.yaml` under `software_delivery.agents.clients.*`
 
 ### Sub-Agent Coordination
@@ -533,22 +546,22 @@ Domain-specific commands must come from local configuration, not core framework 
 
 ## WU Lifecycle Commands
 
-| Command                                        | Description                              | When to Use                 |
-| ---------------------------------------------- | ---------------------------------------- | --------------------------- |
-| `pnpm wu:status --id WU-XXX`                   | Show WU state and valid commands         | Check current state         |
-| `pnpm wu:claim --id WU-XXX --lane "Lane"`      | Claim WU and create worktree (default)   | Start working (local)       |
-| `pnpm wu:claim --id WU-XXX --lane "L" --cloud` | Claim WU in branch-pr mode (no worktree) | Start working (cloud)       |
-| `pnpm wu:edit --id WU-XXX --field value`       | Edit WU spec fields                      | Update notes/desc           |
-| `pnpm wu:brief --id WU-XXX --client X`         | Generate handoff prompt + evidence       | Complex WUs                 |
-| `pnpm wu:brief --id WU-XXX --evidence-only`    | Record evidence only (no prompt output)  | Self-implementation path    |
-| `pnpm wu:delegate --id WU-XXX --parent-wu P`   | Generate prompt + record delegation      | Auditable delegation flows  |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates in claimed workspace, prep completion | Before wu:done        |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, cleanup)       | After gates pass            |
-| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr)           | After PR merge (cloud only) |
-| `pnpm wu:escalate --id WU-XXX`                 | Show or resolve escalation status        | Escalation-triggered WUs    |
-| `pnpm wu:escalate --resolve --id WU-XXX`       | Resolve human escalation                 | Before wu:done (escalation) |
-| `pnpm wu:delete --id WU-XXX`                   | Delete WU spec and cleanup               | Cancel stale/throwaway WUs  |
-| `pnpm wu:recover --id WU-XXX`                  | Fix inconsistent WU state                | When state is broken        |
+| Command                                        | Description                                     | When to Use                 |
+| ---------------------------------------------- | ----------------------------------------------- | --------------------------- |
+| `pnpm wu:status --id WU-XXX`                   | Show WU state and valid commands                | Check current state         |
+| `pnpm wu:claim --id WU-XXX --lane "Lane"`      | Claim WU and create worktree (default)          | Start working (local)       |
+| `pnpm wu:claim --id WU-XXX --lane "L" --cloud` | Claim WU in branch-pr mode (no worktree)        | Start working (cloud)       |
+| `pnpm wu:edit --id WU-XXX --field value`       | Edit WU spec fields                             | Update notes/desc           |
+| `pnpm wu:brief --id WU-XXX --client X`         | Generate handoff prompt + evidence              | Complex WUs                 |
+| `pnpm wu:brief --id WU-XXX --evidence-only`    | Record evidence only (no prompt output)         | Self-implementation path    |
+| `pnpm wu:delegate --id WU-XXX --parent-wu P`   | Generate prompt + record delegation             | Auditable delegation flows  |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates in claimed workspace, prep completion | Before wu:done              |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, cleanup)              | After gates pass            |
+| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr)                  | After PR merge (cloud only) |
+| `pnpm wu:escalate --id WU-XXX`                 | Show or resolve escalation status               | Escalation-triggered WUs    |
+| `pnpm wu:escalate --resolve --id WU-XXX`       | Resolve human escalation                        | Before wu:done (escalation) |
+| `pnpm wu:delete --id WU-XXX`                   | Delete WU spec and cleanup                      | Cancel stale/throwaway WUs  |
+| `pnpm wu:recover --id WU-XXX`                  | Fix inconsistent WU state                       | When state is broken        |
 
 ---
 

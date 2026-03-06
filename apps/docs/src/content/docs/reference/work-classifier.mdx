@@ -152,11 +152,26 @@ interface WorkClassificationConfig {
 
 ## Test Methodology Hint
 
-When the detected domain is `ui` and confidence >= 0.5, the classifier returns `testMethodologyHint: 'smoke-test'`. This signals to consumers (like `wu:brief`) that visual smoke tests should be recommended alongside unit tests.
+The classifier emits methodology hints as recommendations for prompt composition. They are not a
+hardcoded software-engineering mandate.
+
+### `smoke-test`
+
+When the detected domain is `ui` and confidence >= 0.5, the classifier returns
+`testMethodologyHint: 'smoke-test'`. The default `wu:brief` composition uses this to prefer
+integration, E2E, smoke, and manual verification for UI work, while reserving unit tests for pure
+logic or explicitly required verification.
+
+### `structured-content`
+
+When every declared code path is structured content (`.yaml`, `.yml`, `.json`, `.md`, `.mdx`),
+the classifier returns `testMethodologyHint: 'structured-content'`. The default `wu:brief`
+composition uses this to prefer parsing, linting, schema, evaluator, and smoke evidence instead of
+forcing backend-style TDD.
 
 ## Brief Integration
 
-The work classifier is wired into `wu:brief` generation (WU-1900) at three points:
+The work classifier is wired into `wu:brief` generation (WU-1900) at four points:
 
 ### Capability-to-Skill Mapping
 
@@ -176,6 +191,12 @@ When classifier capabilities match keys in the map, the corresponding skill name
 ### Design Context Section
 
 A `## Design Context` section is added to the brief for UI-classified work, with guidance on pattern checks, viewport verification, and accessibility. This section contains no `/skill` syntax or client-specific names.
+
+### Template Selection
+
+The classifier also feeds prompt-template conditions such as `work.domain` and
+`work.testMethodologyHint`. The built-in defaults use those fields to include sections like
+`visual-directive`, `structured-content-directive`, and `design-context-ui`.
 
 ### Conditional Constraints
 

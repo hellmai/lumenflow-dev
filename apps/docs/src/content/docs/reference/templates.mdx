@@ -7,6 +7,12 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 Templates are markdown files with YAML frontmatter that define reusable prompt sections for `wu:brief`. The template system enables customization of agent prompts without modifying core LumenFlow code.
 
+<Aside type="note" title="Local templates are optional">
+  If `.lumenflow/templates/` is absent, `wu:brief` uses the bundled default templates that ship with
+  your installed CLI version. Create local templates only when you want to override or extend those
+  defaults.
+</Aside>
+
 ## Template Location
 
 Templates live in `.lumenflow/templates/spawn-prompt/`:
@@ -16,9 +22,18 @@ Templates live in `.lumenflow/templates/spawn-prompt/`:
   templates/
     manifest.yaml          # Assembly order configuration
     spawn-prompt/
-      tdd-directive.md     # Test-driven development guidance
+      methodology/
+        tdd-directive.md
+        test-after-directive.md
+      architecture/
+        hexagonal-directive.md
+      tdd-directive.md     # Compatibility fallback
       documentation-directive.md
+      visual-directive.md
+      structured-content-directive.md
+      verification-requirements.md
       skills-selection.md
+      design-context-ui.md
       effort-scaling.md
       constraints.md       # Always included last
       lane-guidance/       # Lane-specific templates
@@ -149,14 +164,17 @@ Navigate to: {WORKTREE_PATH}
 
 ### Available Tokens
 
-| Token             | Description                   | Example Value                      |
-| ----------------- | ----------------------------- | ---------------------------------- |
-| `{WU_ID}`         | Work Unit identifier          | `WU-1253`                          |
-| `{LANE}`          | Full lane name                | `Framework: Core`                  |
-| `{TYPE}`          | WU type                       | `feature`, `bug`, `documentation`  |
-| `{TITLE}`         | WU title                      | `Add template loader`              |
-| `{DESCRIPTION}`   | WU description                | `Implement the template system...` |
-| `{WORKTREE_PATH}` | Path to worktree (if claimed) | `worktrees/framework-core-wu-1253` |
+| Token                          | Description                               | Example Value                      |
+| ------------------------------ | ----------------------------------------- | ---------------------------------- |
+| `{WU_ID}`                      | Work Unit identifier                      | `WU-1253`                          |
+| `{LANE}`                       | Full lane name                            | `Framework: Core`                  |
+| `{TYPE}`                       | WU type                                   | `feature`, `bug`, `documentation`  |
+| `{TITLE}`                      | WU title                                  | `Add template loader`              |
+| `{DESCRIPTION}`                | WU description                            | `Implement the template system...` |
+| `{WORKTREE_PATH}`              | Path to worktree (if claimed)             | `worktrees/framework-core-wu-1253` |
+| `{WORK_DOMAIN}`                | Classified work domain                    | `ui`, `backend`, `docs`            |
+| `{WORK_TEST_METHODOLOGY_HINT}` | Classifier-driven methodology hint        | `smoke-test`, `structured-content` |
+| `{REQUIRED_VERIFICATION}`      | Rendered required verification text block | `1. Run ...`                       |
 
 <Aside type="note">
   Tokens that are `undefined` in the context remain as literal text (e.g., `{UNDEFINED_TOKEN}`).
@@ -209,17 +227,23 @@ Conditions control whether a template is included in the assembled prompt.
 
 Conditions use lowercase aliases of token values:
 
-| Variable              | Maps To           | Example Values                       |
-| --------------------- | ----------------- | ------------------------------------ |
-| `type`                | `{TYPE}`          | `feature`, `bug`, `documentation`    |
-| `lane`                | `{LANE}`          | `Framework: Core`                    |
-| `wuId`                | `{WU_ID}`         | `WU-1253`                            |
-| `title`               | `{TITLE}`         | `Add template loader`                |
-| `description`         | `{DESCRIPTION}`   | Full description text                |
-| `worktreePath`        | `{WORKTREE_PATH}` | Path or undefined                    |
-| `laneParent`          | Extracted         | `Framework`, `Content`, `Operations` |
-| `policy.testing`      | Resolved policy   | `tdd`, `test-after`, `none`          |
-| `policy.architecture` | Resolved policy   | `hexagonal`, `layered`, `none`       |
+| Variable                   | Maps To                           | Example Values                               |
+| -------------------------- | --------------------------------- | -------------------------------------------- |
+| `type`                     | `{TYPE}`                          | `feature`, `bug`, `documentation`            |
+| `lane`                     | `{LANE}`                          | `Framework: Core`                            |
+| `wuId`                     | `{WU_ID}`                         | `WU-1253`                                    |
+| `title`                    | `{TITLE}`                         | `Add template loader`                        |
+| `description`              | `{DESCRIPTION}`                   | Full description text                        |
+| `worktreePath`             | `{WORKTREE_PATH}`                 | Path or undefined                            |
+| `laneParent`               | Extracted                         | `Framework`, `Content`, `Operations`         |
+| `policy.testing`           | Resolved policy                   | `tdd`, `test-after`, `none`                  |
+| `policy.architecture`      | Resolved policy                   | `hexagonal`, `layered`, `none`               |
+| `work.domain`              | `{WORK_DOMAIN}`                   | `ui`, `backend`, `docs`, `infra`, `mixed`    |
+| `work.testMethodologyHint` | `{WORK_TEST_METHODOLOGY_HINT}`    | `smoke-test`, `structured-content`           |
+| `hasRequiredVerification`  | Derived from WU test requirements | truthy when any required verification exists |
+| `tests.hasUnit`            | Derived from WU test paths        | truthy when unit paths are declared          |
+| `tests.hasE2E`             | Derived from WU test paths        | truthy when E2E paths are declared           |
+| `tests.hasManual`          | Derived from WU test paths        | truthy when manual checks are declared       |
 
 ### Condition Examples
 
@@ -258,6 +282,19 @@ condition: "policy.testing === 'tdd'"
 
 # Include for test-after methodology
 condition: "policy.testing === 'test-after'"
+```
+
+**Work-classification inclusion:**
+
+```yaml
+# Include only for UI-classified work
+condition: "work.domain === 'ui'"
+
+# Include only for structured-content work
+condition: "work.testMethodologyHint === 'structured-content'"
+
+# Include only when the WU spec declares required verification
+condition: 'hasRequiredVerification'
 ```
 
 **Combined conditions:**
@@ -328,7 +365,8 @@ When running `wu:brief --id WU-XXX --client <client>`:
 | `windsurf`               | windsurf | `templates.windsurf/` |
 
 <Aside type="note">
-  Three new spawn template keys are now first-class override points: `code-craft`,
+  Common override points now include methodology templates, `visual-directive`,
+  `structured-content-directive`, `verification-requirements`, `design-context-ui`, `code-craft`,
   `read-before-write`, and `self-review`.
 </Aside>
 
