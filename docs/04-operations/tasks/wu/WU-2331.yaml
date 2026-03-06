@@ -2,7 +2,7 @@ id: WU-2331
 title: Fix release-breaking upgrade guide MDX
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-06
 code_paths:
@@ -18,7 +18,9 @@ artifacts:
   - .lumenflow/stamps/WU-2331.done
 dependencies: []
 risks: []
-notes: 'Fix both mirrored upgrade pages, validate the Starlight build locally, then cut a patch release so the docs tag workflow can succeed. tdd-exception: Docs-only MDX repair validated by the Starlight build; no automated test file changes are expected.'
+notes: 'Fix both mirrored upgrade pages, validate the Starlight build locally, then cut a patch
+  release so the docs tag workflow can succeed. tdd-exception: Docs-only MDX repair validated by the
+  Starlight build; no automated test file changes are expected.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -28,10 +30,11 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: The v3.11.0 tag published to npm and GitHub, but the Starlight docs workflow
-  failed. Problem: the mirrored upgrade guides in apps/docs/src/content/docs/getting-started/upgrade.mdx
-  and apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx contain malformed MDX
-  in a <Steps> block, so tagged docs builds break and releases do not fully ship. Solution: repair
-  the MDX structure, validate the docs build locally, and cut a follow-up patch release so the docs
+  failed. Problem: the mirrored upgrade guides in
+  apps/docs/src/content/docs/getting-started/upgrade.mdx and
+  apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx contain malformed MDX in a
+  <Steps> block, so tagged docs builds break and releases do not fully ship. Solution: repair the
+  MDX structure, validate the docs build locally, and cut a follow-up patch release so the docs
   deployment succeeds.'
 acceptance:
   - The mirrored upgrade guides build successfully under Astro/MDX.
@@ -45,3 +48,6 @@ session_id: 1b9008b2-6879-4c69-ad25-9a41e814bbae
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-06T10:49:00.053Z
+locked: true
+completed_at: 2026-03-06T10:54:56.025Z
+completed: 2026-03-06

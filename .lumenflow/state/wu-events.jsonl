@@ -2857,3 +2857,4 @@
 {"type":"claim","wuId":"WU-2330","timestamp":"2026-03-06T10:21:26.077Z","lane":"Content: Framework Docs","title":"Document wu:brief template defaults and consumer upgrade path"}
 {"type":"complete","wuId":"WU-2330","timestamp":"2026-03-06T10:40:00.141Z"}
 {"type":"claim","wuId":"WU-2331","timestamp":"2026-03-06T10:49:00.080Z","lane":"Content: Documentation","title":"Fix release-breaking upgrade guide MDX"}
+{"type":"complete","wuId":"WU-2331","timestamp":"2026-03-06T10:55:00.540Z"}
