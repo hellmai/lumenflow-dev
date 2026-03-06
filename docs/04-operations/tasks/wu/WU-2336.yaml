@@ -1,0 +1,38 @@
+id: WU-2336
+title: Make Cloud prompt policy summaries UI-aware
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-03-06
+code_paths:
+  - packages/@lumenflow/core/src/spawn-guidance-generators.ts
+  - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
+tests:
+  manual:
+    - pnpm wu:brief --id <UI-WU> --client codex-cli
+    - pnpm wu:brief --id <RUNTIME-WU> --client codex-cli
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2336.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: WU-2335 fixed UI-specific verification guidance ordering in wu:brief, but Cloud prompts still emit later blanket policy summaries for UI-classified WUs. Problem: UI work can correctly say 'Prefer user-outcome verification over brittle DOM assertions' and then later still say 'TDD: Failing test first' and 'Testing: tdd', which pushes agents back toward brittle UI component TDD. Solution: make the core prompt policy summary sections domain-aware so UI-classified work does not restate runtime-style TDD mandates in Mandatory Standards or You will be judged by, while preserving strong TDD guidance for runtime/backend work."
+acceptance:
+  - UI-classified feature/bug WUs generated via wu:brief do not restate blanket TDD mandates in Mandatory Standards when the effective guidance is behavior-focused UI verification
+  - "UI-classified feature/bug WUs generated via wu:brief do not show 'Testing: tdd' in You will be judged by when the work should be validated via fit-for-surface UI verification"
+  - Runtime/backend feature WUs still show strong TDD-oriented policy summaries where appropriate
+  - Automated regression coverage proves the core prompt generator behavior for both UI-classified and runtime/backend WUs
