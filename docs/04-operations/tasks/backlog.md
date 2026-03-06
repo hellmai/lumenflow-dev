@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2334 — Fix initiative:create phase persistence regression in v3.12.0](wu/WU-2334.yaml) — Framework: Initiatives
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1280,6 +1280,7 @@ sections:
 - [WU-2331 — Fix release-breaking upgrade guide MDX](wu/WU-2331.yaml)
 - [WU-2332 — Repair lane taxonomy drift with deterministic reconciliation](wu/WU-2332.yaml)
 - [WU-2333 — Clarify workspace-only lane docs before release](wu/WU-2333.yaml)
+- [WU-2334 — Fix initiative:create phase persistence regression in v3.12.0](wu/WU-2334.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

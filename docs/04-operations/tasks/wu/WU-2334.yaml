@@ -2,7 +2,7 @@ id: WU-2334
 title: Fix initiative:create phase persistence regression in v3.12.0
 lane: 'Framework: Initiatives'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-06
 code_paths:
@@ -26,9 +26,8 @@ artifacts:
   - .lumenflow/stamps/WU-2334.done
 dependencies: []
 risks: []
-notes: >-
-  Parser normalization now preserves explicit WUOption names alongside Commander-derived keys so
-  initiative:create can consume canonical initDescription/initPhase values without regressing
+notes: Parser normalization now preserves explicit WUOption names alongside Commander-derived keys
+  so initiative:create can consume canonical initDescription/initPhase values without regressing
   existing long-flag access patterns.
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -59,3 +58,6 @@ session_id: e8c09052-b9d7-4ae3-9de2-ad5a83d7f472
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-06T13:22:43.183Z
+locked: true
+completed_at: 2026-03-06T13:27:47.725Z
+completed: 2026-03-06
