@@ -2,7 +2,7 @@ id: WU-2332
 title: Remove lane-inference artifact from lane lifecycle
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-06
 code_paths:
@@ -27,8 +27,9 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - On a fresh repo with a local bare origin, lane:setup -> refresh main from origin -> lane:validate
-      -> refresh main -> lane:create succeeds without creating .lumenflow.lane-inference.yaml
+    - On a fresh repo with a local bare origin, lane:setup -> refresh main from origin ->
+      lane:validate -> refresh main -> lane:create succeeds without creating
+      .lumenflow.lane-inference.yaml
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-inference-error.test.ts
     - packages/@lumenflow/core/src/__tests__/backlog-sync-validator.test.ts
@@ -49,8 +50,8 @@ artifacts:
   - .lumenflow/stamps/WU-2332.done
 dependencies: []
 risks: []
-notes: 'Manual smoke used a local bare origin because lane:setup remains push-only and leaves the
-  caller checkout stale until refreshed from origin/main.'
+notes: Manual smoke used a local bare origin because lane:setup remains push-only and leaves the
+  caller checkout stale until refreshed from origin/main.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -79,3 +80,6 @@ session_id: 16efb233-4542-4f11-a4c3-0b4455762832
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-06T11:36:50.171Z
+locked: true
+completed_at: 2026-03-06T12:12:56.730Z
+completed: 2026-03-06

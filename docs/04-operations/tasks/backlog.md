@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2332 — Repair lane taxonomy drift with deterministic reconciliation](wu/WU-2332.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1278,6 +1278,7 @@ sections:
 - [WU-2329 — Make wu:brief verification guidance template-driven and lane-aware](wu/WU-2329.yaml)
 - [WU-2330 — Document wu:brief template defaults and consumer upgrade path](wu/WU-2330.yaml)
 - [WU-2331 — Fix release-breaking upgrade guide MDX](wu/WU-2331.yaml)
+- [WU-2332 — Repair lane taxonomy drift with deterministic reconciliation](wu/WU-2332.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
