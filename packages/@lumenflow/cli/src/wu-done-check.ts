@@ -8,11 +8,8 @@ import { LOG_PREFIX, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 const WU_DONE_ALLOWLISTED_STATUS_PATHS = new Set([LUMENFLOW_PATHS.WU_EVENTS]);
 
 function extractStatusPath(statusLine: string): string {
-  if (statusLine.length <= 3) {
-    return '';
-  }
-
-  const rawPath = statusLine.slice(3).trim();
+  const match = statusLine.match(/^\s*[A-Z?!]{1,2}\s+(.*)$/);
+  const rawPath = match?.[1]?.trim() ?? '';
   if (!rawPath) {
     return '';
   }

@@ -812,6 +812,14 @@ status: done
       ).toEqual(['?? packages/@lumenflow/cli/src/wu-done.ts']);
     });
 
+    it('filters single-column modified wu-events status lines out of blocking changes', () => {
+      expect(
+        getBlockingWorktreeStatusLines(
+          'M .lumenflow/state/wu-events.jsonl\nM packages/@lumenflow/cli/src/wu-done.ts',
+        ),
+      ).toEqual(['M packages/@lumenflow/cli/src/wu-done.ts']);
+    });
+
     it('should use the correct worktree path', async () => {
       mockGit.getStatus.mockResolvedValue('');
 
