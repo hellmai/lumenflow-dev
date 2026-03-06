@@ -15,7 +15,6 @@ import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { die } from '@lumenflow/core/error-handler';
-import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import {
   ensureDraftLaneArtifacts,
@@ -42,8 +41,7 @@ export const LANE_SETUP_HELP_TEXT = `Usage: pnpm lane:setup [options]
 Create or update draft lane artifacts.
 
 Detects workspace structure, creates lane definitions in workspace.yaml
-and lane inference taxonomy. Changes are committed atomically via
-micro-worktree isolation.
+and commits them atomically via micro-worktree isolation.
 
 Options:
   ${ARG_LOCK}    Combine setup + validate + lock into a single command
@@ -108,13 +106,10 @@ async function main() {
 
       console.log(`${LOG_PREFIX} Lane lifecycle status: ${result.status}`);
 
-      if (result.createdDefinitions || result.createdInference) {
+      if (result.createdDefinitions) {
         console.log(`${LOG_PREFIX} Draft artifacts prepared:`);
         console.log(
           `  - ${WORKSPACE_CONFIG_FILE_NAME}: ${result.createdDefinitions ? 'created/updated lane definitions' : 'existing definitions preserved'}`,
-        );
-        console.log(
-          `  - ${CONFIG_FILES.LANE_INFERENCE}: ${result.createdInference ? 'created draft taxonomy' : 'existing taxonomy preserved'}`,
         );
       } else {
         console.log(
@@ -124,9 +119,6 @@ async function main() {
 
       // Collect files that were modified
       const files: string[] = [WORKSPACE_CONFIG_FILE_NAME];
-      if (result.createdInference) {
-        files.push(CONFIG_FILES.LANE_INFERENCE);
-      }
 
       // WU-1755: --lock combines setup + validate + lock into a single command
       if (lockFlag) {
@@ -136,7 +128,7 @@ async function main() {
             console.warn(`${LOG_PREFIX} Warning: ${warning}`);
           }
         }
-        if (validation.missingDefinitions || validation.missingInference) {
+        if (validation.missingDefinitions) {
           die(`${LOG_PREFIX} Cannot lock: lane artifacts are incomplete. Fix warnings above.`);
         }
         setLaneLifecycleStatus(worktreePath, LANE_LIFECYCLE_STATUS.LOCKED);

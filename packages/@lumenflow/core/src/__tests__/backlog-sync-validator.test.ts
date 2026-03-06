@@ -34,18 +34,15 @@ describe('backlog-sync-validator', () => {
     writeFileSync(
       path.join(tmpDir, 'workspace.yaml'),
       `software_delivery:
+  lanes:
+    definitions:
+      - name: "Operations: Tooling"
+        wip_limit: 1
+        code_paths:
+          - "tools/**"
   directories:
     wuDir: ${customWuDir}
     backlogPath: ${customBacklogPath}
-`,
-      { encoding: 'utf-8' },
-    );
-
-    writeFileSync(
-      path.join(tmpDir, '.lumenflow.lane-inference.yaml'),
-      `Operations:
-  sub_lanes:
-    - Tooling
 `,
       { encoding: 'utf-8' },
     );

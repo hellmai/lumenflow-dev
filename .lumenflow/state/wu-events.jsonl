@@ -2859,3 +2859,5 @@
 {"type":"claim","wuId":"WU-2331","timestamp":"2026-03-06T10:49:00.080Z","lane":"Content: Documentation","title":"Fix release-breaking upgrade guide MDX"}
 {"type":"complete","wuId":"WU-2331","timestamp":"2026-03-06T10:55:00.540Z"}
 {"type":"claim","wuId":"WU-2332","timestamp":"2026-03-06T11:36:50.192Z","lane":"Framework: CLI","title":"Repair lane taxonomy drift with deterministic reconciliation"}
+{"type":"checkpoint","wuId":"WU-2332","timestamp":"2026-03-06T11:37:01.279Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2332","timestamp":"2026-03-06T11:38:03.883Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}

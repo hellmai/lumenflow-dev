@@ -10,7 +10,6 @@ export const SCAFFOLDED_ONBOARDING_TEMPLATE_PATHS: Record<string, string> = {
   'starting-prompt.md': 'core/ai/onboarding/starting-prompt.md.template',
   'first-15-mins.md': 'core/ai/onboarding/first-15-mins.md.template',
   'local-only.md': 'core/ai/onboarding/local-only.md.template',
-  'lane-inference.md': 'core/ai/onboarding/lane-inference.md.template',
   'quick-ref-commands.md': 'core/ai/onboarding/quick-ref-commands.md.template',
   'first-wu-mistakes.md': 'core/ai/onboarding/first-wu-mistakes.md.template',
   'troubleshooting-wu-done.md': 'core/ai/onboarding/troubleshooting-wu-done.md.template',

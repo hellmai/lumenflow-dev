@@ -19,7 +19,7 @@ import YAML from 'yaml';
 import {
   runOnboardingSmokeTest,
   validateInitScripts,
-  validateLaneInferenceFormat,
+  validateWorkspaceLaneScaffold,
 } from '../onboarding-smoke-test.js';
 import { connectWorkspaceToCloud } from '../onboard.js';
 import {
@@ -33,7 +33,6 @@ import {
 
 /** Constants for test files to avoid duplicate string literals */
 const PACKAGE_JSON_FILE = 'package.json';
-const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
 const WORKSPACE_FILE = 'workspace.yaml';
 const TEST_PROJECT_NAME = 'test-project';
 const TEST_CLOUD_ENDPOINT = 'https://control-plane.example';
@@ -195,51 +194,8 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
     });
   });
 
-  describe('validateLaneInferenceFormat', () => {
-    it('should pass when lane-inference.yaml has correct hierarchical format', () => {
-      // Create lane-inference.yaml with correct format
-      const laneInference = `# Lane Inference Configuration
-Framework:
-  Core:
-    description: 'Core library'
-    code_paths:
-      - 'packages/core/**'
-    keywords:
-      - 'core'
-
-Content:
-  Documentation:
-    description: 'Documentation'
-    code_paths:
-      - 'docs/**'
-    keywords:
-      - 'docs'
-`;
-      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
-
-      const result = validateLaneInferenceFormat({ projectDir: tempDir });
-
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
-    });
-
-    it('should fail when lane-inference.yaml uses flat lanes array', () => {
-      // Create lane-inference.yaml with old flat format
-      const laneInference = `# Lane Inference Configuration
-lanes:
-  - name: Framework
-    code_paths:
-      - 'packages/**'
-`;
-      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
-
-      const result = validateLaneInferenceFormat({ projectDir: tempDir });
-
-      expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('lanes'))).toBe(true);
-    });
-
-    it('should pass when lane-inference.yaml does not exist but lifecycle is unconfigured', () => {
+  describe('validateWorkspaceLaneScaffold', () => {
+    it('should pass when workspace lifecycle remains unconfigured and no sidecar exists', () => {
       const configContent = `software_delivery:
   lanes:
     lifecycle:
@@ -247,14 +203,14 @@ lanes:
 `;
       fs.writeFileSync(path.join(tempDir, WORKSPACE_FILE), configContent);
 
-      const result = validateLaneInferenceFormat({ projectDir: tempDir });
+      const result = validateWorkspaceLaneScaffold({ projectDir: tempDir });
 
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
       expect(result.error).toBeUndefined();
     });
 
-    it('should fail when lane-inference.yaml does not exist and lifecycle is locked', () => {
+    it('should fail when lifecycle is already locked', () => {
       const configContent = `software_delivery:
   lanes:
     lifecycle:
@@ -262,44 +218,25 @@ lanes:
 `;
       fs.writeFileSync(path.join(tempDir, WORKSPACE_FILE), configContent);
 
-      const result = validateLaneInferenceFormat({ projectDir: tempDir });
+      const result = validateWorkspaceLaneScaffold({ projectDir: tempDir });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((error) => error.includes('unconfigured'))).toBe(true);
+    });
+
+    it('should fail when the deleted lane-inference sidecar exists', () => {
+      const configContent = `software_delivery:
+  lanes:
+    lifecycle:
+      status: unconfigured
+`;
+      fs.writeFileSync(path.join(tempDir, WORKSPACE_FILE), configContent);
+      fs.writeFileSync(path.join(tempDir, '.lumenflow.lane-inference.yaml'), 'Framework: {}\n');
+
+      const result = validateWorkspaceLaneScaffold({ projectDir: tempDir });
 
       expect(result.valid).toBe(false);
       expect(result.error).toContain('.lumenflow.lane-inference.yaml');
-    });
-
-    it('should validate parent lane names are capitalized', () => {
-      const laneInference = `# Lane Inference Configuration
-framework:  # Should be 'Framework'
-  core:
-    description: 'Core library'
-    code_paths:
-      - 'packages/core/**'
-`;
-      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
-
-      const result = validateLaneInferenceFormat({ projectDir: tempDir });
-
-      expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('capitalized'))).toBe(true);
-    });
-
-    it('should validate sub-lanes have required fields', () => {
-      const laneInference = `# Lane Inference Configuration
-Framework:
-  Core:
-    # Missing description and code_paths
-    keywords:
-      - 'core'
-`;
-      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
-
-      const result = validateLaneInferenceFormat({ projectDir: tempDir });
-
-      expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('description') || e.includes('code_paths'))).toBe(
-        true,
-      );
     });
   });
 

@@ -12,21 +12,13 @@
  * finalized through dedicated lane lifecycle commands.
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import { WORKSPACE_CONFIG_FILE_NAME, getConfig } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
-import { CONFIG_FILES, FILE_SYSTEM, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
-import { DEFAULT_LANE_DEFINITIONS, LANE_INFERENCE_TEMPLATE } from './init-templates.js';
-import {
-  extractConfigLanes,
-  extractInferenceParents,
-  extractInferenceTaxonomy,
-  detectLaneTaxonomyDrift,
-  validateLaneConfigAgainstInference,
-  type LaneValidationResult,
-} from './init-lane-validation.js';
+import { FILE_SYSTEM, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { DEFAULT_LANE_DEFINITIONS } from './init-templates.js';
 
 const LANE_CONFIG_KEY = 'lanes';
 const LANE_DEFINITIONS_KEY = 'definitions';
@@ -37,8 +29,6 @@ const LANE_LIFECYCLE_MIGRATED_AT_KEY = 'migrated_at';
 const LANE_LIFECYCLE_MIGRATION_REASON_KEY = 'migration_reason';
 const EMPTY_OBJECT = '{}';
 const NEWLINE = '\n';
-const EMPTY_STRING = '';
-
 const WU_CREATE_PREFIX = '[wu:create]';
 const INITIATIVE_CREATE_PREFIX = '[initiative:create]';
 const INIT_PREFIX = '[lumenflow init]';
@@ -46,10 +36,6 @@ const INIT_PREFIX = '[lumenflow init]';
 const LANE_SETUP_COMMAND = 'pnpm lane:setup';
 const LANE_LOCK_COMMAND = 'pnpm lane:lock';
 const LANE_READY_SENTINEL = 'lanes ready';
-const LANE_SUGGEST_SYNC_COMMAND = `pnpm lane:suggest --interactive --output ${CONFIG_FILES.LANE_INFERENCE}`;
-const LANE_REVALIDATE_COMMAND = 'pnpm lane:validate';
-
-const DEFAULT_FRAMEWORK_LANES_TOKEN = '{{FRAMEWORK_LANES}}';
 const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 export const LANE_LIFECYCLE_STATUS = {
@@ -68,9 +54,10 @@ export interface LaneLifecycleClassification {
   persisted: boolean;
 }
 
-export interface LaneArtifactsValidationResult extends LaneValidationResult {
+export interface LaneArtifactsValidationResult {
+  warnings: string[];
+  invalidLanes: string[];
   missingDefinitions: boolean;
-  missingInference: boolean;
 }
 
 interface LaneLifecycleDoc {
@@ -116,10 +103,6 @@ function isLaneLifecycleStatus(value: unknown): value is LaneLifecycleStatus {
 
 function getConfigPath(projectRoot: string): string {
   return path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
-}
-
-function getLaneInferencePath(projectRoot: string): string {
-  return path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
 }
 
 function readWorkspaceDoc(projectRoot: string): WorkspaceDoc {
@@ -198,16 +181,8 @@ function hasLaneDefinitions(config: ConfigDoc): boolean {
   return Array.isArray(definitions) && definitions.length > 0;
 }
 
-function hasLaneInferenceFile(projectRoot: string): boolean {
-  return existsSync(getLaneInferencePath(projectRoot));
-}
-
 function deepCloneDefaultLaneDefinitions(): unknown[] {
   return JSON.parse(JSON.stringify(DEFAULT_LANE_DEFINITIONS)) as unknown[];
-}
-
-function buildDefaultLaneInferenceTemplate(): string {
-  return LANE_INFERENCE_TEMPLATE.replace(DEFAULT_FRAMEWORK_LANES_TOKEN, EMPTY_STRING);
 }
 
 /**
@@ -227,40 +202,20 @@ export function classifyLaneLifecycleForProject(projectRoot: string): LaneLifecy
   }
 
   const definitionsPresent = hasLaneDefinitions(config);
-  const inferencePresent = hasLaneInferenceFile(projectRoot);
 
-  if (!definitionsPresent && !inferencePresent) {
+  if (!definitionsPresent) {
     return {
       status: LANE_LIFECYCLE_STATUS.UNCONFIGURED,
       source: 'migration',
-      migrationReason: 'no lane artifacts',
-      persisted: false,
-    };
-  }
-
-  if (definitionsPresent && inferencePresent) {
-    const validation = validateLaneArtifacts(projectRoot);
-    if (validation.invalidLanes.length === 0 && validation.warnings.length === 0) {
-      return {
-        status: LANE_LIFECYCLE_STATUS.LOCKED,
-        source: 'migration',
-        migrationReason: 'lane artifacts detected and valid',
-        persisted: false,
-      };
-    }
-
-    return {
-      status: LANE_LIFECYCLE_STATUS.DRAFT,
-      source: 'migration',
-      migrationReason: 'lane artifacts detected but validation failed',
+      migrationReason: 'no lane definitions',
       persisted: false,
     };
   }
 
   return {
-    status: LANE_LIFECYCLE_STATUS.DRAFT,
+    status: LANE_LIFECYCLE_STATUS.LOCKED,
     source: 'migration',
-    migrationReason: 'partial lane artifacts detected',
+    migrationReason: 'lane definitions detected',
     persisted: false,
   };
 }
@@ -268,10 +223,10 @@ export function classifyLaneLifecycleForProject(projectRoot: string): LaneLifecy
 /**
  * Ensure lifecycle status exists in config.
  *
- * Existing repositories are migrated deterministically from current artifacts:
- * - valid artifacts => locked
- * - invalid/partial artifacts => draft
- * - no artifacts => unconfigured
+ * Existing repositories are migrated deterministically from current
+ * workspace lane definitions:
+ * - lane definitions present => locked
+ * - no lane definitions => unconfigured
  */
 export function ensureLaneLifecycleForProject(
   projectRoot: string,
@@ -435,7 +390,6 @@ function detectWorkspaceLanes(
 
 export function ensureDraftLaneArtifacts(projectRoot: string): {
   createdDefinitions: boolean;
-  createdInference: boolean;
   status: LaneLifecycleStatus;
 } {
   const config = readConfigDoc(projectRoot);
@@ -448,83 +402,60 @@ export function ensureDraftLaneArtifacts(projectRoot: string): {
     createdDefinitions = true;
   }
 
-  const laneInferencePath = getLaneInferencePath(projectRoot);
-  let createdInference = false;
-  if (!existsSync(laneInferencePath)) {
-    const inferenceDir = path.dirname(laneInferencePath);
-    if (!existsSync(inferenceDir)) {
-      mkdirSync(inferenceDir, { recursive: true });
-    }
-    writeFileSync(
-      laneInferencePath,
-      buildDefaultLaneInferenceTemplate(),
-      FILE_SYSTEM.ENCODING as BufferEncoding,
-    );
-    createdInference = true;
-  }
-
   setLifecycleStatusInDoc(config, LANE_LIFECYCLE_STATUS.DRAFT);
   writeConfigDoc(projectRoot, config);
 
   return {
     createdDefinitions,
-    createdInference,
     status: LANE_LIFECYCLE_STATUS.DRAFT,
   };
 }
 
 export function validateLaneArtifacts(projectRoot: string): LaneArtifactsValidationResult {
   const configPath = getConfigPath(projectRoot);
-  const inferencePath = getLaneInferencePath(projectRoot);
-
-  const configLanes = extractConfigLanes(configPath);
-  const inferenceParents = extractInferenceParents(inferencePath);
-  const inferenceTaxonomy = extractInferenceTaxonomy(inferencePath);
-
-  const missingDefinitions = configLanes.length === 0;
-  const missingInference = inferenceParents.length === 0;
-
   const warnings: string[] = [];
   const invalidLanes: string[] = [];
+  let missingDefinitions = false;
+
+  if (!existsSync(configPath)) {
+    warnings.push(`Missing ${WORKSPACE_CONFIG_FILE_NAME}. Run: ${LANE_SETUP_COMMAND}`);
+    return {
+      warnings,
+      invalidLanes,
+      missingDefinitions: true,
+    };
+  }
+
+  try {
+    getConfig({
+      projectRoot,
+      reload: true,
+      strictWorkspace: true,
+    });
+  } catch (error) {
+    warnings.push(
+      `Invalid ${WORKSPACE_CONFIG_FILE_NAME}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return {
+      warnings,
+      invalidLanes,
+      missingDefinitions: true,
+    };
+  }
+
+  const config = readConfigDoc(projectRoot);
+  missingDefinitions = !hasLaneDefinitions(config);
 
   if (missingDefinitions) {
     warnings.push(
       `No lane definitions found in ${WORKSPACE_CONFIG_FILE_NAME} (${SOFTWARE_DELIVERY_KEY}.lanes). Run: ${LANE_SETUP_COMMAND}`,
     );
   }
-  if (missingInference) {
-    warnings.push(`Missing or invalid ${CONFIG_FILES.LANE_INFERENCE}. Run: ${LANE_SETUP_COMMAND}`);
-  }
-
-  if (!missingDefinitions && !missingInference) {
-    const laneValidation = validateLaneConfigAgainstInference(configLanes, inferenceParents);
-    warnings.push(...laneValidation.warnings);
-    invalidLanes.push(...laneValidation.invalidLanes);
-
-    const drift = detectLaneTaxonomyDrift(configLanes, inferenceTaxonomy);
-    if (drift.hasDrift) {
-      warnings.push(
-        `Lane taxonomy drift detected between ${WORKSPACE_CONFIG_FILE_NAME} lane definitions and ${CONFIG_FILES.LANE_INFERENCE}.`,
-      );
-
-      for (const [parent, subLanes] of Object.entries(drift.missingInInference)) {
-        warnings.push(`Missing in inference [${parent}]: ${subLanes.join(', ')}`);
-      }
-
-      for (const [parent, subLanes] of Object.entries(drift.extraInInference)) {
-        warnings.push(`Extra in inference [${parent}]: ${subLanes.join(', ')}`);
-      }
-
-      warnings.push(`Remediation: ${LANE_SUGGEST_SYNC_COMMAND}`);
-      warnings.push(`Then re-run: ${LANE_REVALIDATE_COMMAND}`);
-    }
-  }
 
   return {
     warnings,
     invalidLanes,
     missingDefinitions,
-    missingInference,
   };
 }
 

@@ -114,7 +114,7 @@ function formatWarningMessage(
     return (
       `Lane suggestion (low confidence ${confidenceStr}): "${suggestedLane}"\n` +
       `Run: pnpm wu:infer-lane --id WU-XXX to verify\n` +
-      `See: .lumenflow.lane-inference.yaml for lane taxonomy`
+      `See: workspace.yaml software_delivery.lanes.definitions for configured lanes`
     );
   }
 

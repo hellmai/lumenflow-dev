@@ -57,7 +57,7 @@ Description:
   Creates a temporary directory and runs:
   1. lumenflow init --full
   2. Validates package.json scripts use standalone binary format
-  3. Validates lane-inference.yaml uses hierarchical format
+  3. Validates workspace.yaml remains the only lane artifact
   4. Validates wu:create works with requireRemote=false
 
 Exit codes:
@@ -76,8 +76,8 @@ function formatResult(result: OnboardingSmokeTestResult): void {
     if (result.initScriptsValidation) {
       console.log('  ✓ Package.json scripts validated');
     }
-    if (result.laneInferenceValidation) {
-      console.log('  ✓ Lane-inference format validated');
+    if (result.workspaceLaneValidation) {
+      console.log('  ✓ Workspace-only lane scaffold validated');
     }
     if (result.wuCreateValidation) {
       console.log('  ✓ wu:create with requireRemote=false validated');

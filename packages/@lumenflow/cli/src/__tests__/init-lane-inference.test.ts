@@ -5,8 +5,7 @@
  * @file init-lane-inference.test.ts
  * WU-1748: Deferred lane lifecycle
  *
- * `.lumenflow.lane-inference.yaml` is no longer scaffolded by `init`.
- * It is created during lane lifecycle setup (`pnpm lane:setup`).
+ * `.lumenflow.lane-inference.yaml` must never be scaffolded by `init`.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';

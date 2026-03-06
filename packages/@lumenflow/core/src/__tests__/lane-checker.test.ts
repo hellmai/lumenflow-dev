@@ -24,7 +24,6 @@ import {
 } from '../lane-checker.js';
 import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from '../config-contract.js';
 import { stringifyYAML } from '../wu-yaml.js';
-import { CONFIG_FILES } from '../wu-constants.js';
 import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
 
 // Test constants to avoid magic string duplication
@@ -891,7 +890,7 @@ No completed items
 /**
  * WU-2326: workspace.yaml is authoritative for lane validation.
  *
- * Sub-lane validation must not depend on .lumenflow.lane-inference.yaml.
+ * Sub-lane validation must not depend on a secondary lane taxonomy file.
  */
 describe('lane-checker workspace-authoritative lane validation (WU-2326)', () => {
   let testBaseDir: string;
@@ -921,7 +920,7 @@ describe('lane-checker workspace-authoritative lane validation (WU-2326)', () =>
     };
     writeWorkspaceConfig(configFilePath, config);
 
-    // NOTE: .lumenflow.lane-inference.yaml is intentionally NOT created
+    // NOTE: only workspace.yaml is created
   });
 
   afterEach(() => {
@@ -933,7 +932,7 @@ describe('lane-checker workspace-authoritative lane validation (WU-2326)', () =>
     }
   });
 
-  describe('validateLaneFormat with missing lane-inference file', () => {
+  describe('validateLaneFormat with workspace-only lane definitions', () => {
     /** Module path for dynamic import (extracted to avoid duplication) */
     const LANE_CHECKER_MODULE = '../lane-checker.js';
 
@@ -1047,18 +1046,6 @@ describe('lane-checker workspace-authoritative lane validation (WU-2326)', () =>
         },
       };
       writeFileSync(configFilePath, stringifyYAML(workspaceWithControlPlane));
-
-      // Also write lane-inference so sub-lane validation doesn't fail
-      const laneInferencePath = join(testBaseDir, CONFIG_FILES.LANE_INFERENCE);
-      const laneInference = {
-        Framework: {
-          Core: { code_paths: ['packages/**/core/**'], keywords: ['core'] },
-        },
-        Content: {
-          Documentation: { code_paths: ['docs/**'], keywords: ['docs'] },
-        },
-      };
-      writeFileSync(laneInferencePath, stringifyYAML(laneInference));
 
       const { validateLaneFormat } = await importLaneCheckerWithMockedRoot();
 

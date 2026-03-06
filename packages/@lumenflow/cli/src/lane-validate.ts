@@ -38,7 +38,7 @@ export const LANE_VALIDATE_HELP_TEXT = `Usage: pnpm lane:validate
 
 Validate lane artifacts before locking.
 
-Checks lane definitions in workspace.yaml and lane inference taxonomy,
+Checks lane definitions in workspace.yaml,
 then sets lane lifecycle status to "draft" via micro-worktree isolation
 (changes committed atomically to main).
 

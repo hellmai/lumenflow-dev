@@ -51,35 +51,35 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Work Unit Management
 
-| Command            | Description                                                   |
-| ------------------ | ------------------------------------------------------------- |
-| `approval-list`    | List control-plane approvals with optional filters            |
-| `approval-request` | Request control-plane approval for a workflow action          |
-| `approval-review`  | Resolve a control-plane approval decision                     |
-| `wu-block`         | Block WU with reason                                          |
-| `wu-brief`         | Generate handoff prompt for sub-agent WU execution            |
-| `wu-claim`         | Claim WU and create worktree                                  |
-| `wu-cleanup`       | Cleanup after PR merge                                        |
-| `wu-create`        | Create new WU spec                                            |
-| `wu-delegate`      | Generate delegation prompt and record explicit lineage intent |
-| `wu-delete`        | Delete WU spec and cleanup                                    |
-| `wu-deps`          | Show WU dependencies                                          |
-| `wu-done`          | Complete WU (merge, stamp, cleanup) from main                 |
-| `wu-edit`          | Edit WU spec fields                                           |
-| `wu-escalate`      | Show or resolve WU escalation status                          |
-| `wu-infer-lane`    | Infer lane from code paths/description                        |
-| `wu-preflight`     | Pre-flight checks before wu:done                              |
-| `wu-prep`          | Run gates in worktree, prep for wu:done                       |
-| `wu-proto`         | Create WU prototype                                           |
-| `wu-prune`         | Clean stale worktrees                                         |
-| `wu-recover`       | Analyze and fix WU state inconsistencies                      |
-| `wu-release`       | Release orphaned WU (in_progress to ready)                    |
-| `wu-repair`        | Repair WU state issues                                        |
-| `wu-sandbox`       | Run command through hardened WU sandbox backend               |
-| `wu-status`        | Show WU status, location, valid commands                      |
-| `wu-unblock`       | Unblock WU                                                    |
-| `wu-unlock-lane`   | Unlock stuck lane                                             |
-| `wu-validate`      | Validate WU spec                                              |
+| Command            | Description                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| `approval-list`    | List control-plane approvals with optional filters                 |
+| `approval-request` | Request control-plane approval for a workflow action               |
+| `approval-review`  | Resolve a control-plane approval decision                          |
+| `wu-block`         | Block WU with reason                                               |
+| `wu-brief`         | Generate handoff prompt for sub-agent WU execution                 |
+| `wu-claim`         | Claim WU and create worktree                                       |
+| `wu-cleanup`       | Cleanup after PR merge                                             |
+| `wu-create`        | Create new WU spec                                                 |
+| `wu-delegate`      | Generate delegation prompt and record explicit lineage intent      |
+| `wu-delete`        | Delete WU spec and cleanup                                         |
+| `wu-deps`          | Show WU dependencies                                               |
+| `wu-done`          | Complete WU (merge, stamp, cleanup) from main                      |
+| `wu-edit`          | Edit WU spec fields                                                |
+| `wu-escalate`      | Show or resolve WU escalation status                               |
+| `wu-infer-lane`    | Infer lane from code paths/description using workspace definitions |
+| `wu-preflight`     | Pre-flight checks before wu:done                                   |
+| `wu-prep`          | Run gates in worktree, prep for wu:done                            |
+| `wu-proto`         | Create WU prototype                                                |
+| `wu-prune`         | Clean stale worktrees                                              |
+| `wu-recover`       | Analyze and fix WU state inconsistencies                           |
+| `wu-release`       | Release orphaned WU (in_progress to ready)                         |
+| `wu-repair`        | Repair WU state issues                                             |
+| `wu-sandbox`       | Run command through hardened WU sandbox backend                    |
+| `wu-status`        | Show WU status, location, valid commands                           |
+| `wu-unblock`       | Unblock WU                                                         |
+| `wu-unlock-lane`   | Unlock stuck lane                                                  |
+| `wu-validate`      | Validate WU spec                                                   |
 
 ### Memory & Session
 
@@ -144,7 +144,7 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `lane-lock`     | Lock lane lifecycle for delivery WUs                           |
 | `lane-setup`    | Create/update draft lane artifacts                             |
 | `lane-status`   | Show lane lifecycle status and next step                       |
-| `lane-suggest`  | Suggest lane for code paths                                    |
+| `lane-suggest`  | Suggest workspace lane definitions from project context        |
 | `lane-validate` | Validate lane artifacts before lock                            |
 
 ### Verification & Gates

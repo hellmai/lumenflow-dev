@@ -318,7 +318,6 @@ describe('WU-1751: wu:create lane lifecycle reads are non-mutating', () => {
   it('does not rewrite legacy config when lifecycle status is inferred', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wu-create-lifecycle-readonly-'));
     const configPath = path.join(tempDir, 'workspace.yaml');
-    const inferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
 
     try {
       const configWithComments = `${SOFTWARE_DELIVERY_KEY}:
@@ -333,15 +332,6 @@ describe('WU-1751: wu:create lane lifecycle reads are non-mutating', () => {
           - "src/core/**"
 `;
       fs.writeFileSync(configPath, configWithComments, 'utf-8');
-      fs.writeFileSync(
-        inferencePath,
-        `Framework:
-  Core:
-    code_paths:
-      - src/core/**
-`,
-        'utf-8',
-      );
 
       const before = fs.readFileSync(configPath, 'utf-8');
       const classification = resolveLaneLifecycleForWuCreate(tempDir);

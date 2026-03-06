@@ -23,7 +23,6 @@ import {
 } from '../lane-lifecycle-process.js';
 
 const CONFIG_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
-const LANE_INFERENCE_FILE_NAME = '.lumenflow.lane-inference.yaml';
 
 describe('lane lifecycle process (WU-1748)', () => {
   let tempDir: string;
@@ -49,11 +48,6 @@ describe('lane lifecycle process (WU-1748)', () => {
     );
   }
 
-  function writeLaneInference(content: string): void {
-    const laneInferencePath = path.join(tempDir, LANE_INFERENCE_FILE_NAME);
-    fs.writeFileSync(laneInferencePath, content, 'utf-8');
-  }
-
   it('classifies as unconfigured when no lane artifacts exist', () => {
     writeConfig({});
 
@@ -61,28 +55,15 @@ describe('lane lifecycle process (WU-1748)', () => {
     expect(classification.status).toBe(LANE_LIFECYCLE_STATUS.UNCONFIGURED);
   });
 
-  it('classifies as locked when lane artifacts exist and validate', () => {
+  it('classifies as locked when lane definitions exist', () => {
     writeConfig({
       lanes: {
         definitions: [{ name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }],
       },
     });
-    writeLaneInference(`Framework:\n  Core:\n    code_paths:\n      - src/core/**\n`);
 
     const classification = classifyLaneLifecycleForProject(tempDir);
     expect(classification.status).toBe(LANE_LIFECYCLE_STATUS.LOCKED);
-  });
-
-  it('classifies as draft when lane artifacts exist but validation fails', () => {
-    writeConfig({
-      lanes: {
-        definitions: [{ name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] }],
-      },
-    });
-    writeLaneInference(`Framework:\n  Core:\n    code_paths:\n      - src/core/**\n`);
-
-    const classification = classifyLaneLifecycleForProject(tempDir);
-    expect(classification.status).toBe(LANE_LIFECYCLE_STATUS.DRAFT);
   });
 
   it('recommends deterministic next step for each lifecycle status', () => {
@@ -114,38 +95,7 @@ describe('lane lifecycle process (WU-1748)', () => {
     expect(message).toContain('When ready for delivery WUs, run: pnpm lane:setup');
   });
 
-  it('reports taxonomy drift when workspace and inference sub-lanes diverge', () => {
-    writeConfig({
-      lanes: {
-        definitions: [
-          { name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] },
-          { name: 'Framework: CLI Enforcement', wip_limit: 1, code_paths: ['src/cli/**'] },
-        ],
-      },
-    });
-    writeLaneInference(
-      `Framework:\n  Core:\n    code_paths:\n      - src/core/**\n  CLI:\n    code_paths:\n      - src/cli/**\n`,
-    );
-
-    const validation = validateLaneArtifacts(tempDir);
-
-    expect(
-      validation.warnings.some((warning) => warning.includes('Lane taxonomy drift detected')),
-    ).toBe(true);
-    expect(
-      validation.warnings.some((warning) => warning.includes('Missing in inference [Framework]')),
-    ).toBe(true);
-    expect(
-      validation.warnings.some((warning) => warning.includes('Extra in inference [Framework]')),
-    ).toBe(true);
-    expect(
-      validation.warnings.some((warning) =>
-        warning.includes('pnpm lane:suggest --interactive --output .lumenflow.lane-inference.yaml'),
-      ),
-    ).toBe(true);
-  });
-
-  it('does not report taxonomy drift when workspace and inference sub-lanes match', () => {
+  it('passes validation when lane definitions exist in workspace.yaml', () => {
     writeConfig({
       lanes: {
         definitions: [
@@ -154,14 +104,24 @@ describe('lane lifecycle process (WU-1748)', () => {
         ],
       },
     });
-    writeLaneInference(
-      `Framework:\n  Core:\n    code_paths:\n      - src/core/**\n  CLI:\n    code_paths:\n      - src/cli/**\n`,
-    );
 
     const validation = validateLaneArtifacts(tempDir);
 
+    expect(validation.warnings).toHaveLength(0);
+    expect(validation.invalidLanes).toHaveLength(0);
+    expect(validation.missingDefinitions).toBe(false);
+  });
+
+  it('warns when lane definitions are missing', () => {
+    writeConfig({
+      lanes: {},
+    });
+
+    const validation = validateLaneArtifacts(tempDir);
+
+    expect(validation.missingDefinitions).toBe(true);
     expect(
-      validation.warnings.some((warning) => warning.includes('Lane taxonomy drift detected')),
-    ).toBe(false);
+      validation.warnings.some((warning) => warning.includes('No lane definitions found')),
+    ).toBe(true);
   });
 });

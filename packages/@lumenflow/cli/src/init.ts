@@ -1384,7 +1384,7 @@ async function scaffoldFullDocs(
 /**
  * WU-1083: Scaffold agent onboarding documentation
  * WU-1300: Added starting-prompt.md
- * WU-1309: Added first-15-mins.md, local-only.md, lane-inference.md; use dynamic docs path
+ * WU-1309: Added onboarding docs scaffold with dynamic docs path resolution
  */
 async function scaffoldAgentOnboardingDocs(
   targetDir: string,

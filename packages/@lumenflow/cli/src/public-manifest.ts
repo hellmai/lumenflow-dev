@@ -250,7 +250,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     name: 'wu:infer-lane',
     binName: 'wu-infer-lane',
     binPath: './dist/wu-infer-lane.js',
-    description: 'Infer lane from code paths/description',
+    description: 'Infer lane from code paths/description using workspace definitions',
     category: COMMAND_CATEGORIES.WU_MAINTENANCE,
   },
   {
@@ -349,7 +349,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     name: 'lane:suggest',
     binName: 'lane-suggest',
     binPath: './dist/lane-suggest.js',
-    description: 'Suggest lane for code paths',
+    description: 'Suggest workspace lane definitions from project context',
     category: COMMAND_CATEGORIES.GATES_QUALITY,
   },
   {

@@ -183,7 +183,7 @@ automatically, and `.lumenflow/templates/` remains optional unless you want cust
 | `pnpm test`                                                 | Run all tests (Vitest)                                    |
 | `pnpm spec:linter`                                          | Validate WU specs (all) ¹                                 |
 | `pnpm lane:health`                                          | Check lane config health                                  |
-| `pnpm lane:suggest --output .lumenflow.lane-inference.yaml` | Regenerate lane inference taxonomy from project structure |
+| `pnpm lane:suggest --output workspace.lanes.yaml`           | Generate a workspace lane-definition snippet              |
 | `pnpm lane:status`                                          | Show lane lifecycle status                                |
 | `pnpm lane:setup`                                           | Create/update draft lane config                           |
 | `pnpm lane:validate`                                        | Validate lane draft artifacts                             |
@@ -673,14 +673,15 @@ Check current lifecycle state any time:
 pnpm lane:status
 ```
 
-### Lane Taxonomy Drift (workspace.yaml vs inference)
+### Lane Definition Suggestions
 
-If lane commands report drift between `workspace.yaml` lane definitions and
-`.lumenflow.lane-inference.yaml`, sync taxonomy first, then re-validate:
+If your current lane definitions no longer fit the codebase, generate a fresh
+lane-definition snippet and then review or apply the changes:
 
 ```bash
-pnpm lane:suggest --interactive --output .lumenflow.lane-inference.yaml
-pnpm lane:validate
+pnpm lane:suggest --interactive --output workspace.lanes.yaml
+pnpm lane:edit --name "<existing lane>" ...
+pnpm lane:create --name "<new lane>" --add-path "..."
 ```
 
 ---

@@ -11,7 +11,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML } from './wu-yaml.js';
-import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
 import { STRING_LITERALS } from './wu-constants.js';
@@ -97,9 +96,6 @@ type WUDoc = Pick<import('./wu-doc-types.js').WUDocBase, 'lane'>;
  */
 const ACTIVE_COUNTED_STATUSES_ALL = new Set<string>([WU_STATUS.IN_PROGRESS, WU_STATUS.BLOCKED]);
 const ACTIVE_COUNTED_STATUSES_PROGRESS_ONLY = new Set<string>([WU_STATUS.IN_PROGRESS]);
-
-// Re-export for test access
-export { getSubLanesForParent };
 
 /** Log prefix for lane-checker messages */
 const PREFIX = '[lane-checker]';

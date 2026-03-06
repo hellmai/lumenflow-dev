@@ -246,24 +246,22 @@ title: Add email validation
 lane: 'Experience: UI' # ← Full Parent: Sublane format
 ```
 
-## Auto-Detection via Paths
+## Suggestions via Paths
 
-LumenFlow can auto-detect lanes based on file paths using the lane inference system:
+LumenFlow suggests lanes based on the authoritative lane definitions in
+`workspace.yaml`:
 
 ```yaml
-# .lumenflow.lane-inference.yaml
-Framework:
-  Core:
-    code_paths:
-      - 'packages/@lumenflow/core/**'
-    keywords:
-      - 'core library'
-      - 'wu lifecycle'
+software_delivery:
+  lanes:
+    definitions:
+      - name: 'Framework: Core'
+        code_paths:
+          - 'packages/@lumenflow/core/**'
 ```
 
-If a WU's `code_paths` match a pattern, the sublane is suggested automatically.
-
-Note: `.lumenflow.lane-inference.yaml` is created during lane lifecycle setup (not during `lumenflow init`).
+If a WU's `code_paths` match configured lane `code_paths`, the lane is suggested
+automatically by `wu:infer-lane`.
 
 ## Multiple Lanes
 

@@ -4,7 +4,7 @@
 /**
  * @file init-onboarding-docs.test.ts
  * Tests for onboarding docs scaffold (WU-1309)
- * Verifies: starting-prompt, first-15-mins, local-only, lane-inference
+ * Verifies: starting-prompt, first-15-mins, local-only
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -30,8 +30,6 @@ describe('onboarding docs scaffold', () => {
   const STARTING_PROMPT_FILE = 'starting-prompt.md';
   const FIRST_15_MINS_FILE = 'first-15-mins.md';
   const LOCAL_ONLY_FILE = 'local-only.md';
-  const LANE_INFERENCE_FILE = 'lane-inference.md';
-
   function getOnboardingDir(docsStructure: 'simple' | 'arc42' = ARC42_DOCS_STRUCTURE): string {
     if (docsStructure === 'simple') {
       return path.join(tempDir, 'docs', '_frameworks', 'lumenflow', 'agent', 'onboarding');
@@ -125,16 +123,6 @@ describe('onboarding docs scaffold', () => {
       expect(content).toContain('local');
     });
 
-    it('should scaffold lane-inference.md', async () => {
-      await scaffoldProject(tempDir, getArc42Options());
-
-      const docPath = path.join(getOnboardingDir(), LANE_INFERENCE_FILE);
-      expect(fs.existsSync(docPath)).toBe(true);
-
-      const content = fs.readFileSync(docPath, 'utf-8');
-      expect(content).toContain('lane');
-      expect(content).toContain('.lumenflow.lane-inference.yaml');
-    });
   });
 
   describe('onboarding docs with simple structure', () => {
@@ -152,7 +140,6 @@ describe('onboarding docs scaffold', () => {
       expect(fs.existsSync(path.join(onboardingDir, STARTING_PROMPT_FILE))).toBe(true);
       expect(fs.existsSync(path.join(onboardingDir, FIRST_15_MINS_FILE))).toBe(true);
       expect(fs.existsSync(path.join(onboardingDir, LOCAL_ONLY_FILE))).toBe(true);
-      expect(fs.existsSync(path.join(onboardingDir, LANE_INFERENCE_FILE))).toBe(true);
     });
   });
 
@@ -167,7 +154,6 @@ describe('onboarding docs scaffold', () => {
         STARTING_PROMPT_FILE,
         FIRST_15_MINS_FILE,
         LOCAL_ONLY_FILE,
-        LANE_INFERENCE_FILE,
         // Previously existing docs
         'quick-ref-commands.md',
         'first-wu-mistakes.md',

@@ -13,10 +13,11 @@ import path from 'node:path';
 import { parseYAML } from './wu-yaml.js';
 import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js';
 import { extractParent } from './lane-checker.js';
-import { CONFIG_FILES, STRING_LITERALS, WU_STATUS } from './wu-constants.js';
+import { getSubLanesForParent } from './lane-inference.js';
+import { STRING_LITERALS, WU_STATUS } from './wu-constants.js';
 import { getErrorMessage } from './error-handler.js';
 import { createWuPaths } from './wu-paths.js';
-import { findProjectRoot } from './lumenflow-config.js';
+import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from './lumenflow-config.js';
 
 const BACKLOG_SECTION_STATUS = {
   ready: WU_STATUS.READY,
@@ -34,27 +35,14 @@ interface SectionTracker {
 }
 
 /**
- * Check if parent lane has sub-lane taxonomy in .lumenflow.lane-inference.yaml
- * @param {string} parent - Parent lane name
- * @param {string} projectRoot - Path to project root
- * @returns {boolean} True if parent has sub-lanes defined
+ * Check if parent lane has configured sub-lanes in workspace.yaml.
+ *
+ * Parent-only Ready WUs are only flagged when the authoritative lane
+ * definitions already declare specific sub-lanes for that parent.
  */
 function hasSubLaneTaxonomy(parent: string, projectRoot: string): boolean {
-  const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
-  if (!existsSync(taxonomyPath)) {
-    return false;
-  }
-
-  try {
-    const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
-    const taxonomy = parseYAML(taxonomyContent);
-
-    const normalizedParent = parent.trim().toLowerCase();
-    return Object.keys(taxonomy).some((key) => key.toLowerCase().trim() === normalizedParent);
-  } catch {
-    // If taxonomy file is malformed, assume no taxonomy (fail safe)
-    return false;
-  }
+  const workspaceConfigPath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
+  return getSubLanesForParent(parent, workspaceConfigPath).length > 0;
 }
 
 export function validateBacklogSync(backlogPath: string) {

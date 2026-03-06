@@ -106,9 +106,9 @@ When creating WUs or scoping initiatives, always evaluate whether the assigned l
 - **Check code_paths alignment**: Compare the WU's `code_paths` against lane definitions in `workspace.yaml`. If the majority of paths belong to a different lane, propose a lane change.
 - **Use lane inference tooling correctly**:
   - For a WU lane recommendation, run `pnpm wu:infer-lane --id WU-XXXX`.
-  - To regenerate derived lane taxonomy metadata, run `pnpm lane:suggest --output .lumenflow.lane-inference.yaml`.
+  - To generate suggested lane definitions from project structure, run `pnpm lane:suggest --output workspace.lanes.yaml`.
 - **Propose changes proactively**: If scope expansion during implementation pushes a WU beyond its lane's boundaries, flag the mismatch to the user and suggest either a lane change or a WU split.
-- **Initiative-level review**: When planning an initiative with multiple WUs, ensure each WU is assigned to the lane whose `code_paths` best cover the work. Systematic mismatches signal that lane taxonomy may need updating.
+- **Initiative-level review**: When planning an initiative with multiple WUs, ensure each WU is assigned to the lane whose `code_paths` best cover the work. Systematic mismatches signal that `workspace.yaml` lane definitions may need updating.
 
 ---
 
@@ -344,11 +344,11 @@ pnpm config:set --key agents.methodology.principles --value Library-First,KISS
 For lanes:
 
 - `workspace.yaml` (`software_delivery.lanes.definitions`) is the source of truth for lane validation and claim-time lane checks.
-- `.lumenflow.lane-inference.yaml` is derived metadata for suggestion/classification workflows.
-- After lane definition changes, regenerate taxonomy metadata with:
+- `wu:infer-lane` reads lane names, descriptions, and `code_paths` from `workspace.yaml`.
+- To generate a lane-definition snippet from project structure, run:
 
 ```bash
-pnpm lane:suggest --output .lumenflow.lane-inference.yaml
+pnpm lane:suggest --output workspace.lanes.yaml
 ```
 
 ### Modifying WU YAML Specs

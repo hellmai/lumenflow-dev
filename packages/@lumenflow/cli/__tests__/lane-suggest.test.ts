@@ -98,14 +98,14 @@ describe('lane:suggest', () => {
         existsSync: ReturnType<typeof vi.fn>;
         readFileSync: ReturnType<typeof vi.fn>;
       };
-      mockFs.existsSync.mockImplementation((path: string) =>
-        path.includes('.lumenflow.lane-inference.yaml'),
-      );
+      mockFs.existsSync.mockImplementation((path: string) => path.includes('workspace.yaml'));
       mockFs.readFileSync.mockReturnValue(`
-Framework:
-  Core:
-    code_paths:
-      - CODE_PATH_CORE
+software_delivery:
+  lanes:
+    definitions:
+      - name: "Framework: Core"
+        code_paths:
+          - CODE_PATH_CORE
 `);
 
       // Should detect and parse existing config

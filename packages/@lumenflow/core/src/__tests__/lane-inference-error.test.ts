@@ -4,23 +4,22 @@
 /**
  * Tests for lane-inference error messages
  *
- * WU-1302: Verify that missing .lumenflow.lane-inference.yaml gives clear
- * error message with actionable fix suggestion.
+ * Lane inference now reads workspace.yaml lane definitions directly.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdirSync, rmSync, existsSync } from 'node:fs';
+import { mkdirSync, rmSync, existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { inferSubLane, getSubLanesForParent } from '../lane-inference.js';
 
 // Test constants to avoid duplicate strings
-const CONFIG_FILENAME = '.lumenflow.lane-inference.yaml';
+const CONFIG_FILENAME = 'workspace.yaml';
 const TEST_CODE_PATH = 'packages/core/src/index.ts';
 const TEST_WU_DESCRIPTION = 'Test WU';
 const EXPECTED_TO_THROW = 'Should have thrown an error';
 
-describe('lane-inference error messages (WU-1302)', () => {
+describe('lane-inference error messages', () => {
   let testBaseDir: string;
 
   beforeEach(() => {
@@ -42,7 +41,7 @@ describe('lane-inference error messages (WU-1302)', () => {
     }
   });
 
-  describe('missing .lumenflow.lane-inference.yaml', () => {
+  describe('missing workspace.yaml', () => {
     it('throws error with clear message when config file is missing', () => {
       const missingConfigPath = join(testBaseDir, CONFIG_FILENAME);
 
@@ -65,38 +64,56 @@ describe('lane-inference error messages (WU-1302)', () => {
       }
     });
 
-    it('error message includes fix suggestion with lane:suggest command', () => {
+    it('error message includes fix suggestion with lane:setup command', () => {
       const missingConfigPath = join(testBaseDir, CONFIG_FILENAME);
 
       try {
         inferSubLane([TEST_CODE_PATH], TEST_WU_DESCRIPTION, missingConfigPath);
         expect.fail(EXPECTED_TO_THROW);
       } catch (error) {
-        // WU-1302: Error should include actionable fix suggestion
-        expect((error as Error).message).toContain('lane:suggest');
+        expect((error as Error).message).toContain('lane:setup');
       }
     });
 
-    it('error message mentions generating lane taxonomy', () => {
+    it('error message points to workspace lane definitions', () => {
       const missingConfigPath = join(testBaseDir, CONFIG_FILENAME);
 
       try {
         inferSubLane([TEST_CODE_PATH], TEST_WU_DESCRIPTION, missingConfigPath);
         expect.fail(EXPECTED_TO_THROW);
       } catch (error) {
-        // Error should explain what the file is for
-        expect((error as Error).message.toLowerCase()).toMatch(/generate|create|taxonomy|lane/);
+        expect((error as Error).message).toContain('workspace');
+        expect((error as Error).message).toContain('lanes.definitions');
       }
     });
   });
 
-  describe('getSubLanesForParent with missing config', () => {
+  describe('getSubLanesForParent', () => {
     it('returns empty array (graceful degradation) when config is missing', () => {
       const missingConfigPath = join(testBaseDir, CONFIG_FILENAME);
 
-      // getSubLanesForParent should NOT throw - it's used in validation paths
-      // and should gracefully return empty when config is missing
-      expect(() => getSubLanesForParent('Framework', missingConfigPath)).toThrow();
+      expect(getSubLanesForParent('Framework', missingConfigPath)).toEqual([]);
+    });
+
+    it('reads sub-lanes from workspace.yaml definitions', () => {
+      const configPath = join(testBaseDir, CONFIG_FILENAME);
+      writeFileSync(
+        configPath,
+        `software_delivery:
+  lanes:
+    definitions:
+      - name: "Framework: Core"
+        wip_limit: 1
+        code_paths:
+          - "packages/core/**"
+      - name: "Framework: CLI"
+        wip_limit: 1
+        code_paths:
+          - "packages/cli/**"
+`,
+      );
+
+      expect(getSubLanesForParent('Framework', configPath)).toEqual(['Core', 'CLI']);
     });
   });
 });

@@ -2,40 +2,33 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 /**
- * Lane Inference Module (WU-906)
+ * Lane inference derived directly from workspace lane definitions.
  *
- * Provides automated sub-lane suggestion based on WU code_paths and description.
- * Uses config-driven pattern matching with confidence scoring.
- *
- * Inference is suggestion only (not enforcement). Track accuracy for future tuning.
- *
- * Uses industry-standard libraries:
- * - micromatch for robust glob matching (28x faster than minimatch)
- * - yaml for modern YAML parsing (actively maintained, YAML 1.2 compliant)
+ * Suggestions are based on the canonical `workspace.yaml`
+ * `software_delivery.lanes.definitions` block. There is no secondary
+ * lane taxonomy artifact.
  */
 
-import { readFileSync, existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import YAML from 'yaml'; // Modern YAML library (not js-yaml)
-import micromatch from 'micromatch'; // Industry-standard glob matching (CommonJS)
-import { extractParent } from './lane-checker.js'; // Shared utility (WU-1137: consolidation)
+import micromatch from 'micromatch';
+import YAML from 'yaml';
+import { WORKSPACE_V2_KEYS } from './config-contract.js';
 import { createError, ErrorCodes } from './error-handler.js';
-import { WEIGHTS, CONFIDENCE } from './wu-validation-constants.js';
-import { findProjectRoot } from './lumenflow-config.js';
-import { CONFIG_FILES } from './wu-constants.js';
+import { getConfig, findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from './lumenflow-config.js';
+import { asRecord } from './object-guards.js';
+import { CONFIDENCE, WEIGHTS } from './wu-validation-constants.js';
 
-interface SubLaneConfig {
+interface LaneDefinition {
+  name: string;
+  description?: string;
   code_paths?: string[];
-  keywords?: string[];
 }
-
-type LaneInferenceConfig = Record<string, Record<string, SubLaneConfig>>;
 
 interface LaneScore {
   lane: string;
   confidence: number;
   parent: string;
-  subLane: string;
 }
 
 interface LaneInferenceResult {
@@ -43,118 +36,154 @@ interface LaneInferenceResult {
   confidence: number;
 }
 
-/**
- * Load lane inference config from project root
- * @param {string|null} configPath - Optional path to config file (defaults to project root)
- * @returns {object} Parsed config object
- * @throws {Error} If config file not found or YAML parsing fails
- */
-function loadConfig(configPath: string | null = null): LaneInferenceConfig {
-  let resolvedConfigPath = configPath;
-  if (!resolvedConfigPath) {
-    // Use findProjectRoot() to locate config from cwd
-    const projectRoot = findProjectRoot();
-    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
-  }
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+const DEFAULT_FALLBACK_PARENT = 'Operations';
 
-  if (!existsSync(resolvedConfigPath)) {
-    throw createError(
-      ErrorCodes.FILE_NOT_FOUND,
-      `Lane inference config not found: ${resolvedConfigPath}\n\n` +
-        `This file provides derived lane taxonomy for lane suggestion/classification.\n\n` +
-        `To fix this:\n` +
-        `  1. Generate a lane taxonomy from your codebase:\n` +
-        `     pnpm lane:suggest --output ${CONFIG_FILES.LANE_INFERENCE}\n\n` +
-        `  2. Or copy from an example project and customize.\n` +
-        `     workspace.yaml remains the source of truth for lane validation.\n\n` +
-        `See: LUMENFLOW.md "Setup Notes" section for details.`,
-      { path: resolvedConfigPath },
-    );
-  }
-
-  try {
-    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-    const parsed = YAML.parse(configContent) as unknown;
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw createError(
-        ErrorCodes.YAML_PARSE_ERROR,
-        `Failed to parse lane inference config: ${resolvedConfigPath}\n\n` +
-          `Config must be a mapping of parent lanes to sub-lane config objects.`,
-        { path: resolvedConfigPath },
-      );
-    }
-    return parsed as LaneInferenceConfig;
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    throw createError(
-      ErrorCodes.YAML_PARSE_ERROR,
-      `Failed to parse lane inference config: ${resolvedConfigPath}\n\n${message}\n\n` +
-        `Ensure config is valid YAML.`,
-      { path: resolvedConfigPath, originalError: message },
-    );
-  }
+function extractParentFromLaneName(laneName: string): string {
+  const trimmed = laneName.trim();
+  const colonIndex = trimmed.indexOf(':');
+  return colonIndex === -1 ? trimmed : trimmed.substring(0, colonIndex).trim();
 }
 
-/**
- * Check if a code path matches a glob pattern using micromatch
- * @param {string} codePath - Actual code path from WU
- * @param {string} pattern - Glob pattern from config (e.g., "tools/**", "*.ts")
- * @returns {boolean} True if path matches pattern
- */
+function normalizeDefinitionsFromLanes(lanes: unknown): LaneDefinition[] {
+  if (Array.isArray(lanes)) {
+    return lanes.filter((lane): lane is LaneDefinition => {
+      const record = asRecord(lane);
+      return typeof record?.name === 'string';
+    });
+  }
+
+  const lanesRecord = asRecord(lanes);
+  if (!lanesRecord) {
+    return [];
+  }
+
+  const definitions: LaneDefinition[] = [];
+  for (const key of ['definitions', 'engineering', 'business']) {
+    const value = lanesRecord[key];
+    if (!Array.isArray(value)) {
+      continue;
+    }
+    for (const lane of value) {
+      const record = asRecord(lane);
+      if (typeof record?.name === 'string') {
+        definitions.push(record as unknown as LaneDefinition);
+      }
+    }
+  }
+
+  return definitions;
+}
+
+function parseWorkspaceLaneDefinitions(configPath: string): LaneDefinition[] {
+  const rawConfig = readFileSync(configPath, { encoding: 'utf-8' });
+  const parsedWorkspace = asRecord(YAML.parse(rawConfig));
+  if (!parsedWorkspace) {
+    throw createError(
+      ErrorCodes.YAML_PARSE_ERROR,
+      `Failed to parse workspace config: ${configPath}\n\n` +
+        `${WORKSPACE_CONFIG_FILE_NAME} must contain an object root.`,
+      { path: configPath },
+    );
+  }
+
+  const softwareDelivery = asRecord(parsedWorkspace[SOFTWARE_DELIVERY_KEY]);
+  if (!softwareDelivery) {
+    throw createError(
+      ErrorCodes.CONFIG_ERROR,
+      `Missing ${SOFTWARE_DELIVERY_KEY} block in ${configPath}.\n\n` +
+        'Run `pnpm workspace-init --yes` and configure lanes in workspace.yaml.',
+      { path: configPath },
+    );
+  }
+
+  return normalizeDefinitionsFromLanes(softwareDelivery.lanes);
+}
+
+function loadLaneDefinitions(configPath: string | null = null): LaneDefinition[] {
+  if (configPath) {
+    if (!existsSync(configPath)) {
+      throw createError(
+        ErrorCodes.FILE_NOT_FOUND,
+        `Workspace config not found: ${configPath}\n\n` +
+          `Run \`pnpm workspace-init --yes\` and \`pnpm lane:setup\` to scaffold ` +
+          `${SOFTWARE_DELIVERY_KEY}.lanes.definitions.`,
+        { path: configPath },
+      );
+    }
+
+    const definitions = parseWorkspaceLaneDefinitions(configPath);
+    if (definitions.length === 0) {
+      throw createError(
+        ErrorCodes.VALIDATION_ERROR,
+        `No lane definitions found in ${configPath}.\n\n` +
+          `Configure ${SOFTWARE_DELIVERY_KEY}.lanes.definitions or run \`pnpm lane:setup\`.`,
+        { path: configPath },
+      );
+    }
+    return definitions;
+  }
+
+  const projectRoot = findProjectRoot();
+  const config = getConfig({
+    projectRoot,
+    reload: true,
+    strictWorkspace: true,
+  });
+  const definitions = normalizeDefinitionsFromLanes(config.lanes);
+
+  if (definitions.length === 0) {
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `No lane definitions found in ${path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME)}.\n\n` +
+        `Configure ${SOFTWARE_DELIVERY_KEY}.lanes.definitions or run \`pnpm lane:setup\`.`,
+      { path: path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME) },
+    );
+  }
+
+  return definitions;
+}
+
 function matchesPattern(codePath: string, pattern: string): boolean {
-  // Use micromatch for robust, fast glob matching (industry standard)
-  // 28x faster than minimatch, used by webpack/babel/jest
   return micromatch.isMatch(codePath, pattern, { nocase: true });
 }
 
-/**
- * Check if description contains a keyword (case-insensitive match)
- * @param {string} description - WU description text
- * @param {string} keyword - Keyword to search for
- * @returns {boolean} True if keyword found in description
- */
 function containsKeyword(description: string, keyword: string): boolean {
   const normalizedDesc = description.toLowerCase().trim();
   const normalizedKeyword = keyword.toLowerCase().trim();
-
-  // Simple substring match (sufficient for keyword detection)
-  return normalizedDesc.includes(normalizedKeyword);
+  return normalizedKeyword.length > 0 && normalizedDesc.includes(normalizedKeyword);
 }
 
-/**
- * Calculate confidence score for a sub-lane match
- *
- * WU-2438: Changed from percentage-based to absolute scoring.
- * Previously, confidence = (score / maxPossibleScore) * 100, which penalized
- * lanes with more patterns/keywords even when they had MORE matches.
- *
- * Now, confidence = raw score, so lanes with more matches win.
- * This is more intuitive: 4 signals beats 1 signal, regardless of config size.
- *
- * @param {string[]} codePaths - WU code paths
- * @param {string} description - WU description
- * @param {object} subLaneConfig - Sub-lane config (code_paths, keywords)
- * @returns {number} Confidence score (raw score, higher = better match)
- */
+function buildLaneKeywords(definition: LaneDefinition): string[] {
+  const keywords = new Set<string>();
+  const sources = [definition.name, definition.description ?? ''];
+
+  for (const source of sources) {
+    for (const token of source.split(/[^a-zA-Z0-9/+-]+/)) {
+      const normalized = token.trim().toLowerCase();
+      if (normalized.length >= 3) {
+        keywords.add(normalized);
+      }
+    }
+  }
+
+  return [...keywords];
+}
+
 function calculateConfidence(
   codePaths: string[],
   description: string,
-  subLaneConfig: SubLaneConfig,
+  definition: LaneDefinition,
 ): number {
   let score = 0;
 
-  // Score code path matches
-  const patterns = subLaneConfig.code_paths || [];
-  for (const pattern of patterns) {
-    const hasMatch = codePaths.some((cp) => matchesPattern(cp, pattern));
-    if (hasMatch) {
+  for (const pattern of definition.code_paths ?? []) {
+    if (codePaths.some((codePath) => matchesPattern(codePath, pattern))) {
       score += WEIGHTS.CODE_PATH_MATCH;
     }
   }
 
-  // Score keyword matches
-  const keywords = subLaneConfig.keywords || [];
-  for (const keyword of keywords) {
+  for (const keyword of buildLaneKeywords(definition)) {
     if (containsKeyword(description, keyword)) {
       score += WEIGHTS.KEYWORD_MATCH;
     }
@@ -163,20 +192,11 @@ function calculateConfidence(
   return score;
 }
 
-/**
- * Infer sub-lane from WU code paths and description
- * @param {string[]} codePaths - Array of file paths modified/created by this WU
- * @param {string} description - WU description/title text
- * @param {string|null} configPath - Optional path to config file
- * @returns {{ lane: string, confidence: number }} Suggested sub-lane and confidence (0-100)
- * @throws {Error} If config cannot be loaded
- */
 export function inferSubLane(
   codePaths: string[],
   description: string,
   configPath: string | null = null,
 ): LaneInferenceResult {
-  // Validate inputs
   if (!Array.isArray(codePaths)) {
     throw createError(ErrorCodes.VALIDATION_ERROR, 'codePaths must be an array of strings', {
       codePaths,
@@ -190,36 +210,19 @@ export function inferSubLane(
     });
   }
 
-  // Load config
-  const config = loadConfig(configPath);
+  const definitions = loadLaneDefinitions(configPath);
+  const scores: LaneScore[] = definitions.map((definition) => ({
+    lane: definition.name,
+    confidence: calculateConfidence(codePaths, description, definition),
+    parent: extractParentFromLaneName(definition.name),
+  }));
 
-  // Score all sub-lanes
-  const scores: LaneScore[] = [];
-  for (const [parentLane, subLanes] of Object.entries(config)) {
-    for (const [subLane, subLaneConfig] of Object.entries(subLanes)) {
-      const confidence = calculateConfidence(codePaths, description, subLaneConfig);
-      const fullLaneName = `${parentLane}: ${subLane}`;
-
-      scores.push({
-        lane: fullLaneName,
-        confidence,
-        parent: parentLane,
-        subLane,
-      });
-    }
-  }
-
-  // Sort by confidence (descending)
-  scores.sort((a, b) => b.confidence - a.confidence);
-
-  // Return highest scoring sub-lane
+  scores.sort((left, right) => right.confidence - left.confidence);
   const best = scores[0];
 
   if (!best || best.confidence < CONFIDENCE.THRESHOLD) {
-    // No good matches found, return parent-only suggestion
-    // This shouldn't happen with CONFIDENCE.THRESHOLD=0, but keep for future tuning
     return {
-      lane: best ? best.parent : 'Operations', // Default to Operations if all else fails
+      lane: best?.parent ?? DEFAULT_FALLBACK_PARENT,
       confidence: CONFIDENCE.MIN,
     };
   }
@@ -230,51 +233,42 @@ export function inferSubLane(
   };
 }
 
-/**
- * Get all valid sub-lanes from config
- * @param {string|null} configPath - Optional path to config file
- * @returns {string[]} Array of all sub-lane names (format: "Parent: Subdomain")
- */
 export function getAllSubLanes(configPath: string | null = null): string[] {
-  const config = loadConfig(configPath);
-  const subLanes: string[] = [];
-
-  for (const [parentLane, subLaneConfigs] of Object.entries(config)) {
-    for (const subLane of Object.keys(subLaneConfigs)) {
-      subLanes.push(`${parentLane}: ${subLane}`);
-    }
+  try {
+    return loadLaneDefinitions(configPath)
+      .map((definition) => definition.name)
+      .filter((laneName) => laneName.includes(':'))
+      .sort((left, right) => left.localeCompare(right));
+  } catch {
+    return [];
   }
-
-  return subLanes.sort((a, b) => a.localeCompare(b));
 }
 
-/**
- * Get valid sub-lanes for a specific parent lane
- * @param {string} parent - Parent lane name (e.g., "Operations", "Core Systems")
- * @param {string|null} configPath - Optional path to config file
- * @returns {string[]} Array of sub-lane names for that parent (e.g., ["Tooling", "CI/CD", ...])
- */
 export function getSubLanesForParent(parent: string, configPath: string | null = null): string[] {
-  const config = loadConfig(configPath);
+  try {
+    const normalizedParent = parent.toLowerCase().trim();
+    const subLanes = new Set<string>();
 
-  // Find parent key (case-insensitive)
-  const normalizedParent = parent.trim().toLowerCase();
-  const parentKey = Object.keys(config).find(
-    (key) => key.toLowerCase().trim() === normalizedParent,
-  );
+    for (const definition of loadLaneDefinitions(configPath)) {
+      const laneName = definition.name.trim();
+      const colonIndex = laneName.indexOf(':');
+      if (colonIndex === -1) {
+        continue;
+      }
 
-  if (!parentKey) {
+      const laneParent = laneName.substring(0, colonIndex).trim().toLowerCase();
+      if (laneParent !== normalizedParent) {
+        continue;
+      }
+
+      const subLane = laneName.substring(colonIndex + 1).trim();
+      if (subLane.length > 0) {
+        subLanes.add(subLane);
+      }
+    }
+
+    return [...subLanes];
+  } catch {
     return [];
   }
-
-  // Return sub-lane names for this parent
-  const subLanes = config[parentKey];
-  if (!subLanes || typeof subLanes !== 'object') {
-    return [];
-  }
-
-  return Object.keys(subLanes);
 }
-
-// Re-export extractParent from lane-checker for backward compatibility (WU-1137: consolidation)
-export { extractParent };

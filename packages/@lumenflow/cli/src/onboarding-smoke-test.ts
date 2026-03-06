@@ -7,7 +7,7 @@
  *
  * This gate creates a temp repo, runs lumenflow init --full, validates:
  * - Injected package.json scripts use standalone binary format
- * - Lane-inference.yaml uses hierarchical format (not flat lanes array)
+ * - workspace.yaml remains the only lane artifact after init
  * - wu:create works with requireRemote=false
  *
  * Used as part of the gates pipeline to catch regressions before release.
@@ -21,14 +21,10 @@ import { execFileSync } from 'node:child_process';
 import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
-import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import { scaffoldProject } from './init.js';
 
 /** Package.json file name constant */
 const PACKAGE_JSON_FILE = 'package.json';
-
-/** Lane inference file name constant */
-const LANE_INFERENCE_FILE = CONFIG_FILES.LANE_INFERENCE;
 
 /** Canonical workspace config file name */
 const WORKSPACE_CONFIG_FILE = WORKSPACE_CONFIG_FILE_NAME;
@@ -53,9 +49,9 @@ export interface InitScriptsValidationResult {
 }
 
 /**
- * Result from lane-inference format validation
+ * Result from workspace-only lane scaffold validation
  */
-export interface LaneInferenceValidationResult {
+export interface WorkspaceLaneValidationResult {
   valid: boolean;
   errors: string[];
   error?: string;
@@ -92,7 +88,7 @@ export interface OnboardingSmokeTestResult {
   success: boolean;
   errors: string[];
   initScriptsValidation?: InitScriptsValidationResult;
-  laneInferenceValidation?: LaneInferenceValidationResult;
+  workspaceLaneValidation?: WorkspaceLaneValidationResult;
   wuCreateValidation?: WuCreateValidationResult;
   tempDir?: string;
 }
@@ -167,129 +163,53 @@ export function validateInitScripts(options: { projectDir: string }): InitScript
 }
 
 /**
- * Validate a single parent lane and its sub-lanes
- */
-function validateParentLane(parentLane: string, subLanes: unknown, errors: string[]): void {
-  // Skip comment-only keys or non-object values
-  if (typeof subLanes !== 'object' || subLanes === null) {
-    return;
-  }
-
-  // Parent lane names should be capitalized
-  if (parentLane[0] !== parentLane[0].toUpperCase()) {
-    const capitalizedName = parentLane.charAt(0).toUpperCase() + parentLane.slice(1);
-    errors.push(`Parent lane "${parentLane}" should be capitalized (e.g., "${capitalizedName}")`);
-  }
-
-  // Validate each sub-lane
-  const subLaneEntries = subLanes as Record<string, unknown>;
-  for (const [subLaneName, subLaneConfig] of Object.entries(subLaneEntries)) {
-    validateSubLane(parentLane, subLaneName, subLaneConfig, errors);
-  }
-}
-
-/**
- * Validate a single sub-lane configuration
- */
-function validateSubLane(
-  parentLane: string,
-  subLaneName: string,
-  subLaneConfig: unknown,
-  errors: string[],
-): void {
-  if (typeof subLaneConfig !== 'object' || subLaneConfig === null) {
-    return;
-  }
-
-  const config = subLaneConfig as Record<string, unknown>;
-
-  // Required fields for sub-lanes
-  if (!config.description && !config.code_paths) {
-    errors.push(
-      `Sub-lane "${parentLane}: ${subLaneName}" is missing required fields (description, code_paths)`,
-    );
-  }
-}
-
-/**
- * Validate that lane-inference.yaml uses the correct hierarchical format.
- *
- * Expected format:
- * ```yaml
- * Framework:
- *   Core:
- *     description: '...'
- *     code_paths: [...]
- *     keywords: [...]
- * ```
- *
- * Not the old flat format:
- * ```yaml
- * lanes:
- *   - name: Framework
- *     code_paths: [...]
- * ```
+ * Validate that init scaffolds workspace.yaml without recreating the deleted
+ * lane-inference sidecar artifact.
  *
  * @param options - Validation options
  * @returns Validation result
  */
-export function validateLaneInferenceFormat(options: {
+export function validateWorkspaceLaneScaffold(options: {
   projectDir: string;
-}): LaneInferenceValidationResult {
+}): WorkspaceLaneValidationResult {
   const { projectDir } = options;
-  const laneInferencePath = path.join(projectDir, LANE_INFERENCE_FILE);
   const configPath = path.join(projectDir, WORKSPACE_CONFIG_FILE);
 
-  // Check if file exists
-  if (!fs.existsSync(laneInferencePath)) {
-    if (fs.existsSync(configPath)) {
-      try {
-        const configRaw = fs.readFileSync(configPath, 'utf-8');
-        const configParsed = yaml.parse(configRaw) as LaneLifecycleConfigDoc | null;
-        const lifecycleStatus = configParsed?.software_delivery?.lanes?.lifecycle?.status;
-        if (lifecycleStatus === 'unconfigured') {
-          return {
-            valid: true,
-            errors: [],
-          };
-        }
-      } catch {
-        // Fall through to error return below; malformed config should not silently pass.
-      }
-    }
-
+  if (!fs.existsSync(configPath)) {
     return {
       valid: false,
       errors: [],
-      error: `${LANE_INFERENCE_FILE} not found in ${projectDir}`,
+      error: `${WORKSPACE_CONFIG_FILE} not found in ${projectDir}`,
     };
   }
 
-  let content: Record<string, unknown>;
+  const legacyLaneInferencePath = path.join(projectDir, '.lumenflow.lane-inference.yaml');
+  if (fs.existsSync(legacyLaneInferencePath)) {
+    return {
+      valid: false,
+      errors: [],
+      error: `.lumenflow.lane-inference.yaml should not be scaffolded in ${projectDir}`,
+    };
+  }
+
+  let content: LaneLifecycleConfigDoc;
   try {
-    const rawContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    content = yaml.parse(rawContent) as Record<string, unknown>;
+    const rawContent = fs.readFileSync(configPath, 'utf-8');
+    content = (yaml.parse(rawContent) as LaneLifecycleConfigDoc | null) ?? {};
   } catch (err) {
     return {
       valid: false,
       errors: [],
-      error: `Failed to parse ${LANE_INFERENCE_FILE}: ${err instanceof Error ? err.message : String(err)}`,
+      error: `Failed to parse ${WORKSPACE_CONFIG_FILE}: ${err instanceof Error ? err.message : String(err)}`,
     };
   }
 
   const errors: string[] = [];
-
-  // Check for old flat 'lanes' array format
-  if ('lanes' in content && Array.isArray(content.lanes)) {
+  const lifecycleStatus = content?.software_delivery?.lanes?.lifecycle?.status;
+  if (lifecycleStatus !== 'unconfigured') {
     errors.push(
-      "Invalid format: found 'lanes' array. Use hierarchical format (Framework: Core: ...) instead.",
+      `Expected ${WORKSPACE_CONFIG_FILE} lane lifecycle to remain "unconfigured" after init.`,
     );
-    return { valid: false, errors };
-  }
-
-  // Validate hierarchical structure
-  for (const [parentLane, subLanes] of Object.entries(content)) {
-    validateParentLane(parentLane, subLanes, errors);
   }
 
   return {
@@ -413,10 +333,10 @@ function collectScriptsErrors(scriptsResult: InitScriptsValidationResult): strin
 /**
  * Collect errors from lane validation results
  */
-function collectLaneErrors(laneResult: LaneInferenceValidationResult): string[] {
+function collectLaneErrors(laneResult: WorkspaceLaneValidationResult): string[] {
   const errors: string[] = [];
   if (laneResult.error) {
-    errors.push(`Lane-inference validation error: ${laneResult.error}`);
+    errors.push(`Workspace lane validation error: ${laneResult.error}`);
   }
   errors.push(...laneResult.errors);
   return errors;
@@ -430,7 +350,7 @@ async function runValidations(
   skipWuCreate: boolean,
 ): Promise<{
   scriptsResult: InitScriptsValidationResult;
-  laneResult: LaneInferenceValidationResult;
+  laneResult: WorkspaceLaneValidationResult;
   wuResult: WuCreateValidationResult | undefined;
   errors: string[];
 }> {
@@ -445,8 +365,8 @@ async function runValidations(
     errors.push(...collectScriptsErrors(scriptsResult));
   }
 
-  // Step 3: Validate lane-inference format
-  const laneResult = validateLaneInferenceFormat({ projectDir: tempDir });
+  // Step 3: Validate workspace-only lane scaffold
+  const laneResult = validateWorkspaceLaneScaffold({ projectDir: tempDir });
   if (!laneResult.valid) {
     errors.push(...collectLaneErrors(laneResult));
   }
@@ -481,7 +401,7 @@ function cleanupTempDir(tempDir: string | undefined): void {
  *
  * Creates a temp directory, runs lumenflow init --full, and validates:
  * 1. Package.json scripts are correctly injected
- * 2. Lane-inference.yaml uses hierarchical format
+ * 2. workspace-only lane scaffold is preserved
  * 3. wu:create would work with requireRemote=false
  *
  * @param options - Smoke test options
@@ -525,7 +445,7 @@ export async function runOnboardingSmokeTest(
     );
 
     result.initScriptsValidation = scriptsResult;
-    result.laneInferenceValidation = laneResult;
+    result.workspaceLaneValidation = laneResult;
     result.wuCreateValidation = wuResult;
     result.errors = errors;
     result.success = errors.length === 0;

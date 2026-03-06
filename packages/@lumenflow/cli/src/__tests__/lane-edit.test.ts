@@ -26,7 +26,6 @@ import {
 } from '../lane-edit.js';
 
 const CONFIG_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
-const LANE_INFERENCE_FILE_NAME = '.lumenflow.lane-inference.yaml';
 const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 describe('lane:edit (WU-1854)', () => {
@@ -48,11 +47,6 @@ describe('lane:edit (WU-1854)', () => {
       [SOFTWARE_DELIVERY_KEY]: doc,
     };
     fs.writeFileSync(configPath, YAML.stringify(workspace), 'utf-8');
-  }
-
-  function writeLaneInference(content: string): void {
-    const inferencePath = path.join(tempDir, LANE_INFERENCE_FILE_NAME);
-    fs.writeFileSync(inferencePath, content, 'utf-8');
   }
 
   function makeLockedConfig(definitions: LaneDefinition[]): Record<string, unknown> {
@@ -78,8 +72,6 @@ describe('lane:edit (WU-1854)', () => {
       },
     };
   }
-
-  const VALID_INFERENCE = `Framework:\n  Core:\n    code_paths:\n      - src/core/**\n  CLI:\n    code_paths:\n      - src/cli/**\n`;
 
   describe('parseLaneEditArgs', () => {
     it('parses --name and --rename', () => {
@@ -155,7 +147,6 @@ describe('lane:edit (WU-1854)', () => {
       writeConfig(
         makeLockedConfig([{ name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }]),
       );
-      writeLaneInference(VALID_INFERENCE);
 
       const result = validateLaneEditPreconditions(tempDir);
       expect(result.ok).toBe(true);
@@ -165,7 +156,6 @@ describe('lane:edit (WU-1854)', () => {
       writeConfig(
         makeDraftConfig([{ name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }]),
       );
-      writeLaneInference(VALID_INFERENCE);
 
       const result = validateLaneEditPreconditions(tempDir);
       expect(result.ok).toBe(true);
