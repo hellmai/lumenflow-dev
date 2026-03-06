@@ -122,7 +122,6 @@ describe('onboarding docs scaffold', () => {
       expect(content).toContain('requireRemote');
       expect(content).toContain('local');
     });
-
   });
 
   describe('onboarding docs with simple structure', () => {
