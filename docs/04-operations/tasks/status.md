@@ -4,7 +4,7 @@ _Last updated: 2026-03-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2335 — Tighten wu:brief verification precedence for UI-classified work](wu/WU-2335.yaml)
 
 ## Completed
 

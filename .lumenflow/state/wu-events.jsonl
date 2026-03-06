@@ -2873,3 +2873,4 @@
 {"type":"checkpoint","wuId":"WU-2334","timestamp":"2026-03-06T13:22:54.132Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2334","timestamp":"2026-03-06T13:24:21.962Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2334","timestamp":"2026-03-06T13:27:52.206Z"}
+{"type":"claim","wuId":"WU-2335","timestamp":"2026-03-06T14:11:49.850Z","lane":"Framework: CLI WU Commands","title":"Tighten wu:brief verification precedence for UI-classified work"}
