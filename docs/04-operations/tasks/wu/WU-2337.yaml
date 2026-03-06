@@ -1,0 +1,36 @@
+id: WU-2337
+title: Fix wu:infer-lane zero-signal first-lane fallback
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-03-06
+code_paths:
+  - packages/@lumenflow/core/src/lane-inference.ts
+  - packages/@lumenflow/core/src/__tests__/lane-inference-error.test.ts
+tests:
+  manual:
+    - pnpm wu:infer-lane --paths 'no/such/path.txt' --desc 'totally unrelated text'
+    - pnpm wu:infer-lane --paths 'packages/@lumenflow/core/src/lane-inference.ts' --desc 'Fix lane inference fallback'
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lane-inference-error.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2337.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:infer-lane can return the first configured lane when code paths and description provide no meaningful signal. Problem: lane inference sorts zero-score lanes and, with a zero threshold, returns the first definition instead of a real fallback or no-confident-match outcome; in consumer repos this can look like a persistent bias toward Experience: Web. Solution: make inferSubLane treat zero-signal results as no confident match, return a stable fallback instead of the first lane, and add regression coverage for zero-signal and path-driven cases.'
+acceptance:
+  - wu:infer-lane does not return the first configured lane when all candidate lanes score zero
+  - low-signal or zero-signal inputs return a stable fallback result instead of an arbitrary configured lane
+  - strong path-driven matches still resolve to the expected lane
+  - regression tests cover zero-signal fallback and representative positive matches
