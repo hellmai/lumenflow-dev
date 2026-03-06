@@ -1,0 +1,36 @@
+id: WU-2333
+title: Clarify workspace-only lane docs before release
+lane: 'Content: Specs Governance'
+type: documentation
+status: ready
+priority: P1
+created: 2026-03-06
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/starting-prompt.md.template
+  - apps/docs/src/content/docs/getting-started/upgrade.mdx
+  - apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx
+tests:
+  manual:
+    - pnpm sync:templates --check-drift
+    - pnpm docs:validate
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2333.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: WU-2332 removed .lumenflow.lane-inference.yaml from the active lane lifecycle and made workspace.yaml the sole lane source of truth. Problem: a few shipped docs still use stale 'lane inference tooling' wording and the upgrade pages do not explicitly call out the workspace-only contract. Solution: clean the stale terminology in onboarding/templates and add an explicit upgrade note before cutting the next release."
+acceptance:
+  - Starting prompt wording no longer implies a separate lane-inference artifact/tooling surface.
+  - Upgrade pages explicitly state that .lumenflow.lane-inference.yaml is no longer used and that workspace.yaml > software_delivery.lanes.definitions is the sole source of truth.
+  - Docs/template validation passes so the release can proceed from a clean main.
