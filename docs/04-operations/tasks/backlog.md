@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2328 — Make worktree template lookup ignore main dist symlinks](wu/WU-2328.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1274,6 +1274,7 @@ sections:
 - [WU-2325 — Detect lane drift between workspace lanes and inference taxonomy](wu/WU-2325.yaml)
 - [WU-2326 — Make workspace.yaml authoritative for lane existence and sub-lane validation](wu/WU-2326.yaml)
 - [WU-2327 — Eliminate onboarding docs/init/docs-sync drift](wu/WU-2327.yaml)
+- [WU-2328 — Make worktree template lookup ignore main dist symlinks](wu/WU-2328.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

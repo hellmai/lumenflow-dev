@@ -2851,3 +2851,4 @@
 {"type":"claim","wuId":"WU-2327","timestamp":"2026-03-05T23:29:38.591Z","lane":"Framework: CLI","title":"Eliminate onboarding docs/init/docs-sync drift"}
 {"type":"complete","wuId":"WU-2327","timestamp":"2026-03-06T00:19:31.814Z"}
 {"type":"claim","wuId":"WU-2328","timestamp":"2026-03-06T09:21:39.927Z","lane":"Framework: CLI","title":"Make worktree template lookup ignore main dist symlinks"}
+{"type":"complete","wuId":"WU-2328","timestamp":"2026-03-06T09:34:31.268Z"}

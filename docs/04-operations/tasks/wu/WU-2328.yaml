@@ -2,7 +2,7 @@ id: WU-2328
 title: Make worktree template lookup ignore main dist symlinks
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-06
 code_paths:
@@ -12,10 +12,11 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/template-directory-resolver.test.ts
 tests:
   manual:
-    - Run pnpm --filter @lumenflow/cli exec vitest run src/__tests__/template-directory-resolver.test.ts
-      src/__tests__/onboarding-smoke-test.test.ts __tests__/docs-sync.test.ts
-      src/__tests__/init.test.ts src/__tests__/init-onboarding-docs.test.ts and verify worktree
-      template resolution stays branch-local.
+    - Run pnpm --filter @lumenflow/cli exec vitest run
+      src/__tests__/template-directory-resolver.test.ts src/__tests__/onboarding-smoke-test.test.ts
+      __tests__/docs-sync.test.ts src/__tests__/init.test.ts
+      src/__tests__/init-onboarding-docs.test.ts and verify worktree template resolution stays
+      branch-local.
   unit:
     - packages/@lumenflow/cli/src/__tests__/template-directory-resolver.test.ts
     - packages/@lumenflow/cli/src/__tests__/onboarding-smoke-test.test.ts
@@ -24,10 +25,10 @@ artifacts:
   - .lumenflow/stamps/WU-2328.done
 dependencies: []
 risks: []
-notes: 'Added a shared CLI template-directory resolver that prefers the active checkout/worktree
+notes: Added a shared CLI template-directory resolver that prefers the active checkout/worktree
   package templates over module realpaths, then reused it from init-scaffolding and docs:sync.
   Regression coverage simulates a worktree whose CLI dist resolves to main while the branch-only
-  template exists only in the claimed checkout.'
+  template exists only in the claimed checkout.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -57,3 +58,6 @@ session_id: 50408616-7836-4b14-adbc-e3c9b467aa38
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-06T09:21:39.905Z
+locked: true
+completed_at: 2026-03-06T09:34:26.709Z
+completed: 2026-03-06
