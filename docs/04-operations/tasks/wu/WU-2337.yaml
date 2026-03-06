@@ -20,7 +20,9 @@ artifacts:
   - .lumenflow/stamps/WU-2337.done
 dependencies: []
 risks: []
-notes: ''
+notes: inferSubLane now treats a best score of zero as no-signal and returns the stable Operations
+  fallback instead of the first configured lane, while preserving positive path and keyword scoring
+  for real matches.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -220,7 +220,14 @@ export function inferSubLane(
   scores.sort((left, right) => right.confidence - left.confidence);
   const best = scores[0];
 
-  if (!best || best.confidence < CONFIDENCE.THRESHOLD) {
+  if (!best || best.confidence === CONFIDENCE.MIN) {
+    return {
+      lane: DEFAULT_FALLBACK_PARENT,
+      confidence: CONFIDENCE.MIN,
+    };
+  }
+
+  if (best.confidence < CONFIDENCE.THRESHOLD) {
     return {
       lane: best?.parent ?? DEFAULT_FALLBACK_PARENT,
       confidence: CONFIDENCE.MIN,

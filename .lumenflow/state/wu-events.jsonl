@@ -2884,3 +2884,5 @@
 {"type":"checkpoint","wuId":"WU-1940","timestamp":"2026-03-06T17:01:31.686Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2336","timestamp":"2026-03-06T17:06:31.698Z"}
 {"type":"claim","wuId":"WU-2337","timestamp":"2026-03-06T18:28:46.718Z","lane":"Framework: Core","title":"Fix wu:infer-lane zero-signal first-lane fallback"}
+{"type":"checkpoint","wuId":"WU-2337","timestamp":"2026-03-06T18:28:58.410Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2337","timestamp":"2026-03-06T18:29:04.440Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}

@@ -18,6 +18,25 @@ const CONFIG_FILENAME = 'workspace.yaml';
 const TEST_CODE_PATH = 'packages/core/src/index.ts';
 const TEST_WU_DESCRIPTION = 'Test WU';
 const EXPECTED_TO_THROW = 'Should have thrown an error';
+const TEST_ZERO_SIGNAL_PATH = 'no/such/path.txt';
+const TEST_ZERO_SIGNAL_DESCRIPTION = 'totally unrelated text';
+const TEST_FALLBACK_PARENT = 'Operations';
+const TEST_CORE_LANE = 'Framework: Core';
+const TEST_DOCS_LANE = 'Content: Docs';
+const TEST_CORE_MATCH_PATH = 'packages/core/src/lane-inference.ts';
+const TEST_DOCS_MATCH_PATH = 'docs/reference/index.md';
+const WORKSPACE_WITH_LANES = `software_delivery:
+  lanes:
+    definitions:
+      - name: "${TEST_CORE_LANE}"
+        wip_limit: 1
+        code_paths:
+          - "packages/core/**"
+      - name: "${TEST_DOCS_LANE}"
+        wip_limit: 1
+        code_paths:
+          - "docs/**"
+`;
 
 describe('lane-inference error messages', () => {
   let testBaseDir: string;
@@ -114,6 +133,50 @@ describe('lane-inference error messages', () => {
       );
 
       expect(getSubLanesForParent('Framework', configPath)).toEqual(['Core', 'CLI']);
+    });
+  });
+
+  describe('zero-signal fallback', () => {
+    it('returns the stable fallback parent instead of the first configured lane', () => {
+      const configPath = join(testBaseDir, CONFIG_FILENAME);
+      writeFileSync(configPath, WORKSPACE_WITH_LANES);
+
+      const result = inferSubLane(
+        [TEST_ZERO_SIGNAL_PATH],
+        TEST_ZERO_SIGNAL_DESCRIPTION,
+        configPath,
+      );
+
+      expect(result).toEqual({
+        lane: TEST_FALLBACK_PARENT,
+        confidence: 0,
+      });
+    });
+
+    it('still returns a strong path-driven match when confidence is positive', () => {
+      const configPath = join(testBaseDir, CONFIG_FILENAME);
+      writeFileSync(configPath, WORKSPACE_WITH_LANES);
+
+      const result = inferSubLane(
+        [TEST_CORE_MATCH_PATH],
+        'Fix lane inference fallback',
+        configPath,
+      );
+
+      expect(result).toEqual({
+        lane: TEST_CORE_LANE,
+        confidence: 10,
+      });
+    });
+
+    it('supports non-framework positive matches without falling back', () => {
+      const configPath = join(testBaseDir, CONFIG_FILENAME);
+      writeFileSync(configPath, WORKSPACE_WITH_LANES);
+
+      const result = inferSubLane([TEST_DOCS_MATCH_PATH], 'Update docs page', configPath);
+
+      expect(result.lane).toBe(TEST_DOCS_LANE);
+      expect(result.confidence).toBeGreaterThan(0);
     });
   });
 });
