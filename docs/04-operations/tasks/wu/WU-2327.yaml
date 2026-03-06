@@ -16,13 +16,13 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/init-quick-ref.test.ts
   - packages/@lumenflow/cli/src/__tests__/templates-sync.test.ts
   - packages/@lumenflow/cli/__tests__/docs-sync.test.ts
-  - packages/@lumenflow/cli/templates/core/**
-  - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/**
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/**
+  - packages/@lumenflow/cli/templates/core
+  - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills
+  - packages/@lumenflow/cli/templates/core/ai/onboarding
   - packages/@lumenflow/cli/README.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/**
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding
   - docs/04-operations/tasks/wu/WU-2327.yaml
-  - apps/docs/src/content/docs/reference/**
+  - apps/docs/src/content/docs/reference
   - tools/generate-cli-docs.ts
   - .claude/skills/worktree-discipline/SKILL.md
   - LUMENFLOW.md
