@@ -1,7 +1,7 @@
 id: WU-2330
 title: Document wu:brief template defaults and consumer upgrade path
 lane: 'Content: Framework Docs'
-type: documentation
+type: tooling
 status: in_progress
 priority: P2
 created: 2026-03-06
