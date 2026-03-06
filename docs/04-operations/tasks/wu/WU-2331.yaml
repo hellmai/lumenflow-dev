@@ -7,7 +7,7 @@ priority: P1
 created: 2026-03-06
 code_paths:
   - apps/docs/src/content/docs/getting-started/upgrade.mdx
-  - .github/workflows/docs.yml
+  - apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx
 tests:
   manual:
     - pnpm --filter @lumenflow/docs build
@@ -28,12 +28,13 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: The v3.11.0 tag published to npm and GitHub, but the Starlight docs workflow
-  failed. Problem: apps/docs/src/content/docs/getting-started/upgrade.mdx contains malformed MDX in
-  a <Steps> block, so tagged docs builds break and releases do not fully ship. Solution: repair the
-  MDX structure, validate the docs build locally, and cut a follow-up patch release so the docs
+  failed. Problem: the mirrored upgrade guides in apps/docs/src/content/docs/getting-started/upgrade.mdx
+  and apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx contain malformed MDX
+  in a <Steps> block, so tagged docs builds break and releases do not fully ship. Solution: repair
+  the MDX structure, validate the docs build locally, and cut a follow-up patch release so the docs
   deployment succeeds.'
 acceptance:
-  - apps/docs/src/content/docs/getting-started/upgrade.mdx builds successfully under Astro/MDX.
+  - The mirrored upgrade guides build successfully under Astro/MDX.
   - The Starlight docs package builds locally before release.
   - A patch release is cut so npm, GitHub release, and docs deployment all succeed from a clean tag.
 claimed_mode: worktree
