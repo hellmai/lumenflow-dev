@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/cli/templates/core/ai/onboarding/starting-prompt.md.template
   - apps/docs/src/content/docs/getting-started/upgrade.mdx
   - apps/docs/src/content/docs/packs/software-delivery/setup/upgrading.mdx
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
 tests:
   manual:
