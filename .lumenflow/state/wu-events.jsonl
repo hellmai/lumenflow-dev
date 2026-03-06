@@ -2862,3 +2862,4 @@
 {"type":"checkpoint","wuId":"WU-2332","timestamp":"2026-03-06T11:37:01.279Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
 {"type":"checkpoint","wuId":"WU-2332","timestamp":"2026-03-06T11:38:03.883Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2332","timestamp":"2026-03-06T12:13:01.198Z"}
+{"type":"claim","wuId":"WU-2333","timestamp":"2026-03-06T12:27:03.260Z","lane":"Content: Specs Governance","title":"Clarify workspace-only lane docs before release"}

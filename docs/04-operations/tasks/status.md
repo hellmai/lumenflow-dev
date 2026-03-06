@@ -4,7 +4,7 @@ _Last updated: 2026-03-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2333 — Clarify workspace-only lane docs before release](wu/WU-2333.yaml)
 
 ## Completed
 
