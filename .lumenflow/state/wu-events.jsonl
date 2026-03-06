@@ -2869,3 +2869,4 @@
 {"type":"checkpoint","wuId":"WU-2333","timestamp":"2026-03-06T12:33:17.732Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2333.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2333","timestamp":"2026-03-06T12:35:19.712Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2333.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2333","timestamp":"2026-03-06T12:36:23.810Z"}
+{"type":"claim","wuId":"WU-2334","timestamp":"2026-03-06T13:22:43.206Z","lane":"Framework: Initiatives","title":"Fix initiative:create phase persistence regression in v3.12.0"}

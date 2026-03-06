@@ -4,7 +4,7 @@ _Last updated: 2026-03-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2334 — Fix initiative:create phase persistence regression in v3.12.0](wu/WU-2334.yaml)
 
 ## Completed
 
