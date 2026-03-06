@@ -2,7 +2,7 @@ id: WU-2336
 title: Make Cloud prompt policy summaries UI-aware
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-06
 code_paths:
@@ -55,3 +55,6 @@ session_id: fbeefd98-cc6a-4ad4-9ce8-6380ee68c9c1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-03-06T16:55:18.208Z
+locked: true
+completed_at: 2026-03-06T17:06:27.235Z
+completed: 2026-03-06

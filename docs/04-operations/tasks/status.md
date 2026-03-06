@@ -4,7 +4,7 @@ _Last updated: 2026-03-06_
 
 ## In Progress
 
-- [WU-2336 — Make Cloud prompt policy summaries UI-aware](wu/WU-2336.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1256,3 +1256,4 @@ _Last updated: 2026-03-06_
 - [WU-2333 — Clarify workspace-only lane docs before release](wu/WU-2333.yaml) — 2026-03-06
 - [WU-2334 — Fix initiative:create phase persistence regression in v3.12.0](wu/WU-2334.yaml) — 2026-03-06
 - [WU-2335 — Tighten wu:brief verification precedence for UI-classified work](wu/WU-2335.yaml) — 2026-03-06
+- [WU-2336 — Make Cloud prompt policy summaries UI-aware](wu/WU-2336.yaml) — 2026-03-06

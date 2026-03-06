@@ -2882,3 +2882,4 @@
 {"type":"checkpoint","wuId":"WU-2336","timestamp":"2026-03-06T16:55:41.322Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"checkpoint","wuId":"WU-1940","timestamp":"2026-03-06T17:00:29.361Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"checkpoint","wuId":"WU-1940","timestamp":"2026-03-06T17:01:31.686Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"complete","wuId":"WU-2336","timestamp":"2026-03-06T17:06:31.698Z"}
