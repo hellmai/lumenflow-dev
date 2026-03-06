@@ -415,7 +415,6 @@ export function validateLaneArtifacts(projectRoot: string): LaneArtifactsValidat
   const configPath = getConfigPath(projectRoot);
   const warnings: string[] = [];
   const invalidLanes: string[] = [];
-  let missingDefinitions = false;
 
   if (!existsSync(configPath)) {
     warnings.push(`Missing ${WORKSPACE_CONFIG_FILE_NAME}. Run: ${LANE_SETUP_COMMAND}`);
@@ -444,7 +443,7 @@ export function validateLaneArtifacts(projectRoot: string): LaneArtifactsValidat
   }
 
   const config = readConfigDoc(projectRoot);
-  missingDefinitions = !hasLaneDefinitions(config);
+  const missingDefinitions = !hasLaneDefinitions(config);
 
   if (missingDefinitions) {
     warnings.push(
