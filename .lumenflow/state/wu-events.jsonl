@@ -2878,3 +2878,7 @@
 {"type":"checkpoint","wuId":"WU-2335","timestamp":"2026-03-06T14:23:12.152Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2335","timestamp":"2026-03-06T14:27:50.688Z"}
 {"type":"claim","wuId":"WU-2336","timestamp":"2026-03-06T16:55:18.231Z","lane":"Framework: Core","title":"Make Cloud prompt policy summaries UI-aware"}
+{"type":"checkpoint","wuId":"WU-2336","timestamp":"2026-03-06T16:55:29.808Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2336","timestamp":"2026-03-06T16:55:41.322Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"checkpoint","wuId":"WU-1940","timestamp":"2026-03-06T17:00:29.361Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
+{"type":"checkpoint","wuId":"WU-1940","timestamp":"2026-03-06T17:01:31.686Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}

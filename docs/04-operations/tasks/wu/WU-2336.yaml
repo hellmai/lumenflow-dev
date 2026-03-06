@@ -21,7 +21,9 @@ artifacts:
   - .lumenflow/stamps/WU-2336.done
 dependencies: []
 risks: []
-notes: ''
+notes: Prompt summary generators now honor UI and structured-content classifier hints so later
+  policy echo sections stay aligned with the fit-for-surface verification strategy already chosen
+  earlier in the brief.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -162,6 +162,13 @@ export interface TestGuidanceOptions {
   testMethodologyHint?: TestMethodologyHint;
 }
 
+function usesNonTddSummaryHint(options?: TestGuidanceOptions): boolean {
+  return (
+    options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.SMOKE_TEST ||
+    options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT
+  );
+}
+
 /**
  * WU-2309: Generate structured-content guidance for non-code YAML/JSON/Markdown work.
  */
@@ -291,15 +298,26 @@ Before you finish ${id}, review your own diff against gate and craft checks:
 Fix any failed checks before running completion commands.`;
 }
 
-/** WU-1279: Generate the Mandatory Standards section based on resolved policy */
-export function generateMandatoryStandards(policy: ResolvedPolicy): string {
+/** WU-1279, WU-2336: Generate the Mandatory Standards section based on resolved policy */
+export function generateMandatoryStandards(
+  policy: ResolvedPolicy,
+  options?: TestGuidanceOptions,
+): string {
   const lines: string[] = ['## Mandatory Standards', ''];
 
   // LumenFlow workflow is always required
   lines.push('- **LumenFlow**: Follow trunk-based flow, WIP=1, worktree discipline');
 
   // Testing methodology based on policy
-  if (policy.testing === 'tdd') {
+  if (options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.SMOKE_TEST) {
+    lines.push(
+      '- **Verification Strategy**: Prefer user-outcome verification over brittle DOM assertions. Use integration/E2E, smoke coverage, and manual or visual checks as appropriate.',
+    );
+  } else if (options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT) {
+    lines.push(
+      '- **Verification Strategy**: Verify structured content with fixtures, schema checks, or targeted integration coverage. Do not force runtime TDD for content-only changes.',
+    );
+  } else if (policy.testing === 'tdd') {
     lines.push(
       `- **TDD**: Failing test first, then implementation, then passing test. ${policy.coverage_threshold}%+ coverage on new application code`,
     );
@@ -527,16 +545,39 @@ This work involves UI components or styling. Follow these guidelines:
 - Review existing component patterns for consistency`;
 }
 
-/** WU-1261: Generate enforcement summary from resolved policy */
-export function generateEnforcementSummary(policy: ResolvedPolicy): string {
+/** WU-1261, WU-2336: Generate enforcement summary from resolved policy */
+export function generateEnforcementSummary(
+  policy: ResolvedPolicy,
+  options?: TestGuidanceOptions,
+): string {
   const lines: string[] = ['## You will be judged by', ''];
 
   // Testing methodology
-  const testingStatus = policy.tests_required ? 'required' : 'optional';
-  lines.push(`- **Testing**: ${policy.testing} (tests ${testingStatus})`);
+  if (options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.SMOKE_TEST) {
+    lines.push(
+      '- **Testing**: fit-for-surface UI verification (integration/E2E, smoke, manual, or visual checks as appropriate)',
+    );
+  } else if (options?.testMethodologyHint === TEST_METHODOLOGY_HINTS.STRUCTURED_CONTENT) {
+    lines.push(
+      '- **Testing**: structured-content verification (fixtures, schema, golden data, or integration checks as appropriate)',
+    );
+  } else {
+    const testingStatus = policy.tests_required ? 'required' : 'optional';
+    lines.push(`- **Testing**: ${policy.testing} (tests ${testingStatus})`);
+  }
 
   // Coverage
-  if (policy.coverage_mode === 'off') {
+  if (usesNonTddSummaryHint(options)) {
+    const modeLabel =
+      policy.coverage_mode === 'block'
+        ? 'blocking'
+        : policy.coverage_mode === 'warn'
+          ? 'warn only'
+          : 'disabled';
+    lines.push(
+      `- **Coverage**: ${policy.coverage_threshold}% policy target (${modeLabel}) when automated application tests apply`,
+    );
+  } else if (policy.coverage_mode === 'off') {
     lines.push('- **Coverage**: disabled');
   } else {
     const modeLabel = policy.coverage_mode === 'block' ? 'blocking' : 'warn only';

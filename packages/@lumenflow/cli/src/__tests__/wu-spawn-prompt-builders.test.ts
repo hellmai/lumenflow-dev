@@ -716,6 +716,27 @@ describe('WU-2329: verification guidance composition', () => {
     expect(prompt).not.toContain('## TEST-AFTER DIRECTIVE');
   });
 
+  it('keeps UI prompt summaries aligned with smoke-test guidance when real templates load', async () => {
+    const templateLoader = await import('@lumenflow/core/template-loader');
+    const mockLoad = templateLoader.loadTemplatesWithOverrides as ReturnType<typeof vi.fn>;
+    const actualTemplateLoader = await vi.importActual<
+      typeof import('@lumenflow/core/template-loader')
+    >('@lumenflow/core/template-loader');
+
+    mockLoad.mockImplementation((baseDir: string, clientName: string) =>
+      actualTemplateLoader.loadTemplatesWithOverrides(baseDir, clientName),
+    );
+
+    const { generateCodexPrompt } = await import('../wu-spawn-prompt-builders.js');
+    const prompt = generateCodexPrompt(uiDoc, id, strategy, { config });
+
+    expect(prompt).toContain('## Mandatory Standards');
+    expect(prompt).toContain('Verification Strategy');
+    expect(prompt).toContain('fit-for-surface UI verification');
+    expect(prompt).not.toContain('**TDD**: Failing test first');
+    expect(prompt).not.toContain('**Testing**: tdd');
+  });
+
   it('renders required verification before runtime methodology guidance when real templates load', async () => {
     const templateLoader = await import('@lumenflow/core/template-loader');
     const mockLoad = templateLoader.loadTemplatesWithOverrides as ReturnType<typeof vi.fn>;

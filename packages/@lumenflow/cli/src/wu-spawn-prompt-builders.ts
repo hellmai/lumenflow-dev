@@ -1347,10 +1347,14 @@ export function generateTaskInvocation(
   const testGuidance = resolveVerificationGuidanceSection(templates, testGuidanceFallback);
 
   // WU-1288: Generate enforcement summary from resolved policy
-  const enforcementSummary = generateEnforcementSummary(policy);
+  const enforcementSummary = generateEnforcementSummary(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
 
   // WU-1288: Generate mandatory standards based on resolved policy
-  const mandatoryStandards = generateMandatoryStandards(policy);
+  const mandatoryStandards = generateMandatoryStandards(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
   const codeCraftGuidance = templates.get('code-craft') || generateCodeCraftGuidance();
   const readBeforeWrite = templates.get('read-before-write') || generateReadBeforeWriteDiscipline();
   const selfReviewDirective = templates.get('self-review') || generateSelfReviewDirective(id);
@@ -1596,8 +1600,12 @@ export function generateCodexPrompt(
   );
 
   const preamble = generatePreamble(id, strategy);
-  const mandatoryStandards = generateMandatoryStandards(policy);
-  const enforcementSummary = generateEnforcementSummary(policy);
+  const mandatoryStandards = generateMandatoryStandards(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
+  const enforcementSummary = generateEnforcementSummary(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const implementationContext = generateImplementationContext(doc);
   const action = generateActionSection(doc, id, config);

@@ -497,6 +497,40 @@ describe('WU-1279: Wire methodology policy into spawn prompt generation', () => 
       expect(mandatoryStandardsSection).not.toContain(TEST_HEXAGONAL_ARCH);
       expect(mandatoryStandardsSection).not.toContain('Ports-first');
     });
+
+    it('should use UI verification wording instead of TDD when hint is smoke-test', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const standards = generateMandatoryStandards(policy, {
+        testMethodologyHint: 'smoke-test',
+      });
+
+      expect(standards).toContain('Verification Strategy');
+      expect(standards).toContain('brittle DOM assertions');
+      expect(standards).not.toContain('Failing test first');
+    });
+  });
+
+  describe('Enforcement summary uses classifier-aware testing language', () => {
+    it('should not label UI-classified work as testing: tdd', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const summary = generateEnforcementSummary(policy, {
+        testMethodologyHint: 'smoke-test',
+      });
+
+      expect(summary).toContain('fit-for-surface UI verification');
+      expect(summary).not.toContain('**Testing**: tdd');
+      expect(summary).toContain('policy target');
+    });
+
+    it('should not label structured-content work as testing: tdd', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const summary = generateEnforcementSummary(policy, {
+        testMethodologyHint: 'structured-content',
+      });
+
+      expect(summary).toContain('structured-content verification');
+      expect(summary).not.toContain('**Testing**: tdd');
+    });
   });
 });
 
@@ -1232,6 +1266,29 @@ describe('WU-1900: Wire work classifier into wu:brief generation', () => {
       // Step 3: Design context section present
       const designContext = generateDesignContextSection(classification);
       expect(designContext).toContain('Design Context');
+    });
+
+    it('keeps later prompt summaries aligned with smoke-test guidance', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(
+        {
+          title: 'Fix CSS button overflow',
+          lane: TEST_LANE,
+          type: 'bug',
+          status: 'ready',
+          description: 'Adjust card layout and empty state styling',
+          acceptance: ['AC1'],
+          code_paths: ['apps/web/src/styles/button.css'],
+        },
+        'WU-TEST',
+        strategy,
+        { config: parseConfig({ methodology: { testing: 'tdd' } }) },
+      );
+
+      expect(output).toContain('UI/Visual Verification Strategy');
+      expect(output).toContain('Verification Strategy');
+      expect(output).not.toContain('**TDD**: Failing test first');
+      expect(output).not.toContain('**Testing**: tdd');
     });
   });
 });

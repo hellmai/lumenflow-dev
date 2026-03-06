@@ -167,10 +167,14 @@ export function generateTaskInvocation(
   });
 
   // WU-1279: Generate enforcement summary from resolved policy
-  const enforcementSummary = generateEnforcementSummary(policy);
+  const enforcementSummary = generateEnforcementSummary(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
 
   // WU-1279: Generate mandatory standards based on resolved policy
-  const mandatoryStandards = generateMandatoryStandards(policy);
+  const mandatoryStandards = generateMandatoryStandards(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
   const codeCraftGuidance = generateCodeCraftGuidance();
   const readBeforeWrite = generateReadBeforeWriteDiscipline();
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
@@ -422,10 +426,14 @@ export function generateCodexPrompt(
   });
 
   // WU-1290: Generate enforcement summary from resolved policy
-  const enforcementSummary = generateEnforcementSummary(policy);
+  const enforcementSummary = generateEnforcementSummary(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
 
   // WU-1290: Generate mandatory standards based on resolved policy
-  const mandatoryStandards = generateMandatoryStandards(policy);
+  const mandatoryStandards = generateMandatoryStandards(policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
   const codeCraftGuidance = generateCodeCraftGuidance();
   const readBeforeWrite = generateReadBeforeWriteDiscipline();
   const selfReviewDirective = generateSelfReviewDirective(id);
