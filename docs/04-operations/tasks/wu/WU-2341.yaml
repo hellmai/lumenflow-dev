@@ -3,7 +3,7 @@ title: wu:done rejects normal wu:prep handoff as session mismatch and lane:edit 
   JSONL merge conflicts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-07
 code_paths:
@@ -55,3 +55,6 @@ acceptance:
     auto-resolved
   - Regression tests cover wu:prep session A then wu:done session B scenario
   - Regression tests cover lane:edit push followed by worktree merge of origin/main
+locked: true
+completed_at: 2026-03-07T10:15:38.927Z
+completed: 2026-03-07

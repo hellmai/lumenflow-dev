@@ -28,7 +28,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2339 — Remove unsafe agent fallback guidance and misleading claimed-WU prompts](wu/WU-2339.yaml) — Framework: CLI WU Commands
-- [WU-2341 — wu:done rejects normal wu:prep handoff as session mismatch and lane:edit causes predictable JSONL merge conflicts](wu/WU-2341.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -1287,6 +1286,7 @@ sections:
 - [WU-2336 — Make Cloud prompt policy summaries UI-aware](wu/WU-2336.yaml)
 - [WU-2337 — Fix wu:infer-lane zero-signal first-lane fallback](wu/WU-2337.yaml)
 - [WU-2338 — Fix wu:done --already-merged writing metadata to main instead of micro-worktree](wu/WU-2338.yaml)
+- [WU-2341 — wu:done rejects normal wu:prep handoff as session mismatch and lane:edit causes predictable JSONL merge conflicts](wu/WU-2341.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
