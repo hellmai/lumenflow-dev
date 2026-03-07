@@ -4,7 +4,7 @@ _Last updated: 2026-03-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2343 — Distinguish wu:claim auto-brief evidence from full wu:brief prompts](wu/WU-2343.yaml)
 
 ## Completed
 

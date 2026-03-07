@@ -2919,3 +2919,4 @@
 {"type":"checkpoint","wuId":"WU-2342","timestamp":"2026-03-07T10:57:27.209Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2342.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2342","timestamp":"2026-03-07T10:59:52.289Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2342.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"complete","wuId":"WU-2342","timestamp":"2026-03-07T11:01:22.136Z"}
+{"type":"claim","wuId":"WU-2343","timestamp":"2026-03-07T16:58:51.075Z","lane":"Framework: CLI WU Commands","title":"Distinguish wu:claim auto-brief evidence from full wu:brief prompts"}
