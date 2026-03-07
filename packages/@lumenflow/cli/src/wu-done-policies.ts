@@ -243,9 +243,9 @@ export function buildMissingWuBriefEvidenceMessage(id: string): string {
     `Missing wu:brief evidence for ${id}.\n\n` +
     `Completion policy requires an auditable wu:brief execution record for feature/bug WUs.\n\n` +
     `Fix options:\n` +
-    `  1. If you are delegating this WU, generate handoff prompt + evidence:\n` +
-    `     pnpm wu:brief --id ${id}\n` +
-    `  2. If you are implementing this WU yourself, record evidence only:\n` +
+    `  1. If you need a real handoff prompt for another agent, generate prompt + evidence:\n` +
+    `     pnpm wu:brief --id ${id} --client <client>\n` +
+    `  2. If you are implementing this WU yourself in the current session, record evidence only:\n` +
     `     pnpm wu:brief --id ${id} --evidence-only\n` +
     `  3. Retry completion:\n` +
     `     pnpm wu:done --id ${id}\n` +
@@ -262,8 +262,8 @@ export function buildMissingWuBriefEvidenceMessageForPrep(
     `Missing wu:brief evidence for ${id} (policy=${mode}).\n\n` +
     `wu:prep enforces wu:brief evidence when policy mode is required.\n\n` +
     `Fix options:\n` +
-    `  1. Record evidence by generating a brief prompt:\n` +
-    `     pnpm wu:brief --id ${id}\n` +
+    `  1. If you need a real handoff prompt for another agent, generate prompt + evidence:\n` +
+    `     pnpm wu:brief --id ${id} --client <client>\n` +
     `  2. If self-implementing, record evidence only:\n` +
     `     pnpm wu:brief --id ${id} --evidence-only\n` +
     `  3. Retry prep:\n` +
@@ -297,8 +297,8 @@ function buildStaleWuBriefEvidenceMessageForPrep(options: {
     `Stale wu:brief evidence for ${options.id} (policy=${options.mode}).\n\n` +
     `${describeWuBriefFreshness(options.evidenceTimestamp, options.freshnessMinutes, options.now)}\n\n` +
     `Fix options:\n` +
-    `  1. Refresh evidence:\n` +
-    `     pnpm wu:brief --id ${options.id}\n` +
+    `  1. If you need a fresh handoff prompt, rerun:\n` +
+    `     pnpm wu:brief --id ${options.id} --client <client>\n` +
     `  2. If self-implementing, refresh evidence only:\n` +
     `     pnpm wu:brief --id ${options.id} --evidence-only\n` +
     `  3. Retry prep:\n` +
@@ -319,8 +319,8 @@ function buildStaleWuBriefEvidenceMessageForDone(options: {
     `Stale wu:brief evidence for ${options.id} (policy=${options.mode}).\n\n` +
     `${describeWuBriefFreshness(options.evidenceTimestamp, options.freshnessMinutes, options.now)}\n\n` +
     `Fix options:\n` +
-    `  1. Refresh evidence:\n` +
-    `     pnpm wu:brief --id ${options.id}\n` +
+    `  1. If you need a fresh handoff prompt, rerun:\n` +
+    `     pnpm wu:brief --id ${options.id} --client <client>\n` +
     `  2. If self-implementing, refresh evidence only:\n` +
     `     pnpm wu:brief --id ${options.id} --evidence-only\n` +
     `  3. Retry completion:\n` +

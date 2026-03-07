@@ -703,11 +703,12 @@ describe('WU-2287: wu:brief policy automation on wu:claim', () => {
       wuId: 'WU-2287',
       workspaceRoot: '/tmp/wu-2287',
       clientName: 'wu:claim:auto',
+      evidenceMode: 'claim-auto',
       claimedMode: 'worktree',
       claimedBranch: undefined,
     });
     expect(logger.log).toHaveBeenCalledWith(
-      '[wu-claim] ✅ wu:brief auto-run completed (policy=auto).',
+      '[wu-claim] ✅ wu:brief evidence auto-recorded (policy=auto; no handoff prompt generated).',
     );
   });
 

@@ -779,6 +779,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         expect(evidence?.wuId).toBe(TEST_WU_ID);
         expect(typeof evidence?.timestamp).toBe('string');
         expect(evidence?.note).toContain('[wu:brief]');
+        expect(evidence?.mode).toBe('evidence-only');
       });
 
       it('records evidence in branch-pr mode when active branch matches claimed branch', async () => {
@@ -806,6 +807,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         );
         expect(evidence).toBeDefined();
         expect(evidence?.wuId).toBe(wuId);
+        expect(evidence?.mode).toBe('evidence-only');
       });
 
       it('skips evidence in branch-pr mode when active branch mismatches claimed branch', async () => {

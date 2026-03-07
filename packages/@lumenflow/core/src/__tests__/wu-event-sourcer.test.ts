@@ -19,6 +19,9 @@ import {
   WUEventSourcer,
   WU_EVENTS_FILE_NAME,
   WU_BRIEF_EVIDENCE_NOTE_PREFIX,
+  extractWuBriefEvidenceClient,
+  extractWuBriefEvidenceHash,
+  extractWuBriefEvidenceMode,
   findLatestWuBriefEvidence,
   getWuBriefEvidenceAgeMinutes,
   isWuBriefEvidenceNote,
@@ -113,12 +116,15 @@ describe('WUEventSourcer', () => {
           wuId: 'WU-100',
           timestamp: '2026-02-24T10:00:00.000Z',
           note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} initial`,
+          nextSteps: 'client=codex-cli;mode=evidence-only',
         },
         {
           type: 'checkpoint',
           wuId: 'WU-100',
           timestamp: '2026-02-24T11:00:00.000Z',
           note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} refreshed`,
+          nextSteps:
+            'client=claude-code;mode=prompt;hash=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         },
       ] as WUEvent[];
 
@@ -128,6 +134,9 @@ describe('WUEventSourcer', () => {
           wuId: 'WU-100',
           timestamp: '2026-02-24T11:00:00.000Z',
           note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} refreshed`,
+          clientName: 'claude-code',
+          mode: 'prompt',
+          promptHash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         }),
       );
     });
@@ -144,6 +153,21 @@ describe('WUEventSourcer', () => {
 
       const result = findLatestWuBriefEvidence(events, 'WU-100');
       expect(result).toBeNull();
+    });
+
+    it('extracts client, mode, and hash metadata from checkpoint nextSteps', () => {
+      const nextSteps =
+        'client=codex-cli;mode=prompt;hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+      expect(extractWuBriefEvidenceClient(nextSteps)).toBe('codex-cli');
+      expect(extractWuBriefEvidenceMode(nextSteps)).toBe('prompt');
+      expect(extractWuBriefEvidenceHash(nextSteps)).toBe(
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      );
+    });
+
+    it('infers claim-auto mode from legacy auto-claim evidence', () => {
+      expect(extractWuBriefEvidenceMode('client=wu:claim:auto')).toBe('claim-auto');
     });
   });
 

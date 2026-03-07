@@ -26,15 +26,56 @@ import { getErrorMessage, createError, ErrorCodes } from './error-handler.js';
  */
 export const WU_EVENTS_FILE_NAME = 'wu-events.jsonl';
 export const WU_BRIEF_EVIDENCE_NOTE_PREFIX = '[wu:brief]';
+export const WU_BRIEF_EVIDENCE_MODES = ['prompt', 'evidence-only', 'claim-auto'] as const;
+
+export type WuBriefEvidenceMode = (typeof WU_BRIEF_EVIDENCE_MODES)[number];
 
 export interface WuBriefEvidence {
   wuId: string;
   timestamp: string;
   note: string;
   nextSteps?: string;
+  clientName?: string;
+  mode?: WuBriefEvidenceMode;
+  promptHash?: string;
 }
 
-const WU_BRIEF_HASH_CAPTURE_REGEX = /(?:^|[;\s])hash=([a-f0-9]{64})(?=$|[;\s])/;
+const WU_BRIEF_HASH_REGEX = /^[a-f0-9]{64}$/;
+
+function parseWuBriefEvidenceMetadata(nextSteps: unknown): Map<string, string> {
+  const metadata = new Map<string, string>();
+  if (typeof nextSteps !== 'string' || nextSteps.trim().length === 0) {
+    return metadata;
+  }
+
+  for (const token of nextSteps.split(';')) {
+    const trimmedToken = token.trim();
+    if (trimmedToken.length === 0) {
+      continue;
+    }
+
+    const separatorIndex = trimmedToken.indexOf('=');
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const key = trimmedToken.slice(0, separatorIndex).trim();
+    const value = trimmedToken.slice(separatorIndex + 1).trim();
+    if (key.length === 0 || value.length === 0) {
+      continue;
+    }
+
+    metadata.set(key, value);
+  }
+
+  return metadata;
+}
+
+function isWuBriefEvidenceMode(value: unknown): value is WuBriefEvidenceMode {
+  return (
+    typeof value === 'string' && WU_BRIEF_EVIDENCE_MODES.includes(value as WuBriefEvidenceMode)
+  );
+}
 
 function hashesEqualTimingSafe(left: string, right: string): boolean {
   if (left.length !== right.length) {
@@ -56,11 +97,38 @@ export function isWuBriefEvidenceNote(note: unknown): note is string {
  * Extract attested brief hash from checkpoint nextSteps payload.
  */
 export function extractWuBriefEvidenceHash(nextSteps: unknown): string | null {
-  if (typeof nextSteps !== 'string' || nextSteps.trim().length === 0) {
-    return null;
+  const hash = parseWuBriefEvidenceMetadata(nextSteps).get('hash');
+  return hash && WU_BRIEF_HASH_REGEX.test(hash) ? hash : null;
+}
+
+/**
+ * Extract brief client name from checkpoint nextSteps payload.
+ */
+export function extractWuBriefEvidenceClient(nextSteps: unknown): string | null {
+  const clientName = parseWuBriefEvidenceMetadata(nextSteps).get('client');
+  return clientName && clientName.length > 0 ? clientName : null;
+}
+
+/**
+ * Extract brief mode from checkpoint nextSteps payload.
+ *
+ * Older evidence may not have an explicit mode. In that case, fall back to
+ * signatures that can be inferred safely without misclassifying ambiguous
+ * legacy prompt records.
+ */
+export function extractWuBriefEvidenceMode(nextSteps: unknown): WuBriefEvidenceMode | null {
+  const metadata = parseWuBriefEvidenceMetadata(nextSteps);
+  const explicitMode = metadata.get('mode');
+  if (isWuBriefEvidenceMode(explicitMode)) {
+    return explicitMode;
   }
-  const match = nextSteps.match(WU_BRIEF_HASH_CAPTURE_REGEX);
-  return match?.[1] ?? null;
+
+  const clientName = metadata.get('client');
+  if (clientName === 'wu:claim:auto') {
+    return 'claim-auto';
+  }
+
+  return extractWuBriefEvidenceHash(nextSteps) ? 'prompt' : null;
 }
 
 /**
@@ -177,11 +245,18 @@ export function findLatestWuBriefEvidence(
     }
 
     if (event.wuId === wuId && isWuBriefEvidenceNote(event.note)) {
+      const nextSteps = typeof event.nextSteps === 'string' ? event.nextSteps : undefined;
+      const clientName = extractWuBriefEvidenceClient(nextSteps);
+      const mode = extractWuBriefEvidenceMode(nextSteps);
+      const promptHash = extractWuBriefEvidenceHash(nextSteps);
       return {
         wuId: event.wuId,
         timestamp: event.timestamp,
         note: event.note,
-        ...(typeof event.nextSteps === 'string' ? { nextSteps: event.nextSteps } : {}),
+        ...(nextSteps ? { nextSteps } : {}),
+        ...(clientName ? { clientName } : {}),
+        ...(mode ? { mode } : {}),
+        ...(promptHash ? { promptHash } : {}),
       };
     }
   }

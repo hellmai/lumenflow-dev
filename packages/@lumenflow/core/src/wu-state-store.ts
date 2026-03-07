@@ -24,11 +24,14 @@ export type { IWuStateStore } from './ports/wu-state.ports.js';
 
 // Re-export from extracted services for backward compatibility
 export {
+  extractWuBriefEvidenceClient,
   extractWuBriefEvidenceHash,
+  extractWuBriefEvidenceMode,
   hasWuBriefEvidenceHash,
   hasMatchingWuBriefEvidenceHash,
   WU_EVENTS_FILE_NAME,
   WU_BRIEF_EVIDENCE_NOTE_PREFIX,
+  WU_BRIEF_EVIDENCE_MODES,
   findLatestWuBriefEvidence,
   getLatestWuBriefEvidence,
   getWuBriefEvidenceAgeMinutes,
@@ -39,6 +42,7 @@ export { isLockStale, acquireLock, releaseLock } from './wu-lock-manager.js';
 export type { LockData } from './wu-lock-manager.js';
 export { repairStateFile } from './wu-repair-service.js';
 export type { RepairResult } from './wu-repair-service.js';
+export type { WuBriefEvidence, WuBriefEvidenceMode } from './wu-event-sourcer.js';
 
 /** Validate a WU event, throwing on failure. */
 function validateOrThrow(event: Record<string, unknown>): WUEvent {

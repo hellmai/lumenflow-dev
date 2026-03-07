@@ -202,10 +202,13 @@ export async function maybeRunAutoBriefForClaim(
       wuId: options.wuId,
       workspaceRoot: options.workspaceRoot,
       clientName: options.clientName || AUTO_BRIEF_CLIENT_NAME,
+      evidenceMode: 'claim-auto',
       claimedMode: options.claimedMode,
       claimedBranch: options.claimedBranch,
     });
-    logger.log(`${PREFIX} ${EMOJI.SUCCESS} wu:brief auto-run completed (policy=${mode}).`);
+    logger.log(
+      `${PREFIX} ${EMOJI.SUCCESS} wu:brief evidence auto-recorded (policy=${mode}; no handoff prompt generated).`,
+    );
     return { attempted: true, mode };
   } catch (error) {
     const message = getErrorMessage(error);

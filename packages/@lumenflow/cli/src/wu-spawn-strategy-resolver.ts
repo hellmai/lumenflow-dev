@@ -41,6 +41,7 @@ import {
   getMemoryContextMaxSize,
   generateMemoryContextSection,
 } from '@lumenflow/core/wu-spawn-context';
+import type { WuBriefEvidenceMode } from '@lumenflow/core/wu-state-store';
 
 import type { WUDocument, SpawnOptions, ClientContext } from './wu-spawn-prompt-builders.js';
 import { generateTaskInvocation, generateCodexPrompt } from './wu-spawn-prompt-builders.js';
@@ -343,6 +344,7 @@ interface RecordWuBriefEvidenceOptions {
   wuId: string;
   workspaceRoot: string;
   clientName: string;
+  evidenceMode?: WuBriefEvidenceMode;
   promptHash?: string;
   forceRecord?: boolean;
   claimedMode?: string;
@@ -376,8 +378,16 @@ export async function recordWuBriefEvidence(
   options: RecordWuBriefEvidenceOptions,
   dependencies: RecordWuBriefEvidenceDependencies = {},
 ): Promise<void> {
-  const { wuId, workspaceRoot, clientName, promptHash, forceRecord, claimedMode, claimedBranch } =
-    options;
+  const {
+    wuId,
+    workspaceRoot,
+    clientName,
+    evidenceMode,
+    promptHash,
+    forceRecord,
+    claimedMode,
+    claimedBranch,
+  } = options;
 
   const checkWorktree = dependencies.isInWorktree ?? isInWorktreeDefault;
   const isInWorktree = checkWorktree({ cwd: workspaceRoot });
@@ -423,11 +433,16 @@ export async function recordWuBriefEvidence(
   const createStore = dependencies.createStore ?? ((dir: string) => new WUStateStore(dir));
   const store = createStore(stateDir);
   const note = `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} generated via ${clientName}`;
-  const nextSteps = promptHash ? `client=${clientName};hash=${promptHash}` : `client=${clientName}`;
+  const resolvedEvidenceMode =
+    evidenceMode ?? (clientName === 'wu:claim:auto' ? 'claim-auto' : 'evidence-only');
+  const nextStepsParts = [`client=${clientName}`, `mode=${resolvedEvidenceMode}`];
+  if (promptHash) {
+    nextStepsParts.push(`hash=${promptHash}`);
+  }
 
   await store.checkpoint(wuId, note, {
     progress: BRIEF_EVIDENCE_PROGRESS,
-    nextSteps,
+    nextSteps: nextStepsParts.join(';'),
   });
 }
 
@@ -599,14 +614,17 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   const clientName = resolveClientName(args, config, effectiveLogPrefix);
   const baseDir = process.cwd();
 
-  const recordEvidenceOrFail = async (
-    options: { promptHash?: string; forceRecord?: boolean } = {},
-  ) => {
+  const recordEvidenceOrFail = async (options: {
+    evidenceMode: WuBriefEvidenceMode;
+    promptHash?: string;
+    forceRecord?: boolean;
+  }) => {
     try {
       await recordWuBriefEvidence({
         wuId: id,
         workspaceRoot: baseDir,
         clientName,
+        evidenceMode: options.evidenceMode,
         promptHash: options.promptHash,
         forceRecord: options.forceRecord,
         claimedMode: typeof doc.claimed_mode === 'string' ? doc.claimed_mode : undefined,
@@ -623,11 +641,14 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   };
 
   if (args.evidenceOnly) {
-    await recordEvidenceOrFail();
+    await recordEvidenceOrFail({ evidenceMode: 'evidence-only' });
     console.log(
-      `${effectiveLogPrefix} Recorded wu:brief evidence for ${id} (evidence-only mode; no handoff prompt generated).`,
+      `${effectiveLogPrefix} Recorded wu:brief evidence for ${id} (mode=evidence-only; no handoff prompt generated).`,
     );
     console.log(`${effectiveLogPrefix} Continue implementing ${id} in the current session.`);
+    console.log(
+      `${effectiveLogPrefix} Need a handoff prompt instead? Run: pnpm wu:brief --id ${id} --client <client>`,
+    );
     return;
   }
 
@@ -679,6 +700,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
       logPrefix: effectiveLogPrefix,
     });
     await recordEvidenceOrFail({
+      evidenceMode: 'prompt',
       promptHash: briefAttestation?.promptHash,
       forceRecord: explicitDelegation,
     });
@@ -710,6 +732,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
     logPrefix: effectiveLogPrefix,
   });
   await recordEvidenceOrFail({
+    evidenceMode: 'prompt',
     promptHash: briefAttestation?.promptHash,
     forceRecord: explicitDelegation,
   });

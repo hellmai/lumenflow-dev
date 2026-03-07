@@ -326,7 +326,7 @@ status: done
     it('returns actionable remediation text for missing wu:brief evidence', () => {
       const message = buildMissingWuBriefEvidenceMessage('WU-2132');
       expect(message).toContain('Missing wu:brief evidence');
-      expect(message).toContain('pnpm wu:brief --id WU-2132');
+      expect(message).toContain('pnpm wu:brief --id WU-2132 --client <client>');
       expect(message).toContain('pnpm wu:brief --id WU-2132 --evidence-only');
       expect(message).toContain('--force');
     });
@@ -427,7 +427,7 @@ status: done
     it('returns prep remediation with policy and bypass guidance', () => {
       const message = buildMissingWuBriefEvidenceMessageForPrep('WU-2288', 'required');
       expect(message).toContain('policy=required');
-      expect(message).toContain('pnpm wu:brief --id WU-2288');
+      expect(message).toContain('pnpm wu:brief --id WU-2288 --client <client>');
       expect(message).toContain('--force --reason');
     });
 
