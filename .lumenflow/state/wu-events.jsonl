@@ -2888,3 +2888,5 @@
 {"type":"checkpoint","wuId":"WU-2337","timestamp":"2026-03-06T18:29:04.440Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2337","timestamp":"2026-03-06T18:33:38.339Z"}
 {"type":"claim","wuId":"WU-2338","timestamp":"2026-03-07T08:44:34.349Z","lane":"Framework: CLI WU Commands","title":"Fix wu:done --already-merged writing metadata to main instead of micro-worktree"}
+{"type":"checkpoint","wuId":"WU-2338","timestamp":"2026-03-07T08:44:46.019Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2338","timestamp":"2026-03-07T08:44:52.770Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
