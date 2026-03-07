@@ -10,6 +10,9 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/wu-done-claim-validation.ts
   - packages/@lumenflow/cli/src/lane-edit.ts
+  - packages/@lumenflow/cli/src/wu-done-ownership.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - .gitattributes
 tests:
   manual:
     - Claim a WU, run wu:prep from worktree, then wu:done from main in new session - should succeed
