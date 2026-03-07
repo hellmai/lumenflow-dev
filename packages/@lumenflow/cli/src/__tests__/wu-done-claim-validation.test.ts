@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
+import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { validateClaimSessionOwnership } from '../wu-done-ownership.js';
 
@@ -63,5 +64,18 @@ describe('WU-2341: wu:prep checkpoint authorizes session handoff', () => {
     });
     expect(result.valid).toBe(true);
     expect(result.auditRequired).toBe(true);
+  });
+
+  it('wires ownership handoff through HEAD-aware checkpoint validation', async () => {
+    const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+
+    expect(source).toContain('resolveCheckpointSkipResult');
+    expect(source).toContain(
+      'const prepCheckpointResult = await resolveCheckpointSkipResult(id, derivedWorktree || null);',
+    );
+    expect(source).toContain(
+      'const earlySkipResult = await resolveCheckpointSkipResult(id, derivedWorktree || null);',
+    );
+    expect(source).not.toContain('currentHeadSha: undefined');
   });
 });

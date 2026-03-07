@@ -49,7 +49,7 @@ import { wuDoneMachine, WU_DONE_EVENTS } from '@lumenflow/core/wu-done-machine';
 import { execSync } from 'node:child_process';
 import type { ZodIssue } from 'zod';
 import { runGates } from './gates.js';
-import { executeGates } from './wu-done-gates.js';
+import { executeGates, resolveCheckpointSkipResult } from './wu-done-gates.js';
 // WU-2102: Import scoped test resolver for wu:done gate fallback
 import { resolveScopedUnitTestsForPrep } from './wu-prep.js';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
@@ -1212,10 +1212,7 @@ async function executePreFlightChecks({
   if (!isBranchOnly) {
     const activeSession = getCurrentSessionForWU();
     // WU-2341: Check if wu:prep created a valid checkpoint — proves authorized session handoff.
-    const prepCheckpointResult = canSkipGates(id, {
-      currentHeadSha: undefined,
-      baseDir: derivedWorktree || undefined,
-    });
+    const prepCheckpointResult = await resolveCheckpointSkipResult(id, derivedWorktree || null);
     const sessionOwnership = validateClaimSessionOwnership({
       wuId: id,
       claimedSessionId:
@@ -1541,10 +1538,7 @@ export async function main() {
   // canSkipGates checks if wu:prep already ran gates successfully via checkpoint.
   // This drives the isPrepPassed guard on the GATES_SKIPPED transition.
   // WU-2102: Look for checkpoint in worktree (where wu:prep writes it), not main
-  const earlySkipResult = canSkipGates(id, {
-    currentHeadSha: undefined,
-    baseDir: derivedWorktree || undefined,
-  });
+  const earlySkipResult = await resolveCheckpointSkipResult(id, derivedWorktree || null);
   const prepPassed = earlySkipResult.canSkip;
 
   // WU-1663: Create XState pipeline actor for state-driven orchestration.

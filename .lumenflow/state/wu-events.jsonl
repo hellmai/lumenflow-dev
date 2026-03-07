@@ -2913,3 +2913,6 @@
 {"type":"checkpoint","wuId":"WU-2340","timestamp":"2026-03-07T10:34:40.604Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2340","timestamp":"2026-03-07T10:44:02.432Z"}
 {"type":"claim","wuId":"WU-2342","timestamp":"2026-03-07T10:51:38.740Z","lane":"Framework: CLI WU Commands","title":"Bind wu:done prep-checkpoint handoff to current worktree HEAD"}
+{"type":"checkpoint","wuId":"WU-2342","timestamp":"2026-03-07T10:51:49.728Z","note":"[wu:brief] generated via wu:claim:auto","progress":"wu:brief executed","nextSteps":"client=wu:claim:auto"}
+{"type":"checkpoint","wuId":"WU-2342","timestamp":"2026-03-07T10:54:27.765Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2342","timestamp":"2026-03-07T10:56:41.909Z","note":"WU-2342"}

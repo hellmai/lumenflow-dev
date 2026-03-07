@@ -12,6 +12,7 @@ import {
   createPreGatesCheckpoint as createWU1747Checkpoint,
   markGatesPassed,
 } from '@lumenflow/core/wu-checkpoint';
+import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { printGateFailureBox } from '@lumenflow/core/wu-done-ui';
 import {
   CHECKPOINT_MESSAGES,
@@ -173,6 +174,36 @@ export interface ExecuteGatesResult {
 }
 
 /**
+ * WU-2342: A prep checkpoint only authorizes reuse when it matches the current
+ * worktree HEAD. This keeps session handoff and gate skipping bound to the
+ * code that actually passed wu:prep.
+ */
+export async function resolveCheckpointSkipResult(wuId: string, worktreePath: string | null) {
+  let currentHeadSha: string | undefined;
+
+  if (worktreePath) {
+    try {
+      currentHeadSha = (await createGitForPath(worktreePath).getCommitHash('HEAD')).trim();
+    } catch (err) {
+      die(
+        `Failed to verify wu:prep checkpoint against current worktree HEAD at ${worktreePath}: ${getErrorMessage(err)}`,
+      );
+    }
+
+    if (!currentHeadSha) {
+      die(
+        `Failed to verify wu:prep checkpoint against current worktree HEAD at ${worktreePath}: git returned an empty HEAD SHA.`,
+      );
+    }
+  }
+
+  return canSkipGates(wuId, {
+    currentHeadSha,
+    baseDir: worktreePath || undefined,
+  });
+}
+
+/**
  * WU-2165: Gate orchestration extracted from wu-done.ts.
  */
 export async function executeGates(
@@ -193,10 +224,7 @@ export async function executeGates(
     checkpointId: null,
   };
 
-  const skipResult = canSkipGates(id, {
-    currentHeadSha: undefined,
-    baseDir: worktreePath || undefined,
-  });
+  const skipResult = await resolveCheckpointSkipResult(id, worktreePath);
   if (skipResult.canSkip) {
     gateResult.skippedByCheckpoint = true;
     gateResult.checkpointId = skipResult.checkpoint.checkpointId;
