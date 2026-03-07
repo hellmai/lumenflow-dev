@@ -7,9 +7,6 @@ status: in_progress
 priority: P2
 created: 2026-03-07
 code_paths:
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-done-claim-validation.ts
-  - packages/@lumenflow/cli/src/lane-edit.ts
   - packages/@lumenflow/cli/src/wu-done-ownership.ts
   - packages/@lumenflow/cli/src/wu-done.ts
   - .gitattributes
