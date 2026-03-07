@@ -2,7 +2,7 @@ id: WU-2338
 title: Fix wu:done --already-merged writing metadata to main instead of micro-worktree
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-03-07
 code_paths:
@@ -44,3 +44,6 @@ acceptance:
   - wu:done --already-merged writes metadata files inside micro-worktree, not main checkout
   - Existing wu-done-already-merged tests pass
   - New test confirms paths passed to transaction are absolute micro-worktree paths
+locked: true
+completed_at: 2026-03-07T08:48:08.363Z
+completed: 2026-03-07

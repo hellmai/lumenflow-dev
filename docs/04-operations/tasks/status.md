@@ -4,7 +4,7 @@ _Last updated: 2026-03-07_
 
 ## In Progress
 
-- [WU-2338 — Fix wu:done --already-merged writing metadata to main instead of micro-worktree](wu/WU-2338.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1258,3 +1258,4 @@ _Last updated: 2026-03-07_
 - [WU-2335 — Tighten wu:brief verification precedence for UI-classified work](wu/WU-2335.yaml) — 2026-03-06
 - [WU-2336 — Make Cloud prompt policy summaries UI-aware](wu/WU-2336.yaml) — 2026-03-06
 - [WU-2337 — Fix wu:infer-lane zero-signal first-lane fallback](wu/WU-2337.yaml) — 2026-03-06
+- [WU-2338 — Fix wu:done --already-merged writing metadata to main instead of micro-worktree](wu/WU-2338.yaml) — 2026-03-07

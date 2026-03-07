@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2338 — Fix wu:done --already-merged writing metadata to main instead of micro-worktree](wu/WU-2338.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1284,6 +1284,7 @@ sections:
 - [WU-2335 — Tighten wu:brief verification precedence for UI-classified work](wu/WU-2335.yaml)
 - [WU-2336 — Make Cloud prompt policy summaries UI-aware](wu/WU-2336.yaml)
 - [WU-2337 — Fix wu:infer-lane zero-signal first-lane fallback](wu/WU-2337.yaml)
+- [WU-2338 — Fix wu:done --already-merged writing metadata to main instead of micro-worktree](wu/WU-2338.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
