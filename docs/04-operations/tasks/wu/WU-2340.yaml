@@ -2,7 +2,7 @@ id: WU-2340
 title: wu:edit misclassifies claimed WUs when local main is stale
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-07
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
 tests:
   manual:
-    - Claim a worktree WU, leave local main stale, run wu:edit for notes, and verify the edit does not route through ready/micro-worktree state
+    - Claim a worktree WU, leave local main stale, run wu:edit for notes, and verify the edit does
+      not route through ready/micro-worktree state
     - After the edit, run wu:prep and verify the WU remains in_progress with intact claim metadata
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-edit-worktree-read.test.ts
@@ -22,7 +23,9 @@ artifacts:
   - .lumenflow/stamps/WU-2340.done
 dependencies: []
 risks: []
-notes: 'Captured from March 7, 2026 WU-304 transcript: wu:edit notes fix appeared to land via main path, worktree rebase conflicted in wu-events.jsonl, and wu:prep later saw the WU as ready instead of in_progress.'
+notes: 'Captured from March 7, 2026 WU-304 transcript: wu:edit notes fix appeared to land via main
+  path, worktree rebase conflicted in wu-events.jsonl, and wu:prep later saw the WU as ready instead
+  of in_progress.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -31,9 +34,27 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: a claimed worktree WU can have canonical claim metadata on origin/main and in its worktree while a local main checkout remains stale. Problem: validateWUEditable() reads the local WU YAML first to choose edit mode, so a stale local ready copy can make wu:edit treat an in_progress worktree WU as ready. That lets the spec edit go through the micro-worktree path on main, which can drop claim metadata, create wu-events rebase conflicts in the worktree, and break wu:prep/wu:done until recovery commands repair state. Solution: resolve edit mode from authoritative claimed state instead of stale local main, or fail safely when local and remote/worktree state disagree, and add regression coverage for stale-main claimed-WU edits.'
+description: 'Context: a claimed worktree WU can have canonical claim metadata on origin/main and in
+  its worktree while a local main checkout remains stale. Problem: validateWUEditable() reads the
+  local WU YAML first to choose edit mode, so a stale local ready copy can make wu:edit treat an
+  in_progress worktree WU as ready. That lets the spec edit go through the micro-worktree path on
+  main, which can drop claim metadata, create wu-events rebase conflicts in the worktree, and break
+  wu:prep/wu:done until recovery commands repair state. Solution: resolve edit mode from
+  authoritative claimed state instead of stale local main, or fail safely when local and
+  remote/worktree state disagree, and add regression coverage for stale-main claimed-WU edits.'
 acceptance:
-  - wu:edit does not choose ready/micro-worktree mode for a WU that is claimed in_progress on origin/main or in its worktree when local main is stale
-  - If local and authoritative WU state disagree, wu:edit fails safely with remediation instead of rewriting runtime claim metadata
-  - Editing notes on a claimed worktree WU from the correct worktree preserves claimed_mode, claimed_at, session_id, worktree_path, and status
+  - wu:edit does not choose ready/micro-worktree mode for a WU that is claimed in_progress on
+    origin/main or in its worktree when local main is stale
+  - If local and authoritative WU state disagree, wu:edit fails safely with remediation instead of
+    rewriting runtime claim metadata
+  - Editing notes on a claimed worktree WU from the correct worktree preserves claimed_mode,
+    claimed_at, session_id, worktree_path, and status
   - Regression tests cover the stale-local-main scenario and prevent claim metadata loss
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2340
+claimed_at: 2026-03-07T10:34:14.491Z
+baseline_main_sha: bd942581e191cafff23e78a9925b4ef2fcf10a2e
+session_id: f105bfbc-9e05-409a-9be9-38c66c3ca22a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-07T10:34:14.499Z

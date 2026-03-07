@@ -2917,3 +2917,4 @@
 {"type":"checkpoint","wuId":"WU-2339","timestamp":"2026-03-07T10:22:47.268Z","note":"[wu:edit] path=docs/04-operations/tasks/wu/WU-2339.yaml","progress":"wu:edit stamp","nextSteps":"pre-commit enforcement"}
 {"type":"checkpoint","wuId":"WU-2339","timestamp":"2026-03-07T10:23:12.433Z","note":"Implementation and template sync complete","progress":"Targeted tests passing; running full gates","nextSteps":"Run pnpm gates, then wu:prep/wu:done if green"}
 {"type":"complete","wuId":"WU-2339","timestamp":"2026-03-07T10:33:26.916Z"}
+{"type":"claim","wuId":"WU-2340","timestamp":"2026-03-07T10:34:14.522Z","lane":"Framework: CLI WU Commands","title":"wu:edit misclassifies claimed WUs when local main is stale"}

@@ -4,7 +4,7 @@ _Last updated: 2026-03-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2340 — wu:edit misclassifies claimed WUs when local main is stale](wu/WU-2340.yaml)
 
 ## Completed
 
