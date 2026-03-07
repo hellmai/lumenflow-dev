@@ -1,0 +1,41 @@
+id: WU-2342
+title: Bind wu:done prep-checkpoint handoff to current worktree HEAD
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-03-07
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-done-gates.ts
+  - packages/@lumenflow/cli/src/wu-done-ownership.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done-claim-validation.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done-gates-extraction.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+tests:
+  manual:
+    - Run wu:prep in a claimed worktree, add a new commit after prep, then run wu:done from main in a new session and verify it rejects the stale checkpoint instead of treating it as an authorized handoff
+    - Run wu:prep and wu:done without new commits between them and verify the cross-session handoff still succeeds
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done-claim-validation.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2342.done
+dependencies: []
+risks: []
+notes: 'Follow-up to WU-2341 review: prep checkpoint handoff must stay tied to current worktree HEAD, not just checkpoint freshness.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-2341 allowed wu:done session handoff when any valid wu:prep checkpoint existed, but both the ownership check in wu-done.ts and the gate-skip path in wu-done-gates.ts call canSkipGates() with currentHeadSha undefined. Problem: a stale prep checkpoint can still authorize cross-session completion or skip gates after new commits land on the worktree branch. Solution: resolve the current worktree HEAD SHA and require checkpoint SHA match before treating prep as an authorized handoff or skipping gates, with regression tests for stale-checkpoint mismatch and normal prep-to-done handoff.'
+acceptance:
+  - wu:done only accepts wu:prep session handoff when the prep checkpoint matches the current worktree HEAD
+  - checkpoint-based gate skipping in wu:done refuses stale checkpoints after new commits
+  - normal wu:prep in session A then wu:done in session B still succeeds when the worktree HEAD is unchanged
+  - regression tests cover both the ownership path and the executeGates checkpoint-skip path
