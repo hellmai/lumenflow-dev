@@ -18,12 +18,20 @@ artifacts:
   - .lumenflow/stamps/WU-2338.done
 dependencies: []
 risks: []
-notes: ''
+notes: Fixed path resolution in executeAlreadyMergedFinalize. Used path.join(worktreePath,
+  WU_PATHS.*) for absolute paths, matching resolveWorktreeMetadataPaths pattern from WU-1563.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-03-07T08:44:34.321Z
+worktree_path: worktrees/framework-cli-wu-commands-wu-2338
+session_id: db3f19b0-2f15-45a8-95c1-ae71e8dda0fd
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-07T08:44:34.328Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +44,3 @@ acceptance:
   - wu:done --already-merged writes metadata files inside micro-worktree, not main checkout
   - Existing wu-done-already-merged tests pass
   - New test confirms paths passed to transaction are absolute micro-worktree paths
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-wu-commands-wu-2338
-claimed_at: 2026-03-07T08:44:34.321Z
-baseline_main_sha: 139db5b757dc2723ce9ed3bca5858929af199248
-session_id: db3f19b0-2f15-45a8-95c1-ae71e8dda0fd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-03-07T08:44:34.328Z
