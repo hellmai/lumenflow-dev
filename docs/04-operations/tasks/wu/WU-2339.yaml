@@ -2,7 +2,7 @@ id: WU-2339
 title: Remove unsafe agent fallback guidance and misleading claimed-WU prompts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-07
 code_paths:
@@ -80,3 +80,6 @@ acceptance:
   - wu:edit readiness/output is lifecycle-aware and never tells an already in_progress WU to run
     pnpm wu:claim
   - Regression tests cover prompt/template guidance and wu:edit readiness output for claimed WUs
+locked: true
+completed_at: 2026-03-07T10:33:22.404Z
+completed: 2026-03-07
