@@ -10,6 +10,7 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done-gates.ts
   - packages/@lumenflow/cli/src/__tests__/wu-done-claim-validation.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-done-gates.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
 tests:
   manual:
     - Run wu:prep in a claimed worktree, add a new commit after prep, then run wu:done from main in
