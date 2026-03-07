@@ -1,0 +1,38 @@
+id: WU-2341
+title: wu:done rejects normal wu:prep handoff as session mismatch and lane:edit causes predictable JSONL merge conflicts
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-03-07
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-done-claim-validation.ts
+  - packages/@lumenflow/cli/src/lane-edit.ts
+tests:
+  manual:
+    - Claim a WU, run wu:prep from worktree, then wu:done from main in new session - should succeed without --force
+    - Run lane:edit --add-path while a worktree WU is active, then merge origin/main into worktree - no JSONL conflict
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done-claim-validation.test.ts
+    - packages/@lumenflow/cli/src/__tests__/lane-edit-jsonl-merge.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2341.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Two related bugs from March 7 2026 agent transcripts. (1) wu:done CLAIM OWNERSHIP VIOLATION on normal wu:prep to wu:done handoff: wu:prep runs in worktree session, wu:done runs from main in different session. This is the documented happy path but triggers ownership error requiring --force. wu:done should recognize wu:prep checkpoint as authorized handoff. (2) lane:edit micro-worktree pushes to origin/main, then worktree merge creates predictable JSONL conflicts in wu-events.jsonl. JSONL is append-only so conflicts should be auto-resolvable.'
+acceptance:
+  - wu:done accepts wu:prep checkpoint as session handoff proof without requiring --force
+  - lane:edit micro-worktree merges into worktrees do not produce JSONL conflicts or conflicts are auto-resolved
+  - Regression tests cover wu:prep session A then wu:done session B scenario
+  - Regression tests cover lane:edit push followed by worktree merge of origin/main
