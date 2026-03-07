@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-03-06_
+_Last updated: 2026-03-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2338 — Fix wu:done --already-merged writing metadata to main instead of micro-worktree](wu/WU-2338.yaml)
 
 ## Completed
 

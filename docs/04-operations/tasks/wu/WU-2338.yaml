@@ -2,7 +2,7 @@ id: WU-2338
 title: Fix wu:done --already-merged writing metadata to main instead of micro-worktree
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-03-07
 code_paths:
@@ -27,8 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'executeAlreadyMergedFinalize uses relative WU_PATHS inside withMicroWorktree callback. WUTransaction.commit() resolves relative paths from process.cwd() (main checkout) instead of the micro-worktree in /tmp. This writes metadata directly to main working tree, the micro-worktree commit fails, and main is left dirty. The fix exists: resolveWorktreeMetadataPaths() from WU-1563 produces absolute paths but was not used in the WU-2211 already-merged path.'
+description: 'executeAlreadyMergedFinalize uses relative WU_PATHS inside withMicroWorktree callback.
+  WUTransaction.commit() resolves relative paths from process.cwd() (main checkout) instead of the
+  micro-worktree in /tmp. This writes metadata directly to main working tree, the micro-worktree
+  commit fails, and main is left dirty. The fix exists: resolveWorktreeMetadataPaths() from WU-1563
+  produces absolute paths but was not used in the WU-2211 already-merged path.'
 acceptance:
   - wu:done --already-merged writes metadata files inside micro-worktree, not main checkout
   - Existing wu-done-already-merged tests pass
   - New test confirms paths passed to transaction are absolute micro-worktree paths
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2338
+claimed_at: 2026-03-07T08:44:34.321Z
+baseline_main_sha: 139db5b757dc2723ce9ed3bca5858929af199248
+session_id: db3f19b0-2f15-45a8-95c1-ae71e8dda0fd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-07T08:44:34.328Z
