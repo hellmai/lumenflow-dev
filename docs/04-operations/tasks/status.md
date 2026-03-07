@@ -4,7 +4,7 @@ _Last updated: 2026-03-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2339 — Remove unsafe agent fallback guidance and misleading claimed-WU prompts](wu/WU-2339.yaml)
 
 ## Completed
 

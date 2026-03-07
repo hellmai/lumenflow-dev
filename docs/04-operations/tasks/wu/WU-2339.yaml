@@ -2,7 +2,7 @@ id: WU-2339
 title: Remove unsafe agent fallback guidance and misleading claimed-WU prompts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-03-07
 code_paths:
@@ -16,8 +16,10 @@ code_paths:
 tests:
   manual:
     - Generate onboarding/brief guidance and verify no git stash main-checkout advice remains
-    - Trigger a format gate failure and verify remediation prefers targeted file formatting over pnpm format
-    - Run wu:edit against an in_progress worktree WU and verify output does not include a ready-to-claim instruction
+    - Trigger a format gate failure and verify remediation prefers targeted file formatting over
+      pnpm format
+    - Run wu:edit against an in_progress worktree WU and verify output does not include a
+      ready-to-claim instruction
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
@@ -26,7 +28,9 @@ artifacts:
   - .lumenflow/stamps/WU-2339.done
 dependencies: []
 risks: []
-notes: 'Captured from March 7, 2026 agent transcripts. Primary prevention targets: starting-prompt/init-templates quick-fix guidance, wu-spawn prompt builders, and wu-edit readiness summary.'
+notes: 'Captured from March 7, 2026 agent transcripts. Primary prevention targets:
+  starting-prompt/init-templates quick-fix guidance, wu-spawn prompt builders, and wu-edit readiness
+  summary.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -35,10 +39,31 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: recent agent sessions on live WUs still followed contradictory LumenFlow guidance: they used git stash on main to test pre-existing gate failures, ran repo-wide pnpm format after gates had already identified specific files, generated a full wu:brief prompt while self-implementing, and got a misleading 'Ready to claim' summary from wu:edit on an already in_progress worktree WU. Problem: agent-facing prompts/templates and wu:edit output still contain workflow advice that conflicts with worktree discipline and claim-state reality, which leads agents into dirty-main conflicts, unrelated churn, and avoidable lifecycle confusion. Solution: align prompt/template guidance and wu:edit readiness messaging with current worktree rules so agents are steered toward targeted fixes, evidence-only self-implementation, and state-aware next steps."
+description: "Context: recent agent sessions on live WUs still followed contradictory LumenFlow
+  guidance: they used git stash on main to test pre-existing gate failures, ran repo-wide pnpm
+  format after gates had already identified specific files, generated a full wu:brief prompt while
+  self-implementing, and got a misleading 'Ready to claim' summary from wu:edit on an already
+  in_progress worktree WU. Problem: agent-facing prompts/templates and wu:edit output still contain
+  workflow advice that conflicts with worktree discipline and claim-state reality, which leads
+  agents into dirty-main conflicts, unrelated churn, and avoidable lifecycle confusion. Solution:
+  align prompt/template guidance and wu:edit readiness messaging with current worktree rules so
+  agents are steered toward targeted fixes, evidence-only self-implementation, and state-aware next
+  steps."
 acceptance:
-  - Agent-facing onboarding/generated prompts no longer recommend git stash/git stash pop on main to verify pre-existing gate failures
-  - Quick-fix guidance no longer defaults to repo-wide pnpm format when gate output identifies exact files to format
-  - Self-implementation guidance consistently prefers wu:brief --evidence-only and avoids delegation-style prompt generation for in-session work
-  - wu:edit readiness/output is lifecycle-aware and never tells an already in_progress WU to run pnpm wu:claim
+  - Agent-facing onboarding/generated prompts no longer recommend git stash/git stash pop on main to
+    verify pre-existing gate failures
+  - Quick-fix guidance no longer defaults to repo-wide pnpm format when gate output identifies exact
+    files to format
+  - Self-implementation guidance consistently prefers wu:brief --evidence-only and avoids
+    delegation-style prompt generation for in-session work
+  - wu:edit readiness/output is lifecycle-aware and never tells an already in_progress WU to run
+    pnpm wu:claim
   - Regression tests cover prompt/template guidance and wu:edit readiness output for claimed WUs
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-commands-wu-2339
+claimed_at: 2026-03-07T09:47:05.676Z
+baseline_main_sha: 0684835ef027a6b326726af2ae3cd87717c1a020
+session_id: ee95aded-ab4e-4a7a-8ebb-35e8f6fc03f5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-03-07T09:47:05.687Z
