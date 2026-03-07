@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2342 — Bind wu:done prep-checkpoint handoff to current worktree HEAD](wu/WU-2342.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1288,6 +1288,7 @@ sections:
 - [WU-2341 — wu:done rejects normal wu:prep handoff as session mismatch and lane:edit causes predictable JSONL merge conflicts](wu/WU-2341.yaml)
 - [WU-2339 — Remove unsafe agent fallback guidance and misleading claimed-WU prompts](wu/WU-2339.yaml)
 - [WU-2340 — wu:edit misclassifies claimed WUs when local main is stale](wu/WU-2340.yaml)
+- [WU-2342 — Bind wu:done prep-checkpoint handoff to current worktree HEAD](wu/WU-2342.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

@@ -4,7 +4,7 @@ _Last updated: 2026-03-07_
 
 ## In Progress
 
-- [WU-2342 — Bind wu:done prep-checkpoint handoff to current worktree HEAD](wu/WU-2342.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1262,3 +1262,4 @@ _Last updated: 2026-03-07_
 - [WU-2341 — wu:done rejects normal wu:prep handoff as session mismatch and lane:edit causes predictable JSONL merge conflicts](wu/WU-2341.yaml) — 2026-03-07
 - [WU-2339 — Remove unsafe agent fallback guidance and misleading claimed-WU prompts](wu/WU-2339.yaml) — 2026-03-07
 - [WU-2340 — wu:edit misclassifies claimed WUs when local main is stale](wu/WU-2340.yaml) — 2026-03-07
+- [WU-2342 — Bind wu:done prep-checkpoint handoff to current worktree HEAD](wu/WU-2342.yaml) — 2026-03-07

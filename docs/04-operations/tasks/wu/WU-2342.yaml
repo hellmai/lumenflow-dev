@@ -2,7 +2,7 @@ id: WU-2342
 title: Bind wu:done prep-checkpoint handoff to current worktree HEAD
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-03-07
 code_paths:
@@ -58,3 +58,6 @@ acceptance:
   - normal wu:prep in session A then wu:done in session B still succeeds when the worktree HEAD is
     unchanged
   - regression tests cover both the ownership path and the executeGates checkpoint-skip path
+locked: true
+completed_at: 2026-03-07T11:01:17.568Z
+completed: 2026-03-07
