@@ -58,9 +58,9 @@ describe('lumenflow init command (WU-1045)', () => {
       expect(fs.existsSync(lumenflowPath)).toBe(true);
 
       const content = fs.readFileSync(lumenflowPath, 'utf-8');
-      expect(content).toContain('ALWAYS Run wu:done');
+      expect(content).toContain('Use wu:prep Then wu:done');
       expect(content).toContain('LUMENFLOW.md');
-      expect(content).toContain('.lumenflow/agents');
+      expect(content).toContain('docs/04-operations/_frameworks/lumenflow/agent/onboarding');
     });
 
     it('should create .lumenflow/constraints.md', async () => {
@@ -116,7 +116,7 @@ describe('lumenflow init command (WU-1045)', () => {
 
       const content = fs.readFileSync(lumenflowPath, 'utf-8');
       expect(content).not.toBe(existingContent);
-      expect(content).toContain('ALWAYS Run wu:done');
+      expect(content).toContain('Use wu:prep Then wu:done');
     });
 
     it('should return list of created files', async () => {
@@ -246,8 +246,8 @@ describe('lumenflow init command (WU-1045)', () => {
       const content = fs.readFileSync(checklistPath, 'utf-8');
 
       // Verify lane format documentation
-      expect(content).toContain('Parent: Sublane');
-      expect(content).toContain('workspace.yaml');
+      expect(content).toContain('Step 1: Confirm the Lane');
+      expect(content).toContain('pnpm wu:infer-lane --paths');
     });
 
     it('should include plan storage locations in wu-create-checklist.md', async () => {
@@ -258,7 +258,8 @@ describe('lumenflow init command (WU-1045)', () => {
       const content = fs.readFileSync(checklistPath, 'utf-8');
 
       // Verify plan storage documentation
-      expect(content).toContain('~/.lumenflow/plans');
+      expect(content).toContain('lumenflow://plans/');
+      expect(content).toContain('pnpm plan:create --id INIT-XXX');
       expect(content).toContain('--spec-refs');
     });
 
