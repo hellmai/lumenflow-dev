@@ -1413,11 +1413,12 @@ describe('WU-2102: wu:done scoped test fallback', () => {
 
   it('preserves WU-1747 checkpoint gate-skip path in executeGates', async () => {
     const source = await readFile(new URL('../wu-done-gates.ts', import.meta.url), 'utf-8');
-    // executeGates should still check canSkipGates before running gates
+    // executeGates should still check the checkpoint path before running gates
     const executeGatesStart = source.indexOf('async function executeGates(');
     expect(executeGatesStart).toBeGreaterThan(-1);
     const executeGatesSlice = source.slice(executeGatesStart, executeGatesStart + 1500);
-    expect(executeGatesSlice).toContain('canSkipGates');
+    expect(source).toContain('async function resolveCheckpointSkipResult(');
+    expect(executeGatesSlice).toContain('await resolveCheckpointSkipResult(id, worktreePath)');
     expect(executeGatesSlice).toContain('skipResult.canSkip');
     expect(executeGatesSlice).toContain('return gateResult'); // early return when skipping
   });
